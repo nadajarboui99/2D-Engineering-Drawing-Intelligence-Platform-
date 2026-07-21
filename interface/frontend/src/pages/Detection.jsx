@@ -88,6 +88,16 @@ export default function DetectionPage() {
       if (w.length > 0 && !selectedW) setSelectedW(w[0].id);
       const r = await api.getDetectionResults(task);
       setResults(r);
+      // Auto-load the last saved annotated eval (metrics + box overlay) for this task.
+      const saved = await api.getDetectionAnnotated(task);
+      if (saved && saved.images?.length) {
+        setAnnotated(saved);
+        const imgs = saved.images.map(im => im.image);
+        setOrder(shuffle(imgs));
+        setNumImages(imgs.length);
+      } else {
+        setAnnotated(null);
+      }
     } catch {}
   }
 

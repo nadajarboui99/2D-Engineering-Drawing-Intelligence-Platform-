@@ -20,6 +20,7 @@ export const api = {
   evalDetectionWithWeights:(task, path, sz)  => req("POST", `/detection/eval/${task}`, { weights_path: path, imgsz: sz }),
   evalDetectionAnnotated:  (task, path, sz)  => req("POST", `/detection/eval-annotated/${task}`, { weights_path: path, imgsz: sz }),
   evalDetectionDetail:     (task, path, sz)  => req("POST", `/detection/detail/${task}`, { weights_path: path, imgsz: sz }),
+  getDetectionAnnotated:   (task)            => req("GET",  `/detection/annotated-result/${task}`),
   getDetectionResults:     (task)            => req("GET",  `/detection/results/${task}`),
 
   // Weights management
@@ -30,7 +31,7 @@ export const api = {
   getOCRResults: (task, m, mode)  => req("GET",  `/ocr/results/${task}/${m}?mode=${mode || "crop"}`),
   getOCRMetrics: (task, m, mode)  => req("GET",  `/ocr/metrics/${task}/${m}?mode=${mode || "crop"}`),
   getOCRDetail:  (m)              => req("GET",  `/ocr/detail?model=${m || "easyocr"}`),
-  getOCRCrops:   (img, m)         => req("GET",  `/ocr/crops-detail/${encodeURIComponent(img)}?model=${m || "easyocr"}`),
+  getOCRCrops:   (img, m, source) => req("GET",  `/ocr/crops-detail/${encodeURIComponent(img)}?model=${m || "easyocr"}&source=${source || "detector"}`),
 
   // VLM
   runVLM:        (cfg)       => req("POST", `/vlm/run`, cfg),

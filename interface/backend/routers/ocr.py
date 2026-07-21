@@ -30,9 +30,10 @@ router = APIRouter()
 
 
 class OCRConfig(BaseModel):
-    task:            str   = "tables"   # "tables" | "dimensions" | "both"
+    task:            str   = "tables"     # "tables" | "dimensions" | "both"
     ocr_model:       str   = "easyocr"
-    mode:            str   = "crop"     # "crop" (detection crops) | "full" (whole image)
+    mode:            str   = "crop"       # "crop" (detection crops) | "full" (whole image)
+    crop_source:     str   = "detector"   # "detector" (model boxes) | "gt" (ground-truth boxes = OCR ceiling)
     conf_threshold:  float = 0.25
     imgsz:           int   = 640
 
@@ -72,6 +73,23 @@ def _read_regions(ocr, image):
 
 REPO_ROOT   = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 UNIFIED_DIR = os.path.join(REPO_ROOT, "dataset", "selected_images")
+MASTER_DIR  = os.path.join(REPO_ROOT, "dataset", "master", "unified")
+
+
+def _gt_boxes(task: str, stem: str):
+    """Ground-truth boxes for a task from the master annotation (xyxy). Used for
+    the 'OCR ceiling' crop source — crops the true regions, not the detector's."""
+    target = "table" if task == "tables" else "dimension"
+    path = os.path.join(MASTER_DIR, f"{stem}.json")
+    if not os.path.exists(path):
+        return []
+    rec = json.load(open(path))
+    out = []
+    for r in rec.get("regions", []):
+        if r.get("class") == target and r.get("bbox"):
+            b = r["bbox"]
+            out.append([b[0], b[1], b[0] + b[2], b[1] + b[3]])
+    return out
 
 
 def _unified_ready() -> bool:
@@ -94,6 +112,9 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
     from pathlib import Path
 
     mode = cfg.mode if cfg.mode in ("crop", "full") else "crop"
+    use_gt = mode == "crop" and cfg.crop_source == "gt"
+    # File/namespace label: full | crop (detector boxes) | gtcrop (ground-truth boxes).
+    label = "full" if mode == "full" else ("gtcrop" if use_gt else "crop")
 
     job.log(f"[{task}] Loading OCR model: {cfg.ocr_model}...")
     ocr = _load_ocr(cfg.ocr_model)
@@ -101,16 +122,16 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
     images_dir  = _get_images_dir(task)
     output_dir  = os.path.join(OCR_DIR, "results")
     crops_dir   = os.path.join(output_dir, "crops")
-    json_dir    = os.path.join(output_dir, "json", task, mode)
+    json_dir    = os.path.join(output_dir, "json", task, label)
     os.makedirs(crops_dir, exist_ok=True)
     os.makedirs(json_dir,  exist_ok=True)
 
-    # Detection crops need trained weights; whole-image OCR does not.
+    # Detector-box crops need trained weights; GT-box crops and whole-image do not.
     detector = None
-    if mode == "crop":
+    if mode == "crop" and not use_gt:
         weights = find_best_weights(task)
         if not weights:
-            raise RuntimeError(f"No trained weights found for {task}. Train detection first, or use 'full' image mode.")
+            raise RuntimeError(f"No trained weights found for {task}. Train detection first, or use GT crops / full image.")
         job.log(f"[{task}] Loading detector from {weights}...")
         _prioritize_paths(DETECTION_DIR, os.path.join(DETECTION_DIR, "models"))
         for m in ("models", "models.yolov11", "models.rtdetr", "models.base"):
@@ -121,13 +142,15 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
         else:
             from models.yolov11 import YOLOv11Detector
             detector = YOLOv11Detector(weights=weights)
+    elif use_gt:
+        job.log(f"[{task}] Using GROUND-TRUTH boxes as crop source (OCR ceiling).")
 
     image_files = sorted([
         f for f in os.listdir(images_dir)
         if f.lower().endswith((".jpg", ".jpeg", ".png"))
     ])
 
-    job.log(f"[{task}] Processing {len(image_files)} images ({mode} mode)...")
+    job.log(f"[{task}] Processing {len(image_files)} images ({label} mode)...")
     all_results = []
 
     for i, fname in enumerate(image_files):
@@ -137,12 +160,15 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
         detections = []
 
         if mode == "crop":
-            preds  = detector.predict([np.array(image)], conf_threshold=cfg.conf_threshold, imgsz=cfg.imgsz)
-            pred   = preds[0]
-            boxes  = pred["boxes"].tolist()
-            scores = pred["scores"].tolist()
+            if use_gt:
+                boxes  = _gt_boxes(task, stem)
+                scores = [1.0] * len(boxes)
+            else:
+                pred   = detector.predict([np.array(image)], conf_threshold=cfg.conf_threshold, imgsz=cfg.imgsz)[0]
+                boxes  = pred["boxes"].tolist()
+                scores = pred["scores"].tolist()
 
-            img_crops_dir = os.path.join(crops_dir, task, stem)
+            img_crops_dir = os.path.join(crops_dir, label, task, stem)
             os.makedirs(img_crops_dir, exist_ok=True)
 
             for j, (box, score) in enumerate(zip(boxes, scores)):
@@ -174,7 +200,7 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
             "image":      stem,
             "task":       task,
             "ocr_model":  cfg.ocr_model,
-            "mode":       mode,
+            "mode":       label,
             "detections": detections,
         }
         all_results.append(result)
@@ -185,7 +211,7 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
         if (i + 1) % 5 == 0:
             job.log(f"[{task}] {i+1}/{len(image_files)} images processed...")
 
-    combined = os.path.join(output_dir, f"{task}_{cfg.ocr_model}_{mode}_results.json")
+    combined = os.path.join(output_dir, f"{task}_{cfg.ocr_model}_{label}_results.json")
     with open(combined, "w") as f:
         json.dump(all_results, f, indent=2)
 
@@ -195,25 +221,21 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
     avg_conf  = (sum(d.get("confidence", 0) for d in all_dets) / len(all_dets)) if all_dets else 0
     coverage  = (with_text / len(all_dets)) if all_dets else 0
 
-    # Accuracy vs ground truth. Whole-image mode scores against the union of ALL
-    # annotated text (dimensions + tables); crop mode against the per-class texts.
     predicted_by_image = {r["image"]: [d.get("text", "") for d in r["detections"]] for r in all_results}
     gt = ocr_eval.load_whole_image_gt() if mode == "full" else None
     acc = ocr_eval.evaluate(predicted_by_image, task, gt=gt)
-    with open(os.path.join(output_dir, f"{task}_{cfg.ocr_model}_{mode}_metrics.json"), "w") as f:
+    with open(os.path.join(output_dir, f"{task}_{cfg.ocr_model}_{label}_metrics.json"), "w") as f:
         json.dump(acc, f, indent=2)
 
     run_metrics = {"coverage": round(coverage, 4), "avg_confidence": round(avg_conf, 4), "total_patches": len(all_dets)}
     if acc.get("available") and acc.get("evaluated_images"):
         run_metrics.update({"cer": acc["cer"], "wer": acc["wer"], "exact_match": acc["exact_match"], "f1": acc["f1"]})
         job.log(f"[{task}] Accuracy vs ground truth — CER {acc['cer']} · WER {acc['wer']} · exact {acc['exact_match']}")
-    else:
-        job.log(f"[{task}] No ground truth at ocr/data/ground_truth/{task}.json — coverage only.")
 
     log_run(
-        stage="ocr", task=task, model=f"{cfg.ocr_model}_{mode}",
+        stage="ocr", task=task, model=f"{cfg.ocr_model}_{label}",
         metrics=run_metrics,
-        extra={"conf_threshold": cfg.conf_threshold, "mode": mode},
+        extra={"conf_threshold": cfg.conf_threshold, "mode": label, "crop_source": cfg.crop_source},
     )
 
     job.log(f"[{task}] Done. Results saved to {combined}")
@@ -272,14 +294,14 @@ def _load_full_pred(model: str) -> dict:
             for r in data}
 
 
-def _load_crop_pred(model: str) -> dict:
-    """Detector-crop OCR predictions per image, MERGED across tasks (the 'cropped
-    patches' approach) — everything the crops read, whatever the class."""
+def _load_crop_pred(model: str, label: str = "crop") -> dict:
+    """Crop-OCR predictions per image, MERGED across tasks. label = 'crop'
+    (detector boxes) or 'gtcrop' (ground-truth boxes = OCR ceiling)."""
     merged = {}
     for task in ("tables", "dimensions"):
-        path = os.path.join(OCR_DIR, "results", f"{task}_{model}_crop_results.json")
-        if not os.path.exists(path):
-            path = os.path.join(OCR_DIR, "results", f"{task}_{model}_results.json")
+        path = os.path.join(OCR_DIR, "results", f"{task}_{model}_{label}_results.json")
+        if not os.path.exists(path) and label == "crop":
+            path = os.path.join(OCR_DIR, "results", f"{task}_{model}_results.json")  # legacy
         if not os.path.exists(path):
             continue
         with open(path) as f:
@@ -292,11 +314,13 @@ def _load_crop_pred(model: str) -> dict:
 
 @router.get("/detail")
 def ocr_detail(model: str = "easyocr"):
-    """Per-image + aggregate comparison of the two OCR approaches (whole image vs
-    detector crops). Uses WHOLE-TEXT coverage (word + character) so table blocks
-    and whole-page OCR are scored correctly, not string-by-string."""
+    """Per-image + aggregate comparison of the OCR approaches (whole image vs
+    detector crops vs ground-truth crops). Uses WHOLE-TEXT coverage (word +
+    character) so table blocks and whole-page OCR are scored correctly."""
     gt         = ocr_eval.load_whole_image_gt()
-    approaches = {"full": _load_full_pred(model), "crop": _load_crop_pred(model)}
+    approaches = {"full":   _load_full_pred(model),
+                  "gtcrop": _load_crop_pred(model, "gtcrop"),
+                  "crop":   _load_crop_pred(model, "crop")}
 
     def build(pred_by_image):
         per = []
@@ -321,14 +345,15 @@ def list_crops(task: str, image_name: str):
 
 
 @router.get("/crops-detail/{image_name}")
-def crops_detail(image_name: str, model: str = "easyocr"):
-    """Every crop the detector produced for one drawing (across tasks), with its
-    OCR text, confidence, box and an image URL — so you can judge crop quality:
-    were the right regions boxed, are the patches clean enough to read?"""
+def crops_detail(image_name: str, model: str = "easyocr", source: str = "detector"):
+    """Every crop produced for one drawing (across tasks), with its OCR text,
+    confidence, box and an image URL — to judge crop quality. source = 'detector'
+    (model boxes) or 'gt' (ground-truth boxes)."""
+    label = "gtcrop" if source == "gt" else "crop"
     out = []
     for task in ("tables", "dimensions"):
-        path = os.path.join(OCR_DIR, "results", f"{task}_{model}_crop_results.json")
-        if not os.path.exists(path):
+        path = os.path.join(OCR_DIR, "results", f"{task}_{model}_{label}_results.json")
+        if not os.path.exists(path) and label == "crop":
             path = os.path.join(OCR_DIR, "results", f"{task}_{model}_results.json")
         if not os.path.exists(path):
             continue
@@ -337,7 +362,7 @@ def crops_detail(image_name: str, model: str = "easyocr"):
         rec = next((r for r in data if r["image"] == image_name), None)
         if not rec:
             continue
-        crops_dir = os.path.join(OCR_DIR, "results", "crops", task, image_name)
+        crops_dir = os.path.join(OCR_DIR, "results", "crops", label, task, image_name)
         for d in rec.get("detections", []):
             fname = f"crop_{d['id']:03d}.jpg"
             if not os.path.exists(os.path.join(crops_dir, fname)):
@@ -345,14 +370,14 @@ def crops_detail(image_name: str, model: str = "easyocr"):
             out.append({
                 "task": task, "id": d["id"], "text": d.get("text", ""),
                 "confidence": d.get("confidence"), "bbox": d.get("bbox"),
-                "url": f"/ocr/crop-file/{task}/{image_name}/{fname}",
+                "url": f"/ocr/crop-file/{label}/{task}/{image_name}/{fname}",
             })
     return {"image": image_name, "crops": out, "count": len(out)}
 
 
-@router.get("/crop-file/{task}/{image_name}/{filename}")
-def crop_file(task: str, image_name: str, filename: str):
-    path = os.path.join(OCR_DIR, "results", "crops", task, image_name, filename)
+@router.get("/crop-file/{label}/{task}/{image_name}/{filename}")
+def crop_file(label: str, task: str, image_name: str, filename: str):
+    path = os.path.join(OCR_DIR, "results", "crops", label, task, image_name, filename)
     if not os.path.exists(path):
         return {"error": "not found"}
     return FileResponse(path)

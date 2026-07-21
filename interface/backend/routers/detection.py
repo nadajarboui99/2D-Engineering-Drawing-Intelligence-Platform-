@@ -318,10 +318,27 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
                      "recall": metrics["recall"], "f1": metrics["f1"]},
             extra={"on": "annotated", "n_gt": n_gt, "tp": tp, "fp": fp, "fn": fn, "images": len(stems)},
         )
+        # Persist so the page auto-loads the overlay next time (like OCR/VLM).
+        out_dir = os.path.join(DETECTION_DIR, "results")
+        os.makedirs(out_dir, exist_ok=True)
+        with open(os.path.join(out_dir, f"annotated_{task}.json"), "w") as f:
+            json.dump({**metrics, "model_label": model_label}, f)
         return metrics
 
     background.add_task(run_job, job, _run, task=task, cfg=cfg)
     return {"job_id": job.job_id}
+
+
+@router.get("/annotated-result/{task}")
+def get_annotated_result(task: str):
+    """Last saved annotated-eval result (metrics + per-image boxes) so the page
+    auto-loads the overlay without re-running — like OCR/VLM."""
+    import json as _json
+    path = os.path.join(DETECTION_DIR, "results", f"annotated_{task}.json")
+    if not os.path.exists(path):
+        return {}
+    with open(path) as f:
+        return _json.load(f)
 
 
 @router.post("/detail/{task}")
