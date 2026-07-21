@@ -1,0 +1,194 @@
+{
+  "image": "887f963c-Chassis_SA_page_005_png.rf.c904d9df2cf6057537e8af8feb3523db",
+  "task": "dimensions",
+  "width": 1280,
+  "height": 1280,
+  "regions": [
+    {
+      "id": 0,
+      "class": "dimension",
+      "bbox": [
+        497,
+        300,
+        14,
+        27
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 1,
+      "class": "dimension",
+      "bbox": [
+        517,
+        406,
+        12,
+        18
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 2,
+      "class": "dimension",
+      "bbox": [
+        498,
+        503,
+        10,
+        27
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 3,
+      "class": "dimension",
+      "bbox": [
+        316,
+        710,
+        14,
+        16
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 4,
+      "class": "dimension",
+      "bbox": [
+        109,
+        700,
+        27,
+        18
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 5,
+      "class": "dimension",
+      "bbox": [
+        105,
+        172,
+        11,
+        12
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 6,
+      "class": "dimension",
+      "bbox": [
+        451,
+        87,
+        9,
+        14
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 7,
+      "class": "dimension",
+      "bbox": [
+        566,
+        155,
+        75,
+        14
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 8,
+      "class": "dimension",
+      "bbox": [
+        434,
+        778,
+        10,
+        14
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 9,
+      "class": "dimension",
+      "bbox": [
+        317,
+        778,
+        12,
+        13
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 10,
+      "class": "dimension",
+      "bbox": [
+        124,
+        850,
+        10,
+        15
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 11,
+      "class": "dimension",
+      "bbox": [
+        498,
+        883,
+        11,
+        13
+      ],
+      "text": "",
+      "dim_type": ""
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

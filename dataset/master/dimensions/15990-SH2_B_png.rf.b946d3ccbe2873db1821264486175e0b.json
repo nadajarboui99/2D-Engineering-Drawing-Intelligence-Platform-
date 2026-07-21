@@ -1,0 +1,398 @@
+{
+  "image": "15990-SH2_B_png.rf.b946d3ccbe2873db1821264486175e0b",
+  "task": "dimensions",
+  "width": 1280,
+  "height": 1280,
+  "regions": [
+    {
+      "id": 0,
+      "class": "dimension",
+      "bbox": [
+        496,
+        112,
+        30,
+        13
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 1,
+      "class": "dimension",
+      "bbox": [
+        541,
+        106,
+        22,
+        11
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 2,
+      "class": "dimension",
+      "bbox": [
+        633,
+        104,
+        29,
+        15
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 3,
+      "class": "dimension",
+      "bbox": [
+        664,
+        152,
+        24,
+        11
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 4,
+      "class": "dimension",
+      "bbox": [
+        650,
+        197,
+        28,
+        14
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 5,
+      "class": "dimension",
+      "bbox": [
+        678,
+        233,
+        33,
+        14
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 6,
+      "class": "dimension",
+      "bbox": [
+        733,
+        298,
+        91,
+        31
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 7,
+      "class": "dimension",
+      "bbox": [
+        733,
+        329,
+        99,
+        15
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 8,
+      "class": "dimension",
+      "bbox": [
+        540,
+        390,
+        21,
+        10
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 9,
+      "class": "dimension",
+      "bbox": [
+        653,
+        380,
+        70,
+        26
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 10,
+      "class": "dimension",
+      "bbox": [
+        613,
+        423,
+        22,
+        12
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 11,
+      "class": "dimension",
+      "bbox": [
+        534,
+        416,
+        27,
+        11
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 12,
+      "class": "dimension",
+      "bbox": [
+        476,
+        410,
+        30,
+        11
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 13,
+      "class": "dimension",
+      "bbox": [
+        418,
+        544,
+        25,
+        11
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 14,
+      "class": "dimension",
+      "bbox": [
+        697,
+        479,
+        22,
+        10
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 15,
+      "class": "dimension",
+      "bbox": [
+        735,
+        496,
+        22,
+        13
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 16,
+      "class": "dimension",
+      "bbox": [
+        336,
+        525,
+        39,
+        13
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 17,
+      "class": "dimension",
+      "bbox": [
+        263,
+        623,
+        23,
+        11
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 18,
+      "class": "dimension",
+      "bbox": [
+        197,
+        646,
+        22,
+        10
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 19,
+      "class": "dimension",
+      "bbox": [
+        540,
+        690,
+        15,
+        10
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 20,
+      "class": "dimension",
+      "bbox": [
+        609,
+        710,
+        17,
+        10
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 21,
+      "class": "dimension",
+      "bbox": [
+        424,
+        771,
+        23,
+        10
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 22,
+      "class": "dimension",
+      "bbox": [
+        670,
+        767,
+        17,
+        11
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 23,
+      "class": "dimension",
+      "bbox": [
+        683,
+        846,
+        21,
+        13
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 24,
+      "class": "dimension",
+      "bbox": [
+        723,
+        840,
+        73,
+        26
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 25,
+      "class": "dimension",
+      "bbox": [
+        399,
+        839,
+        71,
+        26
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 26,
+      "class": "dimension",
+      "bbox": [
+        424,
+        925,
+        21,
+        10
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 27,
+      "class": "dimension",
+      "bbox": [
+        299,
+        604,
+        35,
+        10
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 28,
+      "class": "dimension",
+      "bbox": [
+        80,
+        458,
+        45,
+        15
+      ],
+      "text": "",
+      "dim_type": ""
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

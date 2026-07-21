@@ -1,0 +1,218 @@
+{
+  "image": "3e776da1-Bed_SA_page_001_png.rf.0bdf6b5fdd31a72bf23c9ce8472ea17b",
+  "task": "dimensions",
+  "width": 1280,
+  "height": 1280,
+  "regions": [
+    {
+      "id": 0,
+      "class": "dimension",
+      "bbox": [
+        591,
+        674,
+        10,
+        20
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 1,
+      "class": "dimension",
+      "bbox": [
+        563,
+        730,
+        25,
+        20
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 2,
+      "class": "dimension",
+      "bbox": [
+        385,
+        651,
+        22,
+        21
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 3,
+      "class": "dimension",
+      "bbox": [
+        300,
+        877,
+        22,
+        17
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 4,
+      "class": "dimension",
+      "bbox": [
+        209,
+        650,
+        15,
+        21
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 5,
+      "class": "dimension",
+      "bbox": [
+        81,
+        577,
+        10,
+        27
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 6,
+      "class": "dimension",
+      "bbox": [
+        160,
+        215,
+        60,
+        29
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 7,
+      "class": "dimension",
+      "bbox": [
+        236,
+        105,
+        40,
+        20
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 8,
+      "class": "dimension",
+      "bbox": [
+        344,
+        181,
+        11,
+        17
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 9,
+      "class": "dimension",
+      "bbox": [
+        301,
+        247,
+        21,
+        16
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 10,
+      "class": "dimension",
+      "bbox": [
+        387,
+        271,
+        20,
+        21
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 11,
+      "class": "dimension",
+      "bbox": [
+        580,
+        255,
+        34,
+        19
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 12,
+      "class": "dimension",
+      "bbox": [
+        662,
+        273,
+        7,
+        19
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 13,
+      "class": "dimension",
+      "bbox": [
+        694,
+        96,
+        12,
+        11
+      ],
+      "text": "",
+      "dim_type": ""
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

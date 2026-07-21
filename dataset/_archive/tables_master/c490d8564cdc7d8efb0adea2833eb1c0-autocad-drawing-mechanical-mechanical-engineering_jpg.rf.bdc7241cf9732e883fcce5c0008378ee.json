@@ -1,0 +1,61 @@
+{
+  "image": "c490d8564cdc7d8efb0adea2833eb1c0-autocad-drawing-mechanical-mechanical-engineering_jpg.rf.bdc7241cf9732e883fcce5c0008378ee",
+  "task": "tables",
+  "width": 474,
+  "height": 335,
+  "regions": [
+    {
+      "id": 0,
+      "class": "table",
+      "bbox": [
+        332,
+        205,
+        132.26,
+        56.67
+      ],
+      "text": ""
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

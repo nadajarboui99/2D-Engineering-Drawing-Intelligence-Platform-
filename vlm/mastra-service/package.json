@@ -1,0 +1,16 @@
+{
+  "name": "vlm-mastra-service",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Local Mastra service that runs VLM feature extraction for the Python eval backend.",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "latest",
+    "@mastra/core": "latest",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2"
+  }
+}

@@ -1,0 +1,314 @@
+{
+  "image": "24315541_B_png.rf.c3435842e5010eae75ef5b76fd72bec0",
+  "task": "dimensions",
+  "width": 1280,
+  "height": 1280,
+  "regions": [
+    {
+      "id": 0,
+      "class": "dimension",
+      "bbox": [
+        278,
+        438,
+        36,
+        28
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 1,
+      "class": "dimension",
+      "bbox": [
+        87,
+        604,
+        39,
+        29
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 2,
+      "class": "dimension",
+      "bbox": [
+        65,
+        633,
+        60,
+        22
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 3,
+      "class": "dimension",
+      "bbox": [
+        477,
+        873,
+        76,
+        22
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 4,
+      "class": "dimension",
+      "bbox": [
+        332,
+        903,
+        28,
+        16
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 5,
+      "class": "dimension",
+      "bbox": [
+        258,
+        905,
+        28,
+        15
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 6,
+      "class": "dimension",
+      "bbox": [
+        236,
+        836,
+        27,
+        27
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 7,
+      "class": "dimension",
+      "bbox": [
+        94,
+        900,
+        34,
+        29
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 8,
+      "class": "dimension",
+      "bbox": [
+        480,
+        1037,
+        48,
+        16
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 9,
+      "class": "dimension",
+      "bbox": [
+        784,
+        1028,
+        70,
+        35
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 10,
+      "class": "dimension",
+      "bbox": [
+        752,
+        879,
+        112,
+        29
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 11,
+      "class": "dimension",
+      "bbox": [
+        756,
+        910,
+        98,
+        19
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 12,
+      "class": "dimension",
+      "bbox": [
+        910,
+        848,
+        42,
+        35
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 13,
+      "class": "dimension",
+      "bbox": [
+        930,
+        763,
+        39,
+        29
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 14,
+      "class": "dimension",
+      "bbox": [
+        1083,
+        586,
+        38,
+        28
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 15,
+      "class": "dimension",
+      "bbox": [
+        1089,
+        630,
+        69,
+        30
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 16,
+      "class": "dimension",
+      "bbox": [
+        1090,
+        663,
+        72,
+        18
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 17,
+      "class": "dimension",
+      "bbox": [
+        1095,
+        708,
+        60,
+        29
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 18,
+      "class": "dimension",
+      "bbox": [
+        1123,
+        838,
+        25,
+        31
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 19,
+      "class": "dimension",
+      "bbox": [
+        1080,
+        935,
+        17,
+        33
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 20,
+      "class": "dimension",
+      "bbox": [
+        724,
+        629,
+        37,
+        30
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 21,
+      "class": "dimension",
+      "bbox": [
+        733,
+        445,
+        35,
+        29
+      ],
+      "text": "",
+      "dim_type": ""
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

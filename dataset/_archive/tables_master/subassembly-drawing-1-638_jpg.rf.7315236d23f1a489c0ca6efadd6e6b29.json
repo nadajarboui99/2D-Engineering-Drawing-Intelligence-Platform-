@@ -1,0 +1,61 @@
+{
+  "image": "subassembly-drawing-1-638_jpg.rf.7315236d23f1a489c0ca6efadd6e6b29",
+  "task": "tables",
+  "width": 638,
+  "height": 452,
+  "regions": [
+    {
+      "id": 0,
+      "class": "table",
+      "bbox": [
+        317,
+        291,
+        264.84,
+        85
+      ],
+      "text": ""
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

@@ -1,0 +1,31 @@
+# OCR Config
+
+
+# Change this one line to switch OCR model: "easyocr" | "tesseract"
+ocr:
+  model: easyocr       # "easyocr" | "tesseract"
+
+  # EasyOCR settings
+  easyocr:
+    languages: ["en"]
+    gpu: false
+
+  # Tesseract settings
+  tesseract:
+    lang: eng
+    config: "--psm 6"  # 6=block, 7=line, 8=word
+
+# Detection model to use for cropping
+detection:
+  task: tables                  # "tables" | "dimensions"
+  weights_tables:     runs/detect/runs/tables/yolov11_n-2/weights/best.pt
+  weights_dimensions: runs/detect/runs/dimensions/yolov11_n-5/weights/best.pt
+  conf_threshold: 0.25
+  imgsz: 640
+
+# Input / Output
+io:
+  images_dir:   data/tables/valid        # folder of images to run on
+  output_dir:   results/ocr             # where to save results
+  save_crops:   true                    # save cropped patches as images
+  save_json:    true                    # save structured JSON outputs

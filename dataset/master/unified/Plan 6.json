@@ -1,0 +1,334 @@
+{
+  "image": "Plan 6",
+  "width": 2481,
+  "height": 1754,
+  "meta": {
+    "standard": "unknown",
+    "source_type": "unknown",
+    "clutter": "med",
+    "has_gdt": false,
+    "difficulty": "med"
+  },
+  "regions": [
+    {
+      "id": 0,
+      "class": "table",
+      "bbox": [
+        1260,
+        1289,
+        1211,
+        443
+      ],
+      "text": "",
+      "cells": []
+    },
+    {
+      "id": 1,
+      "class": "dimension",
+      "bbox": [
+        273,
+        51,
+        67,
+        31
+      ],
+      "text": "32,5"
+    },
+    {
+      "id": 2,
+      "class": "dimension",
+      "bbox": [
+        48,
+        297,
+        29,
+        41
+      ],
+      "text": "60"
+    },
+    {
+      "id": 3,
+      "class": "dimension",
+      "bbox": [
+        84,
+        347,
+        31,
+        39
+      ],
+      "text": "45"
+    },
+    {
+      "id": 4,
+      "class": "dimension",
+      "bbox": [
+        120,
+        433,
+        28,
+        37
+      ],
+      "text": "15"
+    },
+    {
+      "id": 5,
+      "class": "dimension",
+      "bbox": [
+        236,
+        527,
+        41,
+        28
+      ],
+      "text": "15"
+    },
+    {
+      "id": 6,
+      "class": "dimension",
+      "bbox": [
+        382,
+        528,
+        40,
+        26
+      ],
+      "text": "35"
+    },
+    {
+      "id": 7,
+      "class": "dimension",
+      "bbox": [
+        396,
+        561,
+        41,
+        27
+      ],
+      "text": "70"
+    },
+    {
+      "id": 8,
+      "class": "dimension",
+      "bbox": [
+        705,
+        513,
+        134,
+        33
+      ],
+      "text": ""
+    },
+    {
+      "id": 9,
+      "class": "dimension",
+      "bbox": [
+        114,
+        867,
+        34,
+        25
+      ],
+      "text": "3"
+    },
+    {
+      "id": 10,
+      "class": "dimension",
+      "bbox": [
+        398,
+        854,
+        41,
+        28
+      ],
+      "text": "70"
+    },
+    {
+      "id": 11,
+      "class": "dimension",
+      "bbox": [
+        744,
+        853,
+        43,
+        29
+      ],
+      "text": "48"
+    },
+    {
+      "id": 12,
+      "class": "dimension",
+      "bbox": [
+        508,
+        1007,
+        52,
+        29
+      ],
+      "text": ""
+    },
+    {
+      "id": 13,
+      "class": "dimension",
+      "bbox": [
+        934,
+        1001,
+        29,
+        43
+      ],
+      "text": "27"
+    },
+    {
+      "id": 14,
+      "class": "dimension",
+      "bbox": [
+        798,
+        1174,
+        56,
+        28
+      ],
+      "text": ""
+    },
+    {
+      "id": 15,
+      "class": "dimension",
+      "bbox": [
+        932,
+        1299,
+        34,
+        39
+      ],
+      "text": "73"
+    },
+    {
+      "id": 16,
+      "class": "dimension",
+      "bbox": [
+        2069,
+        165,
+        197,
+        33
+      ],
+      "text": ""
+    },
+    {
+      "id": 17,
+      "class": "dimension",
+      "bbox": [
+        2107,
+        204,
+        129,
+        25
+      ],
+      "text": "M5 Déb"
+    },
+    {
+      "id": 18,
+      "class": "dimension",
+      "bbox": [
+        2109,
+        236,
+        168,
+        21
+      ],
+      "text": ""
+    },
+    {
+      "id": 19,
+      "class": "dimension",
+      "bbox": [
+        1966,
+        420,
+        29,
+        37
+      ],
+      "text": "20"
+    },
+    {
+      "id": 20,
+      "class": "dimension",
+      "bbox": [
+        1860,
+        524,
+        66,
+        31
+      ],
+      "text": "16,5"
+    },
+    {
+      "id": 21,
+      "class": "dimension",
+      "bbox": [
+        1712,
+        526,
+        44,
+        28
+      ],
+      "text": "37"
+    }
+  ],
+  "features": {
+    "length_before_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "length_after_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width_before_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width_after_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "height_before_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "height_after_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "circular_holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "noncircular_holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "circular_hole_diameters": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "part_name": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "drawing_number": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

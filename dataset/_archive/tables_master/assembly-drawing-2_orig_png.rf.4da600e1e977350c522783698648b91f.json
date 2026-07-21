@@ -1,0 +1,61 @@
+{
+  "image": "assembly-drawing-2_orig_png.rf.4da600e1e977350c522783698648b91f",
+  "task": "tables",
+  "width": 638,
+  "height": 504,
+  "regions": [
+    {
+      "id": 0,
+      "class": "table",
+      "bbox": [
+        486,
+        365,
+        142.66,
+        52.86
+      ],
+      "text": ""
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

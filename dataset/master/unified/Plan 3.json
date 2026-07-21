@@ -1,0 +1,633 @@
+{
+  "image": "Plan 3",
+  "width": 7021,
+  "height": 4967,
+  "meta": {
+    "standard": "unknown",
+    "source_type": "unknown",
+    "clutter": "med",
+    "has_gdt": false,
+    "difficulty": "med"
+  },
+  "regions": [
+    {
+      "id": 0,
+      "class": "dimension",
+      "bbox": [
+        4996,
+        703,
+        21,
+        63
+      ],
+      "text": "90,68"
+    },
+    {
+      "id": 1,
+      "class": "dimension",
+      "bbox": [
+        4066,
+        1126,
+        41,
+        25
+      ],
+      "text": "248"
+    },
+    {
+      "id": 2,
+      "class": "dimension",
+      "bbox": [
+        4068,
+        2864,
+        39,
+        19
+      ],
+      "text": "248"
+    },
+    {
+      "id": 3,
+      "class": "dimension",
+      "bbox": [
+        4068,
+        2990,
+        41,
+        21
+      ],
+      "text": "160"
+    },
+    {
+      "id": 4,
+      "class": "dimension",
+      "bbox": [
+        3470,
+        2992,
+        31,
+        21
+      ],
+      "text": "44"
+    },
+    {
+      "id": 5,
+      "class": "dimension",
+      "bbox": [
+        4676,
+        2991,
+        28,
+        19
+      ],
+      "text": "44"
+    },
+    {
+      "id": 6,
+      "class": "dimension",
+      "bbox": [
+        3093,
+        3196,
+        20,
+        31
+      ],
+      "text": "41"
+    },
+    {
+      "id": 7,
+      "class": "dimension",
+      "bbox": [
+        3221,
+        3147,
+        21,
+        30
+      ],
+      "text": "24"
+    },
+    {
+      "id": 8,
+      "class": "dimension",
+      "bbox": [
+        4913,
+        3197,
+        23,
+        29
+      ],
+      "text": "41"
+    },
+    {
+      "id": 9,
+      "class": "dimension",
+      "bbox": [
+        4266,
+        3289,
+        19,
+        29
+      ],
+      "text": "10"
+    },
+    {
+      "id": 10,
+      "class": "dimension",
+      "bbox": [
+        3863,
+        3292,
+        26,
+        25
+      ],
+      "text": "10"
+    },
+    {
+      "id": 11,
+      "class": "dimension",
+      "bbox": [
+        3645,
+        3378,
+        30,
+        20
+      ],
+      "text": "7,1"
+    },
+    {
+      "id": 12,
+      "class": "dimension",
+      "bbox": [
+        3572,
+        3483,
+        31,
+        21
+      ],
+      "text": "79"
+    },
+    {
+      "id": 13,
+      "class": "dimension",
+      "bbox": [
+        4073,
+        3484,
+        28,
+        19
+      ],
+      "text": "90"
+    },
+    {
+      "id": 14,
+      "class": "dimension",
+      "bbox": [
+        4565,
+        3483,
+        37,
+        22
+      ],
+      "text": "79"
+    },
+    {
+      "id": 15,
+      "class": "dimension",
+      "bbox": [
+        4066,
+        4015,
+        40,
+        22
+      ],
+      "text": "248"
+    },
+    {
+      "id": 16,
+      "class": "dimension",
+      "bbox": [
+        4059,
+        4108,
+        57,
+        20
+      ],
+      "text": "106,8"
+    },
+    {
+      "id": 17,
+      "class": "dimension",
+      "bbox": [
+        3516,
+        4103,
+        46,
+        26
+      ],
+      "text": "62,4"
+    },
+    {
+      "id": 18,
+      "class": "dimension",
+      "bbox": [
+        3730,
+        4107,
+        35,
+        22
+      ],
+      "text": "8,2"
+    },
+    {
+      "id": 19,
+      "class": "dimension",
+      "bbox": [
+        4406,
+        4104,
+        40,
+        24
+      ],
+      "text": "8,2"
+    },
+    {
+      "id": 20,
+      "class": "dimension",
+      "bbox": [
+        4611,
+        4102,
+        45,
+        28
+      ],
+      "text": "62,4"
+    },
+    {
+      "id": 21,
+      "class": "dimension",
+      "bbox": [
+        3216,
+        4117,
+        24,
+        35
+      ],
+      "text": "8,9"
+    },
+    {
+      "id": 22,
+      "class": "dimension",
+      "bbox": [
+        3217,
+        4222,
+        22,
+        33
+      ],
+      "text": "3,2"
+    },
+    {
+      "id": 23,
+      "class": "dimension",
+      "bbox": [
+        3218,
+        4318,
+        22,
+        34
+      ],
+      "text": "8,9"
+    },
+    {
+      "id": 24,
+      "class": "dimension",
+      "bbox": [
+        3398,
+        4508,
+        31,
+        21
+      ],
+      "text": "20"
+    },
+    {
+      "id": 25,
+      "class": "dimension",
+      "bbox": [
+        3604,
+        4425,
+        28,
+        19
+      ],
+      "text": "49"
+    },
+    {
+      "id": 26,
+      "class": "dimension",
+      "bbox": [
+        3630,
+        4506,
+        33,
+        22
+      ],
+      "text": "59"
+    },
+    {
+      "id": 27,
+      "class": "dimension",
+      "bbox": [
+        3774,
+        4424,
+        33,
+        21
+      ],
+      "text": "10"
+    },
+    {
+      "id": 28,
+      "class": "dimension",
+      "bbox": [
+        3614,
+        4393,
+        72,
+        22
+      ],
+      "text": "M5x0,8"
+    },
+    {
+      "id": 29,
+      "class": "dimension",
+      "bbox": [
+        3865,
+        4307,
+        21,
+        42
+      ],
+      "text": "8,75"
+    },
+    {
+      "id": 30,
+      "class": "dimension",
+      "bbox": [
+        3861,
+        4410,
+        25,
+        47
+      ],
+      "text": "4,75"
+    },
+    {
+      "id": 31,
+      "class": "dimension",
+      "bbox": [
+        3942,
+        4319,
+        20,
+        46
+      ],
+      "text": "13,5"
+    },
+    {
+      "id": 32,
+      "class": "dimension",
+      "bbox": [
+        4072,
+        4506,
+        29,
+        23
+      ],
+      "text": "90"
+    },
+    {
+      "id": 33,
+      "class": "dimension",
+      "bbox": [
+        4277,
+        4316,
+        25,
+        51
+      ],
+      "text": "13,5"
+    },
+    {
+      "id": 34,
+      "class": "dimension",
+      "bbox": [
+        4385,
+        4392,
+        75,
+        24
+      ],
+      "text": "M5x0,8"
+    },
+    {
+      "id": 35,
+      "class": "dimension",
+      "bbox": [
+        4426,
+        4423,
+        28,
+        24
+      ],
+      "text": "30"
+    },
+    {
+      "id": 36,
+      "class": "dimension",
+      "bbox": [
+        4512,
+        4504,
+        29,
+        25
+      ],
+      "text": "59"
+    },
+    {
+      "id": 37,
+      "class": "dimension",
+      "bbox": [
+        4600,
+        4422,
+        31,
+        23
+      ],
+      "text": "29"
+    },
+    {
+      "id": 38,
+      "class": "dimension",
+      "bbox": [
+        4745,
+        4507,
+        29,
+        21
+      ],
+      "text": "20"
+    },
+    {
+      "id": 39,
+      "class": "dimension",
+      "bbox": [
+        4729,
+        4307,
+        24,
+        41
+      ],
+      "text": "8,75"
+    },
+    {
+      "id": 40,
+      "class": "dimension",
+      "bbox": [
+        4727,
+        4404,
+        27,
+        44
+      ],
+      "text": "4,75"
+    },
+    {
+      "id": 41,
+      "class": "dimension",
+      "bbox": [
+        4898,
+        4226,
+        22,
+        28
+      ],
+      "text": "21"
+    },
+    {
+      "id": 42,
+      "class": "dimension",
+      "bbox": [
+        5023,
+        4254,
+        25,
+        49
+      ],
+      "text": "34,5"
+    },
+    {
+      "id": 43,
+      "class": "table",
+      "bbox": [
+        6195,
+        4266,
+        711,
+        582
+      ],
+      "text": "DATE DESCRIPTION REV  HISTORIQUE DE REVISION  SOPARA 27 Chomin des Bruyères - 69330 Pusignan - France Tel: (433) 04 72 81 23 00 - Fax : (+33) 04 72 81 23 09 e-mail : technique@sopara.com- http://www.sopara.com  Matière Inox 304 Quantité 1 Traitement -  Epaisseur - Projet CA2632111  Date Nom Echelle - Etabli 10/12/2025 CR  Vérifié  N° plan  CA2632111-014  Approuvé  Nom pièce ESSAI Profil Plié Type D - ",
+      "cells": []
+    },
+    {
+      "id": 44,
+      "class": "dimension",
+      "bbox": [
+        6112,
+        2840,
+        46,
+        27
+      ],
+      "text": "34,5"
+    },
+    {
+      "id": 45,
+      "class": "dimension",
+      "bbox": [
+        6079,
+        2947,
+        30,
+        23
+      ],
+      "text": "21"
+    },
+    {
+      "id": 46,
+      "class": "dimension",
+      "bbox": [
+        5923,
+        3131,
+        25,
+        49
+      ],
+      "text": "21,5"
+    },
+    {
+      "id": 47,
+      "class": "dimension",
+      "bbox": [
+        6083,
+        3235,
+        37,
+        22
+      ],
+      "text": "1,5"
+    },
+    {
+      "id": 48,
+      "class": "dimension",
+      "bbox": [
+        6401,
+        3197,
+        24,
+        32
+      ],
+      "text": "41"
+    }
+  ],
+  "features": {
+    "length_before_bend": {
+      "value": 248,
+      "text": "",
+      "bbox": null
+    },
+    "length_after_bend": {
+      "value": 248,
+      "text": "",
+      "bbox": null
+    },
+    "width_before_bend": {
+      "value": "90,68",
+      "text": "",
+      "bbox": null
+    },
+    "width_after_bend": {
+      "value": 41,
+      "text": "",
+      "bbox": null
+    },
+    "height_before_bend": {
+      "value": "1,5",
+      "text": "",
+      "bbox": null
+    },
+    "height_after_bend": {
+      "value": 21,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": 3,
+      "text": "",
+      "bbox": null
+    },
+    "circular_holes_count": {
+      "value": 4,
+      "text": "",
+      "bbox": null
+    },
+    "noncircular_holes_count": {
+      "value": 4,
+      "text": "",
+      "bbox": null
+    },
+    "circular_hole_diameters": {
+      "value": [
+        "M5x0.8"
+      ],
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": "545,2139",
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": "Inox 304",
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": "null",
+      "text": "",
+      "bbox": null
+    },
+    "part_name": {
+      "value": "ESSAI Profil Plié Type D",
+      "text": "",
+      "bbox": null
+    },
+    "drawing_number": {
+      "value": "CA2632111-014",
+      "text": "",
+      "bbox": null
+    }
+  }
+}

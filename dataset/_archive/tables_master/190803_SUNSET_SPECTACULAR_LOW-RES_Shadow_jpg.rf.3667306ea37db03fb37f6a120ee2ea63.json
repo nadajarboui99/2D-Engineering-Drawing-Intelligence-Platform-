@@ -1,0 +1,83 @@
+{
+  "image": "190803_SUNSET_SPECTACULAR_LOW-RES_Shadow_jpg.rf.3667306ea37db03fb37f6a120ee2ea63",
+  "task": "tables",
+  "width": 1800,
+  "height": 1189,
+  "regions": [
+    {
+      "id": 0,
+      "class": "table",
+      "bbox": [
+        152,
+        570,
+        183.17,
+        275
+      ],
+      "text": ""
+    },
+    {
+      "id": 1,
+      "class": "table",
+      "bbox": [
+        1084,
+        857,
+        212.94,
+        191.67
+      ],
+      "text": ""
+    },
+    {
+      "id": 2,
+      "class": "table",
+      "bbox": [
+        1332,
+        860,
+        204.55,
+        245
+      ],
+      "text": ""
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

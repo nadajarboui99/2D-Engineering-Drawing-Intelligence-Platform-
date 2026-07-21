@@ -1,0 +1,226 @@
+{
+  "image": "Plan 5",
+  "width": 2481,
+  "height": 1754,
+  "meta": {
+    "standard": "unknown",
+    "source_type": "unknown",
+    "clutter": "med",
+    "has_gdt": false,
+    "difficulty": "med"
+  },
+  "regions": [
+    {
+      "id": 0,
+      "class": "table",
+      "bbox": [
+        1551,
+        1381,
+        869,
+        314
+      ],
+      "text": "Commentaires : SAUF INDICATION CONTRAIRE: LES COTES SONT EN MILLIMETRES ETAT DE SURFACE: TOLERANCES: LINEAIRES: ANGULAIRES: CASSER LES ANGLES VIFS NE PAS CHANGER L'ECHELLE REVISION NOM DATE TITRE : AUTEUR VERIF. APPR. FAB. QUAL. Omega 34Ah V3 MaTERIAU: Aluminium ECHELLE:1:2 FEUILLE 1 SUR 1 A3",
+      "cells": []
+    },
+    {
+      "id": 1,
+      "class": "dimension",
+      "bbox": [
+        804,
+        157,
+        81,
+        29
+      ],
+      "text": "11,25"
+    },
+    {
+      "id": 2,
+      "class": "dimension",
+      "bbox": [
+        884,
+        427,
+        33,
+        62
+      ],
+      "text": "99,5"
+    },
+    {
+      "id": 3,
+      "class": "dimension",
+      "bbox": [
+        221,
+        335,
+        33,
+        76
+      ],
+      "text": "112,5"
+    },
+    {
+      "id": 4,
+      "class": "dimension",
+      "bbox": [
+        552,
+        577,
+        59,
+        31
+      ],
+      "text": "175"
+    },
+    {
+      "id": 5,
+      "class": "dimension",
+      "bbox": [
+        559,
+        769,
+        95,
+        32
+      ],
+      "text": "184,25"
+    },
+    {
+      "id": 6,
+      "class": "dimension",
+      "bbox": [
+        1142,
+        776,
+        77,
+        32
+      ],
+      "text": "R3,50"
+    },
+    {
+      "id": 7,
+      "class": "dimension",
+      "bbox": [
+        1436,
+        911,
+        38,
+        61
+      ],
+      "text": "28,5"
+    },
+    {
+      "id": 8,
+      "class": "dimension",
+      "bbox": [
+        1298,
+        1017,
+        27,
+        28
+      ],
+      "text": "7"
+    },
+    {
+      "id": 9,
+      "class": "dimension",
+      "bbox": [
+        1410,
+        1041,
+        23,
+        30
+      ],
+      "text": "9"
+    },
+    {
+      "id": 10,
+      "class": "dimension",
+      "bbox": [
+        782,
+        1276,
+        58,
+        31
+      ],
+      "text": "390"
+    },
+    {
+      "id": 11,
+      "class": "dimension",
+      "bbox": [
+        161,
+        1422,
+        32,
+        40
+      ],
+      "text": "50"
+    }
+  ],
+  "features": {
+    "length_before_bend": {
+      "value": 390,
+      "text": "",
+      "bbox": null
+    },
+    "length_after_bend": {
+      "value": "184,25",
+      "text": "",
+      "bbox": null
+    },
+    "width_before_bend": {
+      "value": 50,
+      "text": "",
+      "bbox": null
+    },
+    "width_after_bend": {
+      "value": "186,25",
+      "text": "",
+      "bbox": null
+    },
+    "height_before_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "height_after_bend": {
+      "value": "112,25",
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": 3,
+      "text": "",
+      "bbox": null
+    },
+    "circular_holes_count": {
+      "value": 0,
+      "text": "",
+      "bbox": null
+    },
+    "noncircular_holes_count": {
+      "value": 0,
+      "text": "",
+      "bbox": null
+    },
+    "circular_hole_diameters": {
+      "value": [
+        "null"
+      ],
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": 937,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": "Aluminium",
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": "null",
+      "text": "",
+      "bbox": null
+    },
+    "part_name": {
+      "value": "Omega 34Ah V3",
+      "text": "",
+      "bbox": null
+    },
+    "drawing_number": {
+      "value": "null",
+      "text": "",
+      "bbox": null
+    }
+  }
+}

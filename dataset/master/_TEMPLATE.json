@@ -1,0 +1,80 @@
+{
+  "_help": "Copy to dataset/master/unified/<image-stem>.json (stem = image filename without extension). One region per box. bbox is [x, y, w, h] in pixels. class is 'dimension' or 'table'. Fill text + feature values you know; leave blanks/null otherwise. Delete this _help line when done. Or just run: python dataset/build_master.py (scaffolds these for every image in selected_images/).",
+  "image": "<image-stem>",
+  "width": 0,
+  "height": 0,
+  "meta": {
+    "standard": "unknown",
+    "source_type": "unknown",
+    "clutter": "med",
+    "has_gdt": false,
+    "difficulty": "med"
+  },
+  "regions": [
+    {
+      "id": 0,
+      "class": "dimension",
+      "bbox": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "text": ""
+    },
+    {
+      "id": 1,
+      "class": "table",
+      "bbox": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "text": "",
+      "cells": []
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

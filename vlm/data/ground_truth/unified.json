@@ -1,0 +1,61 @@
+{
+  "Plan 3": {
+    "length_before_bend": 248,
+    "length_after_bend": 248,
+    "width_before_bend": "90,68",
+    "width_after_bend": 41,
+    "height_before_bend": "1,5",
+    "height_after_bend": 21,
+    "bends_count": 3,
+    "circular_holes_count": 4,
+    "noncircular_holes_count": 4,
+    "circular_hole_diameters": [
+      "M5x0.8"
+    ],
+    "cut_perimeter": "545,2139",
+    "material": "Inox 304",
+    "standard": "null",
+    "part_name": "ESSAI Profil Plié Type D",
+    "drawing_number": "CA2632111-014"
+  },
+  "Plan 4": {
+    "length_before_bend": null,
+    "length_after_bend": 50,
+    "width_before_bend": null,
+    "width_after_bend": 25,
+    "height_before_bend": null,
+    "height_after_bend": "43,22",
+    "bends_count": 2,
+    "circular_holes_count": 3,
+    "noncircular_holes_count": 0,
+    "circular_hole_diameters": [
+      12.5,
+      12.5,
+      12.5
+    ],
+    "cut_perimeter": "440,6897",
+    "material": "1.0037 (S235JR)",
+    "standard": "null",
+    "part_name": "crochet tourillon",
+    "drawing_number": "potin-10-03"
+  },
+  "Plan 5": {
+    "length_before_bend": 390,
+    "length_after_bend": "184,25",
+    "width_before_bend": 50,
+    "width_after_bend": "186,25",
+    "height_before_bend": null,
+    "height_after_bend": "112,25",
+    "bends_count": 3,
+    "circular_holes_count": 0,
+    "noncircular_holes_count": 0,
+    "circular_hole_diameters": [
+      "null"
+    ],
+    "cut_perimeter": 937,
+    "material": "Aluminium",
+    "standard": "null",
+    "part_name": "Omega 34Ah V3",
+    "drawing_number": "null"
+  }
+}

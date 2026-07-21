@@ -1,0 +1,27 @@
+dataset:
+  class_names:
+  - table
+  num_classes: 1
+  train_annotations: data/tables/train/train.json
+  train_images: data/tables/train
+  val_annotations: data/tables/valid/val.json
+  val_images: data/tables/valid
+  yolo_data_yaml: data/tables/data.yaml
+evaluation:
+  conf_threshold: 0.25
+  iou_threshold: 0.5
+  results_dir: results/tables
+  save_results: true
+model:
+  name: yolov11
+  size: n
+  weights: null
+task: tables
+training:
+  batch_size: 16
+  device: mps
+  epochs: 80
+  imgsz: 640
+  lr: 0.01
+  project: runs/tables
+  run_name: yolov11_n

@@ -1,0 +1,31 @@
+# ─────────────────────────────────────────────
+# OCR Config
+# ─────────────────────────────────────────────
+
+# Change this one line to switch OCR model
+ocr:
+  model: easyocr       # "easyocr" | "tesseract"
+
+  easyocr:
+    languages: ["en"]
+    gpu: false
+
+  tesseract:
+    lang: eng
+    config: "--psm 6"  # 6=block, 7=line, 8=word
+
+# Detection output to consume
+detection:
+  task: tables                  # "tables" | "dimensions"
+  # Paths to trained YOLO weights (in the detection module)
+  weights_tables:     ../Table_dimensions_detection/runs/detect/runs/tables/yolov11_n-2/weights/best.pt
+  weights_dimensions: ../Table_dimensions_detection/runs/detect/runs/dimensions/yolov11_n-5/weights/best.pt
+  conf_threshold: 0.25
+  imgsz: 640
+
+# Input / Output
+io:
+  images_dir:  ../Table_dimensions_detection/data/tables/valid
+  output_dir:  results/
+  save_crops:  true
+  save_json:   true

@@ -1,0 +1,13 @@
+torch
+torchvision
+ultralytics
+pyyaml
+numpy
+opencv-python
+pillow
+matplotlib
+tqdm
+pycocotools
+easyocr
+pytesseract
+anthropic

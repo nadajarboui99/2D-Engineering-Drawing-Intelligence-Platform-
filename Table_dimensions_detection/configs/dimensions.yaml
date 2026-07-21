@@ -1,0 +1,27 @@
+dataset:
+  class_names:
+  - dimension
+  num_classes: 1
+  train_annotations: data/dimensions/train/train.json
+  train_images: data/dimensions/train/images
+  val_annotations: data/dimensions/val/val.json
+  val_images: data/dimensions/val/images
+  yolo_data_yaml: data/dimensions/data.yaml
+evaluation:
+  conf_threshold: 0.25
+  iou_threshold: 0.5
+  results_dir: results/dimensions
+  save_results: true
+model:
+  name: rtdetr
+  size: x
+  weights: null
+task: dimensions
+training:
+  batch_size: 16
+  device: mps
+  epochs: 80
+  imgsz: 1280
+  lr: 0.01
+  project: runs/dimensions
+  run_name: rtdetr_x

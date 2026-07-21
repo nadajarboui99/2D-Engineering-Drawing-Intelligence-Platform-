@@ -1,0 +1,61 @@
+{
+  "image": "2003950H_png.rf.62d028cbf834782ceb5849a95bfd2b25",
+  "task": "tables",
+  "width": 2410,
+  "height": 1684,
+  "regions": [
+    {
+      "id": 0,
+      "class": "table",
+      "bbox": [
+        1863,
+        1008,
+        531.77,
+        515
+      ],
+      "text": ""
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

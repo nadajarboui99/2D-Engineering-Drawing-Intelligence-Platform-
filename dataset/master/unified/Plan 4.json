@@ -1,0 +1,217 @@
+{
+  "image": "Plan 4",
+  "width": 1754,
+  "height": 1241,
+  "meta": {
+    "standard": "unknown",
+    "source_type": "unknown",
+    "clutter": "med",
+    "has_gdt": false,
+    "difficulty": "med"
+  },
+  "regions": [
+    {
+      "id": 0,
+      "class": "dimension",
+      "bbox": [
+        608,
+        521,
+        34,
+        25
+      ],
+      "text": "50"
+    },
+    {
+      "id": 1,
+      "class": "dimension",
+      "bbox": [
+        542,
+        569,
+        39,
+        26
+      ],
+      "text": "25"
+    },
+    {
+      "id": 2,
+      "class": "dimension",
+      "bbox": [
+        847,
+        475,
+        19,
+        27
+      ],
+      "text": "5"
+    },
+    {
+      "id": 3,
+      "class": "dimension",
+      "bbox": [
+        347,
+        627,
+        28,
+        72
+      ],
+      "text": "12,50"
+    },
+    {
+      "id": 4,
+      "class": "dimension",
+      "bbox": [
+        1135,
+        119,
+        73,
+        29
+      ],
+      "text": "12,50"
+    },
+    {
+      "id": 5,
+      "class": "dimension",
+      "bbox": [
+        978,
+        268,
+        30,
+        73
+      ],
+      "text": "30,72"
+    },
+    {
+      "id": 6,
+      "class": "dimension",
+      "bbox": [
+        924,
+        485,
+        27,
+        75
+      ],
+      "text": "43,22"
+    },
+    {
+      "id": 7,
+      "class": "dimension",
+      "bbox": [
+        1246,
+        469,
+        83,
+        84
+      ],
+      "text": ""
+    },
+    {
+      "id": 8,
+      "class": "dimension",
+      "bbox": [
+        861,
+        694,
+        30,
+        42
+      ],
+      "text": "25"
+    },
+    {
+      "id": 9,
+      "class": "dimension",
+      "bbox": [
+        755,
+        817,
+        83,
+        83
+      ],
+      "text": ""
+    },
+    {
+      "id": 10,
+      "class": "table",
+      "bbox": [
+        550,
+        934,
+        1160,
+        261
+      ],
+      "text": "ASSEMBLY WEIGHT kg MATERIAL MAT SPEC Project : POTAIN 0.10 1.0037 (S235JR) DRAWN : Yannick ODDOS 11/12/2025 CHECKED : APPROVED : Forankra 8 rue Jacques de Vaucanson 69780 MIONS FR 04.72.45.01.20 - TOLERANCE - FINISH: TITLE : ANGLE : LENGTH : EUROPEAN PROJECTION TREATMENT : crochet tourillon Scale : 1/2 Sheet : Size : A4 DRW NBR : potin-10-03 REV :",
+      "cells": []
+    }
+  ],
+  "features": {
+    "length_before_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "length_after_bend": {
+      "value": 50,
+      "text": "",
+      "bbox": null
+    },
+    "width_before_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width_after_bend": {
+      "value": 25,
+      "text": "",
+      "bbox": null
+    },
+    "height_before_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "height_after_bend": {
+      "value": "43,22",
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": 2,
+      "text": "",
+      "bbox": null
+    },
+    "circular_holes_count": {
+      "value": 3,
+      "text": "",
+      "bbox": null
+    },
+    "noncircular_holes_count": {
+      "value": 0,
+      "text": "",
+      "bbox": null
+    },
+    "circular_hole_diameters": {
+      "value": [
+        12.5,
+        12.5,
+        12.5
+      ],
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": "440,6897",
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": "1.0037 (S235JR)",
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": "null",
+      "text": "",
+      "bbox": null
+    },
+    "part_name": {
+      "value": "crochet tourillon",
+      "text": "",
+      "bbox": null
+    },
+    "drawing_number": {
+      "value": "potin-10-03",
+      "text": "",
+      "bbox": null
+    }
+  }
+}

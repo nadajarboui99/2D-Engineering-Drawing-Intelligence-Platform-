@@ -1,0 +1,61 @@
+{
+  "image": "Item-Number-A-table-of-parts-Or-BOM-Leader-lines_jpg.rf.a5632fcd21d18dd6ac7cae788a1cb3c0",
+  "task": "tables",
+  "width": 1024,
+  "height": 768,
+  "regions": [
+    {
+      "id": 0,
+      "class": "table",
+      "bbox": [
+        365,
+        24,
+        591.95,
+        175.56
+      ],
+      "text": ""
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

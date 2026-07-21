@@ -1,0 +1,61 @@
+{
+  "image": "Technical_drawing_CAD_jpg.rf.6a4d1234953e97df394330cdf6a4f67f",
+  "task": "tables",
+  "width": 797,
+  "height": 1126,
+  "regions": [
+    {
+      "id": 0,
+      "class": "table",
+      "bbox": [
+        77,
+        897,
+        702.94,
+        213.33
+      ],
+      "text": ""
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

@@ -1,0 +1,83 @@
+# ─────────────────────────────────────────────────────────
+# Feature Schema — the ground truth list of fields the VLM
+# must extract. Edit this file ONLY to add/remove features;
+# nothing else in the code needs to change.
+# ─────────────────────────────────────────────────────────
+
+features:
+  - name: length_before_bend
+    type: number
+    unit: mm
+    description: "Overall length of the part in the flat pattern (before bending)"
+
+  - name: length_after_bend
+    type: number
+    unit: mm
+    description: "Overall length of the formed part (after bending)"
+
+  - name: width_before_bend
+    type: number
+    unit: mm
+    description: "Overall width of the part in the flat pattern (before bending)"
+
+  - name: width_after_bend
+    type: number
+    unit: mm
+    description: "Overall width of the formed part (after bending)"
+
+  - name: height_before_bend
+    type: number
+    unit: mm
+    description: "Overall height of the part in the flat pattern (before bending)"
+
+  - name: height_after_bend
+    type: number
+    unit: mm
+    description: "Overall height of the formed part (after bending)"
+
+  - name: bends_count
+    type: integer
+    unit: null
+    description: "Number of bends in the part"
+
+  - name: circular_holes_count
+    type: integer
+    unit: null
+    description: "Number of circular holes in the part"
+
+  - name: noncircular_holes_count
+    type: integer
+    unit: null
+    description: "Number of non-circular holes (slots, rectangular or shaped cut-outs)"
+
+  - name: circular_hole_diameters
+    type: list
+    unit: mm
+    description: "Diameters of the circular holes, one value per hole (e.g. [5, 8, 8])"
+
+  - name: cut_perimeter
+    type: number
+    unit: mm
+    description: "Total cut perimeter length"
+
+  - name: material
+    type: string
+    unit: null
+    description: "Material specification (e.g. Steel 1045, Al 6061)"
+
+  - name: standard
+    type: string
+    unit: null
+    description: "Referenced engineering standard (e.g. ISO 2768, ASME Y14.5)"
+
+  - name: part_name
+    type: string
+    unit: null
+    description: "Part name / title from the drawing's title block"
+
+  - name: drawing_number
+    type: string
+    unit: null
+    description: "Drawing number / identifier from the title block"
+
+# Add new features here later — no code changes needed elsewhere.

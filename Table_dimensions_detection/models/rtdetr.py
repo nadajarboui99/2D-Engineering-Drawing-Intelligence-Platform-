@@ -1,0 +1,103 @@
+"""
+RT-DETR wrapper — uniform interface for train / predict.
+
+Uses Ultralytics RT-DETR implementation (same API as YOLO).
+Install: pip install ultralytics
+"""
+
+import os
+import torch
+from ultralytics import RTDETR
+
+
+class RTDETRDetector:
+    """
+    Thin wrapper around Ultralytics RT-DETR, exposing the same interface
+    as YOLOv11Detector so you can swap them with a single config line.
+    """
+
+    # Available sizes: l (large), x (xlarge)
+    MODEL_MAP = {
+        "l": "rtdetr-l.pt",
+        "x": "rtdetr-x.pt",
+    }
+
+    def __init__(self, model_size: str = "l", num_classes: int = 1,
+                 device: str = None, weights: str = None):
+        """
+        Args:
+            model_size: 'l' or 'x'
+            num_classes: number of detection classes in your dataset
+            device:      'cuda', 'cpu', or None (auto)
+            weights:     path to a .pt checkpoint to resume from
+        """
+        self.num_classes = num_classes
+        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+
+        if weights and os.path.exists(weights):
+            print(f"[RT-DETR] Loading weights from {weights}")
+            self.model = RTDETR(weights)
+        else:
+            model_name = self.MODEL_MAP.get(model_size, "rtdetr-l.pt")
+            print(f"[RT-DETR] Loading pretrained {model_name}")
+            self.model = RTDETR(model_name)
+
+    def train(self, data_yaml: str, epochs: int = 50, imgsz: int = 640,
+              batch: int = 8, lr: float = 0.0001, project: str = "runs",
+              name: str = "rtdetr", **kwargs):
+        """
+        Train the model.
+        Note: RT-DETR typically uses a lower lr than YOLO (transformer-based).
+        data_yaml: path to a YOLO-format data.yaml
+        """
+        results = self.model.train(
+            data=data_yaml,
+            epochs=epochs,
+            imgsz=imgsz,
+            batch=batch,
+            lr0=lr,
+            device=self.device,
+            project=project,
+            name=name,
+            **kwargs,
+        )
+        return results
+
+    def predict(self, images, conf_threshold: float = 0.25, imgsz: int = 640):
+        """
+        Run inference on a list of PIL images or file paths.
+
+        Returns list of dicts: {boxes [N,4], scores [N], labels [N]}
+        compatible with DetectionMetrics.update()
+        """
+        import numpy as np
+
+        # Convert tensors to numpy arrays (Ultralytics doesn't accept tensors directly)
+        images_np = []
+        for img in images:
+            if hasattr(img, "permute"):
+                # tensor [C, H, W] → numpy [H, W, C] uint8
+                images_np.append((img.permute(1, 2, 0).numpy() * 255).astype(np.uint8))
+            else:
+                images_np.append(img)
+
+        raw = self.model.predict(
+            source=images_np,
+            conf=conf_threshold,
+            imgsz=imgsz,
+            device=self.device,
+            verbose=False,
+        )
+
+        preds = []
+        for r in raw:
+            boxes  = torch.tensor(r.boxes.xyxy.cpu().numpy(),  dtype=torch.float32)
+            scores = torch.tensor(r.boxes.conf.cpu().numpy(),  dtype=torch.float32)
+            labels = torch.tensor(r.boxes.cls.cpu().numpy().astype(int), dtype=torch.int64)
+            preds.append({"boxes": boxes, "scores": scores, "labels": labels})
+
+        return preds
+
+    def save(self, path: str):
+        self.model.save(path)
+        print(f"[RT-DETR] Model saved to {path}")

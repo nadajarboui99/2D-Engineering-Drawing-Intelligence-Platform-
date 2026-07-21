@@ -1,0 +1,487 @@
+[
+  {
+    "id": "detection_tables_yolov11_n-2_1783060975",
+    "stage": "detection",
+    "task": "tables",
+    "model": "yolov11_n-2",
+    "metrics": {
+      "map50": 0.91383,
+      "precision": 0.92295,
+      "recall": 0.74869
+    },
+    "extra": {
+      "weights": "/Users/nadajarboui/Documents/all/Table_dimensions_detection/runs/detect/runs/tables/yolov11_n-2/weights/best.pt",
+      "epochs": 80
+    },
+    "timestamp": "2026-07-03T08:42:55.939034"
+  },
+  {
+    "id": "detection_tables_yolov11_n-2_1783064481",
+    "stage": "detection",
+    "task": "tables",
+    "model": "yolov11_n-2",
+    "metrics": {
+      "map50": 0.91383,
+      "precision": 0.92295,
+      "recall": 0.74869
+    },
+    "extra": {
+      "weights": "/Users/nadajarboui/Documents/all/Table_dimensions_detection/runs/detect/runs/tables/yolov11_n/weights/best.pt",
+      "epochs": 80
+    },
+    "timestamp": "2026-07-03T09:41:21.555841"
+  },
+  {
+    "id": "detection_tables_yolov11_n-2_1783064498",
+    "stage": "detection",
+    "task": "tables",
+    "model": "yolov11_n-2",
+    "metrics": {
+      "map50": 0.91383,
+      "precision": 0.92295,
+      "recall": 0.74869
+    },
+    "extra": {
+      "weights": "/Users/nadajarboui/Documents/all/Table_dimensions_detection/runs/detect/runs/tables/yolov11_n-2/weights/best.pt",
+      "epochs": 80
+    },
+    "timestamp": "2026-07-03T09:41:38.902442"
+  },
+  {
+    "id": "detection_tables_yolov11_n-2_1783064502",
+    "stage": "detection",
+    "task": "tables",
+    "model": "yolov11_n-2",
+    "metrics": {
+      "map50": 0.91383,
+      "precision": 0.92295,
+      "recall": 0.74869
+    },
+    "extra": {
+      "weights": "/Users/nadajarboui/Documents/all/Table_dimensions_detection/runs/detect/runs/tables/yolov11_n/weights/best.pt",
+      "epochs": 80
+    },
+    "timestamp": "2026-07-03T09:41:42.079254"
+  },
+  {
+    "id": "ocr_dimensions_easyocr_full_1783927880",
+    "stage": "ocr",
+    "task": "dimensions",
+    "model": "easyocr_full",
+    "metrics": {
+      "coverage": 1.0,
+      "avg_confidence": 0.7622,
+      "total_patches": 142,
+      "cer": 1.6699,
+      "wer": 1.1642,
+      "exact_match": 0.0896,
+      "f1": 0.0957
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "full"
+    },
+    "timestamp": "2026-07-13T09:31:20.387416"
+  },
+  {
+    "id": "detection_tables_yolov11_n-2_1783928390",
+    "stage": "detection",
+    "task": "tables",
+    "model": "yolov11_n-2",
+    "metrics": {
+      "map50": 0.91383,
+      "precision": 0.92295,
+      "recall": 0.74869
+    },
+    "extra": {
+      "weights": "/Users/nadajarboui/Documents/all/Table_dimensions_detection/runs/detect/runs/tables/yolov11_n-2/weights/best.pt",
+      "epochs": 80
+    },
+    "timestamp": "2026-07-13T09:39:50.449663"
+  },
+  {
+    "id": "detection_tables_yolov11_n-2_1783928404",
+    "stage": "detection",
+    "task": "tables",
+    "model": "yolov11_n-2",
+    "metrics": {
+      "map50": 0.91383,
+      "precision": 0.92295,
+      "recall": 0.74869
+    },
+    "extra": {
+      "weights": "/Users/nadajarboui/Documents/all/Table_dimensions_detection/runs/detect/runs/tables/yolov11_n/weights/best.pt",
+      "epochs": 80
+    },
+    "timestamp": "2026-07-13T09:40:04.593364"
+  },
+  {
+    "id": "ocr_tables_easyocr_crop_1783928448",
+    "stage": "ocr",
+    "task": "tables",
+    "model": "easyocr_crop",
+    "metrics": {
+      "coverage": 0,
+      "avg_confidence": 0,
+      "total_patches": 0,
+      "cer": 1.0,
+      "wer": 1.0,
+      "exact_match": 0.0,
+      "f1": 0.0
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "crop"
+    },
+    "timestamp": "2026-07-13T09:40:48.886784"
+  },
+  {
+    "id": "detection_dimensions_yolov11_n-5 \u00b7 annotated_1783929885",
+    "stage": "detection",
+    "task": "dimensions",
+    "model": "yolov11_n-5 \u00b7 annotated",
+    "metrics": {
+      "map50": 0.1972,
+      "precision": 0.75,
+      "recall": 0.1739,
+      "f1": 0.2824
+    },
+    "extra": {
+      "on": "annotated",
+      "n_gt": 69,
+      "tp": 12,
+      "fp": 4,
+      "fn": 57,
+      "weights": "/Users/nadajarboui/Documents/all/Table_dimensions_detection/runs/detect/runs/dimensions/yolov11_n-5/weights/best.pt",
+      "images": 3
+    },
+    "timestamp": "2026-07-13T10:04:45.667084"
+  },
+  {
+    "id": "ocr_dimensions_easyocr_crop_1783930349",
+    "stage": "ocr",
+    "task": "dimensions",
+    "model": "easyocr_crop",
+    "metrics": {
+      "coverage": 0.9375,
+      "avg_confidence": 0.6546,
+      "total_patches": 16,
+      "cer": 0.9378,
+      "wer": 1.0746,
+      "exact_match": 0.0448,
+      "f1": 0.0976
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "crop"
+    },
+    "timestamp": "2026-07-13T10:12:29.492803"
+  },
+  {
+    "id": "ocr_all_easyocr_full_1784100147",
+    "stage": "ocr",
+    "task": "all",
+    "model": "easyocr_full",
+    "metrics": {
+      "coverage": 1.0,
+      "avg_confidence": 0.7622,
+      "total_patches": 142,
+      "cer": 0.9164,
+      "wer": 0.9583,
+      "exact_match": 0.0857,
+      "f1": 0.0943
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "full"
+    },
+    "timestamp": "2026-07-15T09:22:27.579245"
+  },
+  {
+    "id": "ocr_tables_easyocr_crop_1784100323",
+    "stage": "ocr",
+    "task": "tables",
+    "model": "easyocr_crop",
+    "metrics": {
+      "coverage": 0,
+      "avg_confidence": 0,
+      "total_patches": 0,
+      "cer": 1.0,
+      "wer": 1.0,
+      "exact_match": 0.0,
+      "f1": 0.0
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "crop"
+    },
+    "timestamp": "2026-07-15T09:25:23.647699"
+  },
+  {
+    "id": "ocr_dimensions_easyocr_crop_1784100347",
+    "stage": "ocr",
+    "task": "dimensions",
+    "model": "easyocr_crop",
+    "metrics": {
+      "coverage": 0.9375,
+      "avg_confidence": 0.6546,
+      "total_patches": 16,
+      "cer": 0.9139,
+      "wer": 0.9552,
+      "exact_match": 0.0448,
+      "f1": 0.0976
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "crop"
+    },
+    "timestamp": "2026-07-15T09:25:47.289728"
+  },
+  {
+    "id": "ocr_tables_easyocr_crop_1784104554",
+    "stage": "ocr",
+    "task": "tables",
+    "model": "easyocr_crop",
+    "metrics": {
+      "coverage": 0,
+      "avg_confidence": 0,
+      "total_patches": 0,
+      "cer": 1.0,
+      "wer": 1.0,
+      "exact_match": 0.0,
+      "f1": 0.0
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "crop"
+    },
+    "timestamp": "2026-07-15T10:35:54.336694"
+  },
+  {
+    "id": "vlm_all_claude_whole_image_1784119942",
+    "stage": "vlm",
+    "task": "all",
+    "model": "claude_whole_image",
+    "metrics": {
+      "fill_rate": 0.7111,
+      "images_processed": 3,
+      "avg_input_tokens": 2093.0,
+      "avg_output_tokens": 201.0,
+      "avg_total_tokens": 2294.0,
+      "avg_latency_s": 5.56,
+      "total_cost_usd": 0.027882,
+      "n_calls": 3
+    },
+    "extra": {
+      "mode": "whole_image",
+      "vlm_model": "claude"
+    },
+    "timestamp": "2026-07-15T14:52:22.578349"
+  },
+  {
+    "id": "vlm_all_claude_whole_image_ocr_1784119942",
+    "stage": "vlm",
+    "task": "all",
+    "model": "claude_whole_image_ocr",
+    "metrics": {
+      "fill_rate": 0.6889,
+      "images_processed": 3,
+      "avg_input_tokens": 2371.67,
+      "avg_output_tokens": 196.0,
+      "avg_total_tokens": 2567.67,
+      "avg_latency_s": 4.63,
+      "total_cost_usd": 0.030165,
+      "n_calls": 3
+    },
+    "extra": {
+      "mode": "whole_image_ocr",
+      "vlm_model": "claude"
+    },
+    "timestamp": "2026-07-15T14:52:22.579611"
+  },
+  {
+    "id": "vlm_both_claude_cropped_ocr_1784119942",
+    "stage": "vlm",
+    "task": "both",
+    "model": "claude_cropped_ocr",
+    "metrics": {
+      "fill_rate": 0.6889,
+      "images_processed": 3,
+      "avg_input_tokens": 2547.67,
+      "avg_output_tokens": 191.0,
+      "avg_total_tokens": 2738.67,
+      "avg_latency_s": 5.12,
+      "total_cost_usd": 0.031524,
+      "n_calls": 3
+    },
+    "extra": {
+      "mode": "cropped_ocr",
+      "vlm_model": "claude"
+    },
+    "timestamp": "2026-07-15T14:52:22.580442"
+  },
+  {
+    "id": "ocr_all_easyocr_full_1784186551",
+    "stage": "ocr",
+    "task": "all",
+    "model": "easyocr_full",
+    "metrics": {
+      "coverage": 1.0,
+      "avg_confidence": 0.7622,
+      "total_patches": 142,
+      "cer": 0.9164,
+      "wer": 0.9583,
+      "exact_match": 0.0857,
+      "f1": 0.0943
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "full"
+    },
+    "timestamp": "2026-07-16T09:22:31.795483"
+  },
+  {
+    "id": "ocr_tables_easyocr_crop_1784186585",
+    "stage": "ocr",
+    "task": "tables",
+    "model": "easyocr_crop",
+    "metrics": {
+      "coverage": 0,
+      "avg_confidence": 0,
+      "total_patches": 0,
+      "cer": 1.0,
+      "wer": 1.0,
+      "exact_match": 0.0,
+      "f1": 0.0
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "crop"
+    },
+    "timestamp": "2026-07-16T09:23:05.442066"
+  },
+  {
+    "id": "ocr_dimensions_easyocr_crop_1784186587",
+    "stage": "ocr",
+    "task": "dimensions",
+    "model": "easyocr_crop",
+    "metrics": {
+      "coverage": 1.0,
+      "avg_confidence": 0.6546,
+      "total_patches": 16,
+      "cer": 0.9043,
+      "wer": 0.9552,
+      "exact_match": 0.0448,
+      "f1": 0.1205
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "crop"
+    },
+    "timestamp": "2026-07-16T09:23:07.946976"
+  },
+  {
+    "id": "ocr_tables_easyocr_crop_1784190538",
+    "stage": "ocr",
+    "task": "tables",
+    "model": "easyocr_crop",
+    "metrics": {
+      "coverage": 0,
+      "avg_confidence": 0,
+      "total_patches": 0,
+      "cer": 1.0,
+      "wer": 1.0,
+      "exact_match": 0.0,
+      "f1": 0.0
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "crop"
+    },
+    "timestamp": "2026-07-16T10:28:58.102453"
+  },
+  {
+    "id": "ocr_dimensions_easyocr_crop_1784190585",
+    "stage": "ocr",
+    "task": "dimensions",
+    "model": "easyocr_crop",
+    "metrics": {
+      "coverage": 1.0,
+      "avg_confidence": 0.6546,
+      "total_patches": 16,
+      "cer": 0.9043,
+      "wer": 0.9552,
+      "exact_match": 0.0448,
+      "f1": 0.1205
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "crop"
+    },
+    "timestamp": "2026-07-16T10:29:45.099614"
+  },
+  {
+    "id": "detection_tables_yolov11_n-2 \u00b7 annotated_1784191048",
+    "stage": "detection",
+    "task": "tables",
+    "model": "yolov11_n-2 \u00b7 annotated",
+    "metrics": {
+      "map50": 0.4444,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "extra": {
+      "on": "annotated",
+      "n_gt": 3,
+      "tp": 0,
+      "fp": 0,
+      "fn": 3,
+      "weights": "/Users/nadajarboui/Documents/all/Table_dimensions_detection/runs/detect/runs/tables/yolov11_n-2/weights/best.pt",
+      "images": 3
+    },
+    "timestamp": "2026-07-16T10:37:28.920370"
+  },
+  {
+    "id": "detection_both_yolov11_n-2 + yolov11_n-5 \u00b7 annotated_1784194859",
+    "stage": "detection",
+    "task": "both",
+    "model": "yolov11_n-2 + yolov11_n-5 \u00b7 annotated",
+    "metrics": {
+      "map50": 0.3208,
+      "precision": 0.75,
+      "recall": 0.1667,
+      "f1": 0.2727
+    },
+    "extra": {
+      "on": "annotated",
+      "n_gt": 72,
+      "tp": 12,
+      "fp": 4,
+      "fn": 60,
+      "images": 3
+    },
+    "timestamp": "2026-07-16T11:40:59.980009"
+  },
+  {
+    "id": "detection_tables_yolov11_n-2 \u00b7 annotated_1784195500",
+    "stage": "detection",
+    "task": "tables",
+    "model": "yolov11_n-2 \u00b7 annotated",
+    "metrics": {
+      "map50": 0.4444,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "extra": {
+      "on": "annotated",
+      "n_gt": 3,
+      "tp": 0,
+      "fp": 0,
+      "fn": 3,
+      "images": 3
+    },
+    "timestamp": "2026-07-16T11:51:40.525114"
+  }
+]

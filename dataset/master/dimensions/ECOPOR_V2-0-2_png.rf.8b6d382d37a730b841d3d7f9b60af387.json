@@ -1,0 +1,398 @@
+{
+  "image": "ECOPOR_V2-0-2_png.rf.8b6d382d37a730b841d3d7f9b60af387",
+  "task": "dimensions",
+  "width": 1280,
+  "height": 1280,
+  "regions": [
+    {
+      "id": 0,
+      "class": "dimension",
+      "bbox": [
+        447,
+        400,
+        81,
+        19
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 1,
+      "class": "dimension",
+      "bbox": [
+        439,
+        419,
+        92,
+        21
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 2,
+      "class": "dimension",
+      "bbox": [
+        432,
+        439,
+        134,
+        19
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 3,
+      "class": "dimension",
+      "bbox": [
+        755,
+        495,
+        31,
+        45
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 4,
+      "class": "dimension",
+      "bbox": [
+        655,
+        468,
+        34,
+        66
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 5,
+      "class": "dimension",
+      "bbox": [
+        629,
+        426,
+        43,
+        57
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 6,
+      "class": "dimension",
+      "bbox": [
+        660,
+        246,
+        52,
+        79
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 7,
+      "class": "dimension",
+      "bbox": [
+        777,
+        187,
+        48,
+        41
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 8,
+      "class": "dimension",
+      "bbox": [
+        635,
+        203,
+        42,
+        51
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 9,
+      "class": "dimension",
+      "bbox": [
+        1019,
+        83,
+        41,
+        23
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 10,
+      "class": "dimension",
+      "bbox": [
+        1019,
+        127,
+        22,
+        60
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 11,
+      "class": "dimension",
+      "bbox": [
+        1081,
+        118,
+        50,
+        67
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 12,
+      "class": "dimension",
+      "bbox": [
+        1120,
+        210,
+        27,
+        46
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 13,
+      "class": "dimension",
+      "bbox": [
+        1130,
+        452,
+        30,
+        43
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 14,
+      "class": "dimension",
+      "bbox": [
+        1090,
+        528,
+        52,
+        60
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 15,
+      "class": "dimension",
+      "bbox": [
+        1020,
+        561,
+        41,
+        19
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 16,
+      "class": "dimension",
+      "bbox": [
+        681,
+        797,
+        38,
+        52
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 17,
+      "class": "dimension",
+      "bbox": [
+        546,
+        792,
+        42,
+        57
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 18,
+      "class": "dimension",
+      "bbox": [
+        400,
+        856,
+        31,
+        83
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 19,
+      "class": "dimension",
+      "bbox": [
+        406,
+        685,
+        44,
+        24
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 20,
+      "class": "dimension",
+      "bbox": [
+        406,
+        651,
+        41,
+        24
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 21,
+      "class": "dimension",
+      "bbox": [
+        405,
+        616,
+        42,
+        24
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 22,
+      "class": "dimension",
+      "bbox": [
+        246,
+        596,
+        27,
+        30
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 23,
+      "class": "dimension",
+      "bbox": [
+        303,
+        682,
+        24,
+        71
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 24,
+      "class": "dimension",
+      "bbox": [
+        129,
+        979,
+        17,
+        62
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 25,
+      "class": "dimension",
+      "bbox": [
+        244,
+        1054,
+        37,
+        55
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 26,
+      "class": "dimension",
+      "bbox": [
+        393,
+        1063,
+        39,
+        22
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 27,
+      "class": "dimension",
+      "bbox": [
+        394,
+        1095,
+        36,
+        24
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 28,
+      "class": "dimension",
+      "bbox": [
+        101,
+        300,
+        16,
+        57
+      ],
+      "text": "",
+      "dim_type": ""
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

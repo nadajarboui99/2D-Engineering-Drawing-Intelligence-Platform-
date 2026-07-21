@@ -1,0 +1,61 @@
+{
+  "image": "robot-exploded-layout-4-14-1ij6jnd_png.rf.589a90851a9f610bee1eb90ce41270ee",
+  "task": "tables",
+  "width": 1034,
+  "height": 801,
+  "regions": [
+    {
+      "id": 0,
+      "class": "table",
+      "bbox": [
+        682,
+        16,
+        337.49,
+        720
+      ],
+      "text": ""
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

@@ -1,0 +1,34 @@
+# ─────────────────────────────────────────────
+# VLM Config
+# ─────────────────────────────────────────────
+
+# Change this one line to switch VLM model
+vlm:
+  model: claude          # "claude" | (add more later: "gpt4o", "qwen_vl")
+
+  claude:
+    model_name: claude-sonnet-4-6
+    max_tokens: 1500
+
+# Which input mode(s) to run — can list multiple to compare
+modes:
+  - whole_image          # raw image only
+  - whole_image_ocr      # raw image + OCR text overlay
+  - cropped_ocr           # cropped patches + OCR text per patch
+
+# Schema file (single source of truth for features)
+schema_path: configs/feature_schema.yaml
+
+# Inputs (outputs from the OCR stage)
+io:
+  # Folder of original full images
+  images_dir: ../Table_dimensions_detection/data/dimensions/val/images
+
+  # Combined OCR results JSON from ocr/run_ocr.py (per-image detections + text)
+  ocr_results_json: ../ocr/results/dimensions_easyocr_results.json
+
+  # Folder containing cropped patches (saved by ocr/run_ocr.py)
+  crops_dir: ../ocr/results/crops
+
+  output_dir: results/
+  save_json: true

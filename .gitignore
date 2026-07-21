@@ -1,0 +1,61 @@
+# ───────────────────────── Secrets / credentials ─────────────────────────
+.env
+*.env
+**/.env
+.keys.json
+**/.keys.json
+*.key
+*.pem
+
+# ───────────────────────────── Python ─────────────────────────────────────
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ─────────────────────────── Node / frontend ──────────────────────────────
+node_modules/
+dist/
+build/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ──────────── ML model weights (heavy; downloadable / re-trainable) ────────
+*.pt
+*.pth
+*.onnx
+*.engine
+*.tflite
+*.h5
+
+# ───────────── Training data & run outputs (heavy, regenerable) ────────────
+Table_dimensions_detection/data/
+Table_dimensions_detection/runs/
+Table_dimensions_detection/results/
+
+# ─────────────── Generated evaluation outputs & crops ──────────────────────
+ocr/results/
+vlm/results/
+
+# NOTE: ground-truth annotations (ocr/data/ground_truth, vlm/data/ground_truth,
+# dataset/) are intentionally NOT ignored — they are small and part of the project.
+
+# ─────────────────────────── OS / editor ──────────────────────────────────
+.DS_Store
+**/.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# ─────────────────────────────── Misc ─────────────────────────────────────
+nohup.out
+*.log

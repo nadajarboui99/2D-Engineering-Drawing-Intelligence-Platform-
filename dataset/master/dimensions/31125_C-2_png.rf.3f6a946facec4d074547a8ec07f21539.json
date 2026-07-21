@@ -1,0 +1,398 @@
+{
+  "image": "31125_C-2_png.rf.3f6a946facec4d074547a8ec07f21539",
+  "task": "dimensions",
+  "width": 1280,
+  "height": 1280,
+  "regions": [
+    {
+      "id": 0,
+      "class": "dimension",
+      "bbox": [
+        611,
+        149,
+        16,
+        12
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 1,
+      "class": "dimension",
+      "bbox": [
+        629,
+        119,
+        21,
+        14
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 2,
+      "class": "dimension",
+      "bbox": [
+        789,
+        188,
+        21,
+        13
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 3,
+      "class": "dimension",
+      "bbox": [
+        817,
+        273,
+        19,
+        14
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 4,
+      "class": "dimension",
+      "bbox": [
+        845,
+        281,
+        57,
+        26
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 5,
+      "class": "dimension",
+      "bbox": [
+        769,
+        260,
+        15,
+        13
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 6,
+      "class": "dimension",
+      "bbox": [
+        751,
+        474,
+        66,
+        28
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 7,
+      "class": "dimension",
+      "bbox": [
+        644,
+        481,
+        21,
+        13
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 8,
+      "class": "dimension",
+      "bbox": [
+        642,
+        536,
+        15,
+        16
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 9,
+      "class": "dimension",
+      "bbox": [
+        577,
+        538,
+        26,
+        15
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 10,
+      "class": "dimension",
+      "bbox": [
+        716,
+        568,
+        21,
+        14
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 11,
+      "class": "dimension",
+      "bbox": [
+        783,
+        608,
+        20,
+        14
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 12,
+      "class": "dimension",
+      "bbox": [
+        806,
+        640,
+        27,
+        13
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 13,
+      "class": "dimension",
+      "bbox": [
+        678,
+        653,
+        21,
+        14
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 14,
+      "class": "dimension",
+      "bbox": [
+        668,
+        772,
+        21,
+        14
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 15,
+      "class": "dimension",
+      "bbox": [
+        596,
+        791,
+        14,
+        14
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 16,
+      "class": "dimension",
+      "bbox": [
+        826,
+        875,
+        81,
+        30
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 17,
+      "class": "dimension",
+      "bbox": [
+        827,
+        906,
+        104,
+        20
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 18,
+      "class": "dimension",
+      "bbox": [
+        802,
+        1010,
+        34,
+        21
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 19,
+      "class": "dimension",
+      "bbox": [
+        763,
+        1047,
+        30,
+        20
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 20,
+      "class": "dimension",
+      "bbox": [
+        731,
+        1146,
+        28,
+        17
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 21,
+      "class": "dimension",
+      "bbox": [
+        598,
+        1148,
+        32,
+        13
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 22,
+      "class": "dimension",
+      "bbox": [
+        510,
+        1005,
+        55,
+        29
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 23,
+      "class": "dimension",
+      "bbox": [
+        507,
+        899,
+        20,
+        12
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 24,
+      "class": "dimension",
+      "bbox": [
+        368,
+        685,
+        36,
+        12
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 25,
+      "class": "dimension",
+      "bbox": [
+        322,
+        773,
+        32,
+        16
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 26,
+      "class": "dimension",
+      "bbox": [
+        212,
+        789,
+        20,
+        16
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 27,
+      "class": "dimension",
+      "bbox": [
+        188,
+        762,
+        22,
+        14
+      ],
+      "text": "",
+      "dim_type": ""
+    },
+    {
+      "id": 28,
+      "class": "dimension",
+      "bbox": [
+        119,
+        603,
+        51,
+        20
+      ],
+      "text": "",
+      "dim_type": ""
+    }
+  ],
+  "features": {
+    "length": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "hole_diameter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}
