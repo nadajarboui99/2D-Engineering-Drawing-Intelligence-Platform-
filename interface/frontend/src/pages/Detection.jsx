@@ -116,9 +116,14 @@ export default function DetectionPage() {
   async function runAnnotatedEval() {
     const w = weights.find(w => w.id === selectedW);
     if (task !== "both" && !w) return;   // "both" auto-uses the best of each detector
+    if (w && w.source === "custom-arch" && !w.available) {
+      setLogs([{ ts: new Date().toISOString(), msg: `"${w.name}" needs its dependencies. Install: ${w.install_cmd}` }]);
+      return;
+    }
     setAnnRunning(true); setLogs([]); setAnnotated(null);
     try {
-      const { job_id } = await api.evalDetectionAnnotated(task, task === "both" ? null : w.path, imgsz);
+      const archId = (w && w.source === "custom-arch") ? w.arch_id : null;
+      const { job_id } = await api.evalDetectionAnnotated(task, task === "both" ? null : w?.path, imgsz, task === "both" ? null : archId);
       const result = await pollJob(job_id, setLogs);
       setAnnotated(result);
       const imgs = (result?.images || []).map(im => im.image);
@@ -168,22 +173,24 @@ export default function DetectionPage() {
           </>
         )}
 
-        {/* ── "Add a model" (upload / register / train) hidden for now ──────────
-        <Collapsible title="Upload weights (.pt file)" defaultOpen={weights.length === 0}>
-          <div className="flex gap-3 flex-wrap mt-2">
-            <input type="text" placeholder="Model name (e.g. yolov11n_tables)" value={uploadName}
-              onChange={e => setUploadName(e.target.value)}
-              className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-1.5" />
-            <input type="file" accept=".pt" ref={fileRef} onChange={e => setUploadFile(e.target.files[0])}
-              className="text-sm text-gray-500 file:mr-3 file:text-xs file:border-0 file:bg-gray-100 file:rounded-lg file:px-3 file:py-1.5" />
-            <Btn onClick={uploadWeights} disabled={!uploadFile || !uploadName}>+ Upload</Btn>
-          </div>
-          <p className="text-xs text-gray-400 mt-2">
-            Or register an existing path on disk: open the backend terminal and run<br/>
-            <code className="bg-gray-100 px-1 rounded">POST /weights/register-path?name=...&task={task}&path=/absolute/path/to/best.pt</code>
-          </p>
-        </Collapsible>
-        ──────────────────────────────────────────────────────────────────── */}
+        {task !== "both" && (
+          <Collapsible title="Add a model">
+            <p className="text-xs text-gray-500 mb-2">Upload YOLO / RT-DETR weights (<code className="bg-gray-100 px-1 rounded">.pt</code>) for <strong>{task}</strong>:</p>
+            <div className="flex gap-3 flex-wrap">
+              <input type="text" placeholder="Model name (e.g. yolov11n_tables)" value={uploadName}
+                onChange={e => setUploadName(e.target.value)}
+                className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-1.5" />
+              <input type="file" accept=".pt" ref={fileRef} onChange={e => setUploadFile(e.target.files[0])}
+                className="text-sm text-gray-500 file:mr-3 file:text-xs file:border-0 file:bg-gray-100 file:rounded-lg file:px-3 file:py-1.5" />
+              <Btn onClick={uploadWeights} disabled={!uploadFile || !uploadName}>+ Upload</Btn>
+            </div>
+            <p className="text-xs text-gray-400 mt-3">
+              <strong>Other architectures</strong> (e.g. Table Transformer) appear in the model dropdown above with "(install required)".
+              Run their install command, then select and evaluate them — no code needed. To add a brand-new architecture,
+              drop a wrapper in <code className="bg-gray-100 px-1 rounded">Table_dimensions_detection/models/</code> and register it (see <code className="bg-gray-100 px-1 rounded">detection_registry.py</code>).
+            </p>
+          </Collapsible>
+        )}
       </Panel>
 
       {/* Eval config */}

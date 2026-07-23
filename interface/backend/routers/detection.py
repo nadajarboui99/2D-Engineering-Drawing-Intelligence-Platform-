@@ -12,8 +12,9 @@ from fastapi import APIRouter, BackgroundTasks
 from pydantic import BaseModel
 from core.job_manager import create_job, run_job
 from core.weights_finder import find_best_weights, list_all_runs
-from core.results_store import log_run, get_runs
+from core.results_store import log_run, get_runs, save_snapshot
 from core.weights_registry import list_weights, get_weights_path
+from core import detection_registry
 
 REPO_ROOT    = os.path.dirname(DETECTION_DIR)
 UNIFIED_DIR  = os.path.join(REPO_ROOT, "dataset", "master", "unified")
@@ -37,6 +38,27 @@ def _load_detector(weights: str):
         return RTDETRDetector(weights=weights)
     from models.yolov11 import YOLOv11Detector
     return YOLOv11Detector(weights=weights)
+
+
+def _load_arch_detector(entry: dict):
+    """Load a custom-architecture detector by dynamically importing its wrapper
+    class from Table_dimensions_detection/models/ (registry-declared)."""
+    import importlib
+    det_models = os.path.join(DETECTION_DIR, "models")
+    for d in (DETECTION_DIR, det_models):
+        if d in sys.path:
+            sys.path.remove(d)
+        sys.path.insert(0, d)
+    for m in ("models", "models.yolov11", "models.rtdetr", "models.base", entry["wrapper_module"]):
+        sys.modules.pop(m, None)
+    try:
+        mod = importlib.import_module(entry["wrapper_module"])
+        cls = getattr(mod, entry["wrapper_class"])
+    except Exception as e:
+        raise RuntimeError(
+            f"'{entry.get('label')}' isn't installed. Run: {entry.get('install_cmd','see registry')} "
+            f"(error: {e})")
+    return cls(weights=entry.get("weights"))
 
 
 class DetectionConfig(BaseModel):
@@ -81,7 +103,21 @@ def get_weights_list(task: str):
             "source": "trained",
         })
 
-    return registered + discovered
+    # Custom-architecture models (e.g. Table Transformer) — no .pt path; loaded
+    # via their wrapper. Tagged available=False when their deps aren't installed.
+    arch_models = [{
+        "id":        f"arch_{m['id']}",
+        "arch_id":   m["id"],
+        "name":      m["label"] + ("" if m["installed"] else "  (install required)"),
+        "task":      task,
+        "path":      None,
+        "source":    "custom-arch",
+        "arch":      m["arch"],
+        "available": m["installed"],
+        "install_cmd": m["install_cmd"],
+    } for m in detection_registry.list_models(task)]
+
+    return registered + discovered + arch_models
 
 
 @router.get("/results/{task}")
@@ -145,6 +181,7 @@ async def run_detection(task: str, cfg: DetectionConfig, background: BackgroundT
 
 class EvalConfig(BaseModel):
     weights_path: str | None = None
+    arch_id:      str | None = None   # custom-architecture model (registry id), single-task only
     imgsz:        int | None = None
 
 
@@ -244,15 +281,22 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
         if not gt_viz:
             raise RuntimeError(f"No {' or '.join(targets)} boxes annotated yet — nothing to score.")
 
-        # Best model per target (for "both" always auto; for single, honor the picked weights).
+        # Best model per target (for "both" always auto; for single, honor the picked model).
         models = {}
         for t in targets:
             t_task = "tables" if t == "table" else "dimensions"
-            w = (cfg.weights_path if (task != "both" and cfg.weights_path) else None) or find_best_weights(t_task)
-            if not w or not os.path.exists(w):
-                raise RuntimeError(f"No trained weights found for {t_task}.")
-            models[t] = (_load_detector(w), w)
-            job.log(f"{t} model: {w}")
+            if cfg.arch_id and task != "both":
+                entry = detection_registry.get_model(cfg.arch_id)
+                if not entry:
+                    raise RuntimeError(f"Unknown architecture model: {cfg.arch_id}")
+                models[t] = (_load_arch_detector(entry), entry["label"])
+                job.log(f"{t} model: {entry['label']} (custom arch)")
+            else:
+                w = (cfg.weights_path if (task != "both" and cfg.weights_path) else None) or find_best_weights(t_task)
+                if not w or not os.path.exists(w):
+                    raise RuntimeError(f"No trained weights found for {t_task}.")
+                models[t] = (_load_detector(w), w)
+                job.log(f"{t} model: {w}")
 
         def _find_img(stem):
             for f in os.listdir(SELECTED_DIR):
@@ -311,8 +355,11 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
         }
         job.log(f"Annotated eval — mAP50 {metrics['map50']} · P {metrics['precision']} · R {metrics['recall']} · F1 {metrics['f1']} (TP {tp}/FP {fp}/FN {fn})")
 
-        model_label = " + ".join(os.path.basename(os.path.dirname(os.path.dirname(w))) for _, w in models.values())
-        log_run(
+        def _label(w):
+            # w is either a weights path (YOLO/RT-DETR) or an arch model label.
+            return os.path.basename(os.path.dirname(os.path.dirname(w))) if (isinstance(w, str) and w.endswith(".pt")) else w
+        model_label = " + ".join(_label(w) for _, w in models.values())
+        entry = log_run(
             stage="detection", task=task, model=f"{model_label} · annotated",
             metrics={"map50": metrics["map50"], "precision": metrics["precision"],
                      "recall": metrics["recall"], "f1": metrics["f1"]},
@@ -323,6 +370,11 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
         os.makedirs(out_dir, exist_ok=True)
         with open(os.path.join(out_dir, f"annotated_{task}.json"), "w") as f:
             json.dump({**metrics, "model_label": model_label}, f)
+        # History snapshot — full dashboard, re-openable from the Results page.
+        save_snapshot(entry["id"], {"stage": "detection", "task": task, "model": model_label,
+                                    "timestamp": entry["timestamp"], "metrics": {k: metrics[k] for k in ("map50","precision","recall","f1","tp","fp","fn","n_gt","n_pred")},
+                                    "view": {"images": metrics["images"], "per_class": metrics.get("per_class"),
+                                             "conf_threshold": metrics["conf_threshold"], "iou_threshold": metrics["iou_threshold"]}})
         return metrics
 
     background.add_task(run_job, job, _run, task=task, cfg=cfg)

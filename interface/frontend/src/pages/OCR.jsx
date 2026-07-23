@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { api, pollJob, API_BASE } from "../api/client";
-import { Panel, FormRow, Select, Btn, Tabs, JobLog, Badge, InfoBox, MetricCard } from "../components/ui";
+import { Panel, FormRow, Select, Btn, Tabs, JobLog, Badge, InfoBox, MetricCard, Collapsible } from "../components/ui";
 
 const APPROACHES = { full: "Full image", crop: "Detector crops", gtcrop: "GT-box crops" };
 
@@ -82,8 +82,18 @@ export default function OCRPage() {
       .then(d => { setDetail(d.detail); setCompare(d.compare); setGtImages(d.gt_images || []); })
       .catch(() => { setDetail(null); setCompare(null); setGtImages([]); });
   }
+  const [installing, setInstalling] = useState(null);
   async function loadModels() {
     try { setOcrModels(await fetch(`${API_BASE}/ocr-models/list`).then(r => r.json())); } catch {}
+  }
+  async function installModel(id) {
+    setInstalling(id); setLogs([]);
+    try {
+      const res = await fetch(`${API_BASE}/ocr-models/install/${id}`, { method: "POST" }).then(r => r.json());
+      if (res.job_id) await pollJob(res.job_id, setLogs);
+      await loadModels();
+    } catch (e) { setLogs(l => [...l, { ts: new Date().toISOString(), msg: `Error: ${e.message}` }]); }
+    finally { setInstalling(null); }
   }
   async function run() {
     setRunning(true); setLogs([]);
@@ -147,6 +157,22 @@ export default function OCRPage() {
                   : "The best detector crops regions (2× upscaled + sharpened), OCRs them, then scores against your annotated text."}
             </p>
           </Panel>
+
+          <Collapsible title="OCR models — add / install engines">
+            <p className="text-xs text-gray-400 mb-2">Installed engines are selectable above. Install another architecture to test it (downloads happen on first use).</p>
+            {ocrModels.map(m => (
+              <div key={m.id} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-800">{m.label}</p>
+                  <p className="text-xs text-gray-400">{m.description}</p>
+                  {!m.installed && <p className="text-[11px] font-mono text-gray-300 mt-0.5">{m.install_cmd}</p>}
+                </div>
+                {m.installed ? <Badge variant="green">installed</Badge>
+                  : <Btn small onClick={() => installModel(m.id)} loading={installing === m.id}>⬇ Install</Btn>}
+              </div>
+            ))}
+            <p className="text-xs text-gray-400 mt-2">A new engine needs a ~15-line wrapper in <code className="bg-gray-100 px-1 rounded">ocr/models/</code> (see <code className="bg-gray-100 px-1 rounded">trocr_model.py</code>) + a registry entry.</p>
+          </Collapsible>
 
           {(running || logs.length > 0) && <Panel title="Live logs"><JobLog logs={logs} /></Panel>}
 

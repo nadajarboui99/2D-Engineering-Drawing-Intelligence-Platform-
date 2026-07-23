@@ -18,7 +18,7 @@ export const api = {
   runDetection:            (task, cfg)       => req("POST", `/detection/run/${task}`, cfg),
   evalDetection:           (task)            => req("POST", `/detection/eval/${task}`),
   evalDetectionWithWeights:(task, path, sz)  => req("POST", `/detection/eval/${task}`, { weights_path: path, imgsz: sz }),
-  evalDetectionAnnotated:  (task, path, sz)  => req("POST", `/detection/eval-annotated/${task}`, { weights_path: path, imgsz: sz }),
+  evalDetectionAnnotated:  (task, path, sz, archId)  => req("POST", `/detection/eval-annotated/${task}`, { weights_path: path, imgsz: sz, arch_id: archId }),
   evalDetectionDetail:     (task, path, sz)  => req("POST", `/detection/detail/${task}`, { weights_path: path, imgsz: sz }),
   getDetectionAnnotated:   (task)            => req("GET",  `/detection/annotated-result/${task}`),
   getDetectionResults:     (task)            => req("GET",  `/detection/results/${task}`),
@@ -71,6 +71,7 @@ export const api = {
   getAllResults:  (stage, task) => req("GET", `/results/all${stage?`?stage=${stage}`:""}${task?`${stage?"&":"?"}task=${task}`:""}`),
   getBestResult:  (stage, task) => req("GET", `/results/best/${stage}/${task}`),
   getSummary:     ()            => req("GET", `/results/summary`),
+  getRunSnapshot: (id)          => req("GET", `/results/snapshot/${encodeURIComponent(id)}`),
   deleteRun:      (id)          => req("DELETE", `/results/${id}`),
 
   // Jobs

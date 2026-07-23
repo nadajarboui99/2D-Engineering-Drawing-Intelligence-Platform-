@@ -20,7 +20,7 @@ from fastapi import APIRouter, BackgroundTasks
 from pydantic import BaseModel
 from typing import List
 from core.job_manager import create_job, run_job
-from core.results_store import log_run
+from core.results_store import log_run, save_snapshot
 from core import vlm_eval
 
 router = APIRouter()
@@ -240,12 +240,24 @@ async def run_vlm(cfg: VLMConfig, background: BackgroundTasks):
             fill_rate = (filled_fields / total_fields) if total_fields else 0
             res = _aggregate_resources(mode_results)
             task_label = mode_results[0].get("task", cfg.task)
-            log_run(
+            entry = log_run(
                 stage="vlm", task=task_label, model=f"{cfg.vlm_model}_{mode}",
                 metrics={"fill_rate": round(fill_rate, 4), "images_processed": len(mode_results),
                          **res},
                 extra={"mode": mode, "vlm_model": cfg.vlm_model},
             )
+            # History snapshot: per-image field verdicts + accuracy (re-openable).
+            gt  = vlm_eval.load_unified_gt()
+            det = [{"image": r["image"], **vlm_eval.image_detail(r.get("extracted") or {}, gt.get(r["image"], {}))}
+                   for r in mode_results if r["image"] in gt]
+            acc = vlm_eval.evaluate(combined_all, mode)
+            save_snapshot(entry["id"], {
+                "stage": "vlm", "task": task_label, "model": f"{cfg.vlm_model} · {mode}", "mode": mode,
+                "timestamp": entry["timestamp"],
+                "metrics": {k: acc.get(k) for k in ("field_accuracy", "error_rate", "miss_rate",
+                            "hallucination_rate", "numeric_mape", "exact_match", "overall_accuracy")},
+                "view": {"mode": mode, "vlm_model": cfg.vlm_model, "detail": det, "resources": res},
+            })
 
         job.log(f"All done. {len(combined_all)} results saved.")
         return {"count": len(combined_all)}

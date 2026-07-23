@@ -43,6 +43,8 @@ Table_dimensions_detection/results/
 # ─────────────── Generated evaluation outputs & crops ──────────────────────
 ocr/results/
 vlm/results/
+interface/backend/run_snapshots/
+Table_dimensions_detection/results/annotated_*.json
 
 # NOTE: ground-truth annotations (ocr/data/ground_truth, vlm/data/ground_truth,
 # dataset/) are intentionally NOT ignored — they are small and part of the project.

@@ -18,7 +18,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from core.job_manager import create_job, run_job
 from core.weights_finder import find_best_weights
-from core.results_store import log_run
+from core.results_store import log_run, save_snapshot
 from core import ocr_eval
 from core.image_enhancement import enhance
 
@@ -48,19 +48,36 @@ def _prioritize_paths(*dirs):
 
 
 def _load_ocr(model_name: str):
+    """Load any registered OCR engine by dynamically importing its wrapper class
+    (declared in the registry). Adding an architecture = a wrapper file in
+    ocr/models/ + a registry entry — no change here."""
+    import importlib
+    from core.ocr_registry import get_model
+
     # Force `from models.base import BaseOCR` to resolve against ocr/, not vlm/ or
     # Table_dimensions_detection/, then re-import fresh.
     _prioritize_paths(OCR_DIR, os.path.join(OCR_DIR, "models"))
-    for m in ("models", "models.base", "base", "easyocr_model", "tesseract_model"):
+    for m in ("models", "models.base", "base", "easyocr_model", "tesseract_model",
+              "trocr_model", "paddleocr_model"):
         sys.modules.pop(m, None)
 
-    if model_name == "easyocr":
-        from easyocr_model import EasyOCRModel
-        return EasyOCRModel(languages=["en"], gpu=False)
-    if model_name == "tesseract":
-        from tesseract_model import TesseractModel
-        return TesseractModel()
-    raise ValueError(f"Unknown OCR model: {model_name}")
+    entry = get_model(model_name)
+    if not entry:
+        # back-compat: bare names still work
+        entry = {"easyocr": {"wrapper_module": "easyocr_model", "wrapper_class": "EasyOCRModel"},
+                 "tesseract": {"wrapper_module": "tesseract_model", "wrapper_class": "TesseractModel"}}.get(model_name)
+    if not entry or not entry.get("wrapper_module"):
+        raise ValueError(f"Unknown or unwrapped OCR model: {model_name}")
+
+    try:
+        mod = importlib.import_module(entry["wrapper_module"])
+        cls = getattr(mod, entry["wrapper_class"])
+    except ImportError as e:
+        raise RuntimeError(
+            f"'{entry.get('label', model_name)}' isn't installed. Run: "
+            f"{entry.get('install_cmd', 'see registry')}  (import error: {e})")
+    # EasyOCR takes languages/gpu; others take no args.
+    return cls(languages=["en"], gpu=False) if entry["wrapper_class"] == "EasyOCRModel" else cls()
 
 
 def _read_regions(ocr, image):
@@ -232,11 +249,24 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
         run_metrics.update({"cer": acc["cer"], "wer": acc["wer"], "exact_match": acc["exact_match"], "f1": acc["f1"]})
         job.log(f"[{task}] Accuracy vs ground truth — CER {acc['cer']} · WER {acc['wer']} · exact {acc['exact_match']}")
 
-    log_run(
+    entry = log_run(
         stage="ocr", task=task, model=f"{cfg.ocr_model}_{label}",
         metrics=run_metrics,
         extra={"conf_threshold": cfg.conf_threshold, "mode": label, "crop_source": cfg.crop_source},
     )
+    # History snapshot: per-image whole-text detail vs the union GT (re-openable).
+    gt_union = ocr_eval.load_whole_image_gt()
+    pred_by  = {r["image"]: [d.get("text", "") for d in r["detections"]] for r in all_results}
+    snap_detail = [{"image": r["image"], **ocr_eval.whole_text_detail(pred_by[r["image"]], gt_union.get(r["image"], []))}
+                   for r in all_results]
+    snap_agg = ocr_eval.evaluate_whole(pred_by, gt_union)
+    save_snapshot(entry["id"], {
+        "stage": "ocr", "task": task, "model": f"{cfg.ocr_model} · {label}", "approach": label,
+        "timestamp": entry["timestamp"],
+        "metrics": {k: snap_agg.get(k) for k in ("word_coverage", "char_coverage", "word_precision",
+                                                 "matched_words", "n_gt_words", "n_pred_words", "evaluated_images")},
+        "view": {"approach": label, "ocr_model": cfg.ocr_model, "detail": snap_detail},
+    })
 
     job.log(f"[{task}] Done. Results saved to {combined}")
     return all_results

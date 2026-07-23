@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from core.results_store import get_runs, get_best, delete_run
+from core.results_store import get_runs, get_best, delete_run, load_snapshot
 
 router = APIRouter()
 
@@ -37,6 +37,12 @@ def summary():
             "count": len(runs),
         }
     return out
+
+
+@router.get("/snapshot/{run_id}")
+def snapshot(run_id: str):
+    """Full saved dashboard for one run (metrics + per-image visual payload)."""
+    return load_snapshot(run_id)
 
 
 @router.delete("/{run_id}")
