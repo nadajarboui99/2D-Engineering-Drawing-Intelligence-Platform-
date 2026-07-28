@@ -714,5 +714,173 @@
       "crop_source": "detector"
     },
     "timestamp": "2026-07-23T09:50:28.731490"
+  },
+  {
+    "id": "detection_tables_yolov11_n-2-annotated_1784888563",
+    "stage": "detection",
+    "task": "tables",
+    "model": "yolov11_n-2 \u00b7 annotated",
+    "metrics": {
+      "map50": 0.5938,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "extra": {
+      "on": "annotated",
+      "n_gt": 4,
+      "tp": 0,
+      "fp": 0,
+      "fn": 4,
+      "images": 4
+    },
+    "timestamp": "2026-07-24T12:22:43.451807"
+  },
+  {
+    "id": "detection_dimensions_yolov11_n-5-annotated_1784888565",
+    "stage": "detection",
+    "task": "dimensions",
+    "model": "yolov11_n-5 \u00b7 annotated",
+    "metrics": {
+      "map50": 0.2627,
+      "precision": 0.8261,
+      "recall": 0.2111,
+      "f1": 0.3363
+    },
+    "extra": {
+      "on": "annotated",
+      "n_gt": 90,
+      "tp": 19,
+      "fp": 4,
+      "fn": 71,
+      "images": 4
+    },
+    "timestamp": "2026-07-24T12:22:45.158827"
+  },
+  {
+    "id": "detection_both_yolov11_n-2-yolov11_n-5-annotated_1784888572",
+    "stage": "detection",
+    "task": "both",
+    "model": "yolov11_n-2 + yolov11_n-5 \u00b7 annotated",
+    "metrics": {
+      "map50": 0.4283,
+      "precision": 0.8261,
+      "recall": 0.2021,
+      "f1": 0.3248
+    },
+    "extra": {
+      "on": "annotated",
+      "n_gt": 94,
+      "tp": 19,
+      "fp": 4,
+      "fn": 75,
+      "images": 4
+    },
+    "timestamp": "2026-07-24T12:22:52.920094"
+  },
+  {
+    "id": "ocr_all_easyocr_full_1784888634",
+    "stage": "ocr",
+    "task": "all",
+    "model": "easyocr_full",
+    "metrics": {
+      "coverage": 1.0,
+      "avg_confidence": 0.782,
+      "total_patches": 196,
+      "cer": 0.9164,
+      "wer": 0.9583,
+      "exact_match": 0.0857,
+      "f1": 0.0943
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "full",
+      "crop_source": "detector"
+    },
+    "timestamp": "2026-07-24T12:23:54.702774"
+  },
+  {
+    "id": "detection_tables_yolov11_n-2-annotated_1784899347",
+    "stage": "detection",
+    "task": "tables",
+    "model": "yolov11_n-2 \u00b7 annotated",
+    "metrics": {
+      "map50": 0.5938,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "extra": {
+      "on": "annotated",
+      "n_gt": 4,
+      "tp": 0,
+      "fp": 0,
+      "fn": 4,
+      "images": 4
+    },
+    "timestamp": "2026-07-24T15:22:27.500374"
+  },
+  {
+    "id": "detection_dimensions_yolov11_n-5-annotated_1784899351",
+    "stage": "detection",
+    "task": "dimensions",
+    "model": "yolov11_n-5 \u00b7 annotated",
+    "metrics": {
+      "map50": 0.2627,
+      "precision": 0.8261,
+      "recall": 0.2111,
+      "f1": 0.3363
+    },
+    "extra": {
+      "on": "annotated",
+      "n_gt": 90,
+      "tp": 19,
+      "fp": 4,
+      "fn": 71,
+      "images": 4
+    },
+    "timestamp": "2026-07-24T15:22:31.643079"
+  },
+  {
+    "id": "detection_both_yolov11_n-2-yolov11_n-5-annotated_1784899354",
+    "stage": "detection",
+    "task": "both",
+    "model": "yolov11_n-2 + yolov11_n-5 \u00b7 annotated",
+    "metrics": {
+      "map50": 0.4283,
+      "precision": 0.8261,
+      "recall": 0.2021,
+      "f1": 0.3248
+    },
+    "extra": {
+      "on": "annotated",
+      "n_gt": 94,
+      "tp": 19,
+      "fp": 4,
+      "fn": 75,
+      "images": 4
+    },
+    "timestamp": "2026-07-24T15:22:34.819780"
+  },
+  {
+    "id": "ocr_all_easyocr_full_1784899422",
+    "stage": "ocr",
+    "task": "all",
+    "model": "easyocr_full",
+    "metrics": {
+      "coverage": 1.0,
+      "avg_confidence": 0.782,
+      "total_patches": 196,
+      "cer": 0.9164,
+      "wer": 0.9583,
+      "exact_match": 0.0857,
+      "f1": 0.0943
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "full",
+      "crop_source": "detector"
+    },
+    "timestamp": "2026-07-24T15:23:42.948254"
   }
 ]

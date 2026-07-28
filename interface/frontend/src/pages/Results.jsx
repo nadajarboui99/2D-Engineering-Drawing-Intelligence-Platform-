@@ -1,67 +1,82 @@
 import { useState, useEffect } from "react";
 import { api } from "../api/client";
 import { Panel, Badge, Tabs, InfoBox, Btn } from "../components/ui";
-import { RunImageCell, runMetricPairs, runImages, ImgThumb } from "../components/runViews";
+import { RunImageCell, runImages, ImgThumb } from "../components/runViews";
 
+const STAGE_METRIC = { detection: "map50", ocr: "coverage", vlm: "fill_rate" };
 const STAGE_METRIC_LABEL = { detection: "mAP@0.5", ocr: "Coverage", vlm: "Fill rate" };
-const ALL_RUNS   = "__all_runs__";
-const TASK_LABEL = { tables: "Tables", dimensions: "Dimensions", both: "Tables + Dimensions", all: "Whole image" };
-const taskLabel  = t => t === ALL_RUNS ? "All runs" : (TASK_LABEL[t] || t);
 
-function getMetricValue(run, stage) {
-  if (!run || !run.metrics) return 0;
-  const key = stage === "detection" ? "map50" : stage === "ocr" ? "coverage" : "fill_rate";
-  return run.metrics[key] ?? 0;
-}
-function fmtMetric(v) {
-  if (v == null) return "—";
-  if (typeof v !== "number") return String(v);
-  return Number.isInteger(v) ? String(v) : v.toFixed(3);
-}
+// Input-format / approach axis (separate from task). Reads run.extra.mode.
+const APPROACH_OPTS = {
+  ocr: [["", "All formats"], ["full", "Whole image"], ["crop", "Cropped · detector"], ["gtcrop", "Cropped · ground-truth"]],
+  vlm: [["", "All modes"], ["whole_image", "Image only"], ["whole_image_ocr", "Image + page OCR"], ["cropped_ocr", "Image + crop OCR"]],
+};
+// Task = which classes. tables | dimensions | both (both = the whole page).
+// Whole-image runs are stored as "all" but are conceptually "both", so they fold in.
+const TASK_OPTS = [["", "All tasks"], ["tables", "Tables"], ["dimensions", "Dimensions"], ["both", "Tables + Dimensions"]];
+const taskLabel = t => (t === "all" || t === "both") ? "Tables + Dimensions"
+  : (TASK_OPTS.find(([v]) => v === t) || [t, t])[1];
+const approachOf    = r => r?.extra?.mode || "";
+const approachLabel = (stage, mode) => (APPROACH_OPTS[stage] || []).find(([v]) => v === mode)?.[1] || (mode || "—");
+
+const fmt = v => v == null ? "—" : (typeof v !== "number" ? String(v) : (Number.isInteger(v) ? String(v) : v.toFixed(3)));
 const runTime = ts => new Date(ts).toLocaleString(undefined, { month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" });
 
 export default function ResultsPage() {
-  const [stage, setStage]     = useState("detection");
-  const [task, setTask]       = useState(ALL_RUNS);
-  const [allRuns, setAllRuns] = useState([]);
-  const [summary, setSummary] = useState(null);
+  const [stage, setStage]       = useState("detection");
+  const [taskF, setTaskF]       = useState("");
+  const [approachF, setApproachF] = useState("");
+  const [allRuns, setAllRuns]   = useState([]);
+  const [summary, setSummary]   = useState(null);
 
-  const [selected, setSelected] = useState(() => new Set());  // run ids ticked for compare
-  const [openSnap, setOpenSnap] = useState(null);             // single run being viewed
-  const [compareSnaps, setCompareSnaps] = useState(null);     // [snapshot] for side-by-side
-  const [conf, setConf] = useState(0.25);
+  const [selected, setSelected] = useState(() => new Set());
+  const [view, setView]         = useState(null);   // {type:"single"|"compare", ids:[]}
+  const [snaps, setSnaps]       = useState({});      // id -> snapshot ({} if none)
+  const [conf, setConf]         = useState(0.25);
+  const [sortKey, setSortKey]   = useState("date");  // "date" | a metric name
+  const [sortDir, setSortDir]   = useState("desc");  // desc = latest / highest first
 
-  useEffect(() => { load(); }, [stage]);
-  useEffect(() => { setTask(ALL_RUNS); setSelected(new Set()); setOpenSnap(null); setCompareSnaps(null); }, [stage]);
+  useEffect(() => { load(); setTaskF(""); setApproachF(""); setSelected(new Set()); setView(null); }, [stage]);
+  // Changing filters changes what's comparable → drop any stale ticks.
+  useEffect(() => { setSelected(new Set()); }, [taskF, approachF]);
 
   async function load() {
     try { setAllRuns(await api.getAllResults(stage)); setSummary(await api.getSummary()); } catch {}
   }
-  async function remove(id) { await api.deleteRun(id); setSelected(s => { const n = new Set(s); n.delete(id); return n; }); load(); }
+  async function remove(id) {
+    await api.deleteRun(id);
+    setSelected(s => { const n = new Set(s); n.delete(id); return n; });
+    setView(null); load();
+  }
+  function toggle(id) { setSelected(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; }); }
 
-  function toggle(id) {
-    setSelected(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  async function fetchSnaps(ids) {
+    const missing = ids.filter(id => !(id in snaps));
+    if (!missing.length) return;
+    const got = await Promise.all(missing.map(id => api.getRunSnapshot(id).catch(() => ({}))));
+    setSnaps(prev => { const m = { ...prev }; missing.forEach((id, i) => m[id] = got[i] || {}); return m; });
   }
-  async function openSingle(id) {
-    setCompareSnaps(null);
-    const snap = await api.getRunSnapshot(id);
-    setOpenSnap(snap && snap.stage ? snap : { _empty: true });
-  }
-  async function runCompare() {
-    setOpenSnap(null);
-    const snaps = await Promise.all([...selected].map(id => api.getRunSnapshot(id).catch(() => null)));
-    setCompareSnaps(snaps.filter(s => s && s.stage));
-  }
+  async function openSingle(id) { await fetchSnaps([id]); setView({ type: "single", ids: [id] }); }
+  async function runCompare()   { const ids = [...selected]; await fetchSnaps(ids); setView({ type: "compare", ids }); }
 
-  const taskOptions = [ALL_RUNS, "all", "tables", "dimensions", "both"];
-  const runs   = task === ALL_RUNS ? allRuns : allRuns.filter(r => r.task === task);
-  const sorted = [...runs].sort((a,b) => getMetricValue(b,stage) - getMetricValue(a,stage));
-  const anyDetection = compareSnaps?.some(s => s.stage === "detection") || openSnap?.stage === "detection";
+  const runById = id => allRuns.find(r => r.id === id);
+  const taskMatch = r => !taskF || r.task === taskF || (taskF === "both" && r.task === "all");
+  const filtered = allRuns.filter(r => taskMatch(r) && (!approachF || approachOf(r) === approachF));
+  const metricKeys = [...new Set(filtered.flatMap(r => Object.keys(r.metrics || {})))];
+  const sortVal = r => sortKey === "date"
+    ? new Date(r.timestamp).getTime()
+    : (typeof r.metrics?.[sortKey] === "number" ? r.metrics[sortKey] : (sortDir === "desc" ? -Infinity : Infinity));
+  const sorted = [...filtered].sort((a,b) => sortDir === "desc" ? sortVal(b) - sortVal(a) : sortVal(a) - sortVal(b));
+  const hasApproach = !!APPROACH_OPTS[stage];
+  // Runs are comparable only once the filters pin them to one kind:
+  // detection needs a specific task; OCR/VLM need a specific input-format AND task.
+  const comparable = hasApproach ? (!!taskF && !!approachF) : !!taskF;
 
   return (
     <div>
       <InfoBox>
-        Every evaluation run is logged here. Tick runs to <strong>compare</strong> them side by side, or open one to see its full dashboard again.
+        Every run is logged here. Use the filters to narrow to a <strong>comparable</strong> set, tick runs and <strong>Compare</strong>, or <strong>View</strong> one on its own.
+        Only runs made after this feature was added carry the visual snapshot; older ones still compare on metrics.
       </InfoBox>
 
       {summary && (
@@ -75,7 +90,7 @@ export default function ResultsPage() {
                   {best ? (
                     <div className="flex items-center justify-between">
                       <div><p className="text-sm font-medium text-gray-700 truncate">{best.model}</p><Badge variant="gray">{best.task}</Badge></div>
-                      <p className="text-sm text-emerald-600 font-mono">{getMetricValue(best,s).toFixed(3)}</p>
+                      <p className="text-sm text-emerald-600 font-mono">{fmt(best.metrics?.[STAGE_METRIC[s]])}</p>
                     </div>
                   ) : <span className="text-xs text-gray-300">no runs yet</span>}
                   <p className="text-xs text-gray-300 mt-2">{summary[s]?.count || 0} runs · tasks: {(summary[s]?.tasks||[]).join(", ") || "—"}</p>
@@ -89,128 +104,175 @@ export default function ResultsPage() {
       <Tabs tabs={[{id:"detection",label:"Detection"},{id:"ocr",label:"OCR"},{id:"vlm",label:"VLM"}]} active={stage} onChange={setStage} />
 
       <div className="flex items-center gap-3 mb-4 flex-wrap">
+        {hasApproach && (
+          <>
+            <span className="text-xs text-gray-400">Input format</span>
+            <select value={approachF} onChange={e => setApproachF(e.target.value)}
+              className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-300">
+              {APPROACH_OPTS[stage].map(([v,l]) => <option key={v} value={v}>{l}</option>)}
+            </select>
+          </>
+        )}
         <span className="text-xs text-gray-400">Task</span>
-        <select value={task} onChange={e => setTask(e.target.value)}
+        <select value={taskF} onChange={e => setTaskF(e.target.value)}
           className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-300">
-          {taskOptions.map(t => <option key={t} value={t}>{taskLabel(t)}</option>)}
+          {TASK_OPTS.map(([v,l]) => <option key={v} value={v}>{l}</option>)}
         </select>
+        <span className="text-xs text-gray-400 ml-2">Sort by</span>
+        <select value={sortKey} onChange={e => setSortKey(e.target.value)}
+          className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-300">
+          <option value="date">Date</option>
+          {metricKeys.map(k => <option key={k} value={k}>{k}</option>)}
+        </select>
+        <button onClick={() => setSortDir(d => d === "desc" ? "asc" : "desc")}
+          title={sortDir === "desc" ? "Descending (highest / latest first)" : "Ascending (lowest / oldest first)"}
+          className="text-sm border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white text-gray-600 hover:bg-gray-50">
+          {sortDir === "desc" ? "▼" : "▲"}
+        </button>
         <div className="flex-1" />
-        {selected.size > 0 && (
+        {comparable && selected.size > 0 && (
           <>
             <span className="text-xs text-gray-400">{selected.size} selected</span>
-            <Btn small onClick={runCompare} disabled={selected.size < 2}>⇄ Compare selected</Btn>
+            <Btn small onClick={runCompare} disabled={selected.size < 2}>⇄ Compare</Btn>
             <Btn small onClick={() => setSelected(new Set())}>clear</Btn>
           </>
         )}
       </div>
 
-      <Panel title={`${stage} runs · ${taskLabel(task)}`} badge={sorted.length ? `${sorted.length} runs` : undefined}>
-        {sorted.length === 0 && <p className="text-sm text-gray-300 text-center py-8">No runs yet for this stage and task.</p>}
+      <Panel title={`${stage} runs`} badge={sorted.length ? `${sorted.length} runs` : undefined}>
+        <p className="text-xs text-gray-400 mb-2">
+          {comparable
+            ? "These runs are comparable — tick the ones you want and hit Compare."
+            : `Set ${hasApproach ? "an input format and a task" : "a task"} above to make runs comparable — then checkboxes appear to pick which to compare. You can still View any run on its own.`}
+        </p>
+        {sorted.length === 0 && <p className="text-sm text-gray-300 text-center py-8">No runs match these filters.</p>}
         {sorted.map((r, i) => (
-          <div key={r.id} className={`flex items-center gap-3 py-3 border-b border-gray-50 last:border-0 ${i === 0 ? "bg-emerald-50/40 -mx-5 px-5" : ""}`}>
-            <input type="checkbox" checked={selected.has(r.id)} onChange={() => toggle(r.id)} className="accent-gray-900" />
-            {i === 0 && <Badge variant="green">best</Badge>}
+          <div key={r.id} className="flex items-center gap-3 py-3 border-b border-gray-50 last:border-0">
+            {comparable && <input type="checkbox" checked={selected.has(r.id)} onChange={() => toggle(r.id)} className="accent-gray-900" />}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-700 truncate">{r.model}</p>
-              <Badge variant="gray">{taskLabel(r.task)}</Badge>
+              <div className="flex gap-1.5 mt-0.5">
+                <Badge variant="gray">{taskLabel(r.task)}</Badge>
+                {hasApproach && <Badge variant="blue">{approachLabel(stage, approachOf(r))}</Badge>}
+              </div>
             </div>
-            <div className="flex gap-3 flex-wrap justify-end max-w-[45%]">
-              {Object.entries(r.metrics).map(([k,v]) => (
-                <div key={k} className="text-right"><p className="text-[10px] text-gray-400">{k}</p><p className="text-sm font-mono text-gray-700">{fmtMetric(v)}</p></div>
+            <div className="flex gap-3 flex-wrap justify-end max-w-[40%]">
+              {Object.entries(r.metrics).slice(0, 5).map(([k,v]) => (
+                <div key={k} className="text-right"><p className="text-[10px] text-gray-400">{k}</p><p className="text-sm font-mono text-gray-700">{fmt(v)}</p></div>
               ))}
             </div>
             <span className="text-xs text-gray-300 w-20 text-right shrink-0">{runTime(r.timestamp)}</span>
-            <button onClick={() => openSingle(r.id)} className="text-xs text-gray-500 hover:text-gray-900 shrink-0">view</button>
+            <button onClick={() => openSingle(r.id)} className="text-xs font-medium text-gray-600 hover:text-gray-900 shrink-0">View</button>
             <button onClick={() => remove(r.id)} className="text-xs text-gray-300 hover:text-red-400 shrink-0">remove</button>
           </div>
         ))}
       </Panel>
 
-      {/* Shared conf slider for detection visuals */}
-      {anyDetection && (
-        <div className="flex items-center gap-2 mb-3 text-sm text-gray-500">
-          Confidence ≥ <strong className="text-gray-700 w-8">{conf.toFixed(2)}</strong>
-          <input type="range" min="0.05" max="0.9" step="0.05" value={conf} onChange={e => setConf(parseFloat(e.target.value))} className="w-40 accent-gray-900" />
+      {/* View / Compare open as a modal overlay so it's always visible. */}
+      {view && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center p-6 overflow-y-auto" onClick={() => setView(null)}>
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-6xl my-4" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl">
+              <p className="text-sm font-medium text-gray-800">{view.type === "single" ? "Run details" : "Comparison"}</p>
+              <div className="flex items-center gap-4">
+                {stage === "detection" && (
+                  <span className="flex items-center gap-2 text-xs text-gray-500">
+                    conf ≥ {conf.toFixed(2)}
+                    <input type="range" min="0.05" max="0.9" step="0.05" value={conf} onChange={e => setConf(parseFloat(e.target.value))} className="w-28 accent-gray-900" />
+                  </span>
+                )}
+                <button onClick={() => setView(null)} className="text-gray-400 hover:text-gray-800 text-xl leading-none">✕</button>
+              </div>
+            </div>
+            <div className="p-6">
+              {view.type === "single" && (() => {
+                const r = runById(view.ids[0]); const snap = snaps[view.ids[0]];
+                if (!r) return <InfoBox>Run not found.</InfoBox>;
+                const imgs = snap?.view ? runImages(snap) : [];
+                return (
+                  <>
+                    <p className="font-medium text-gray-800">{r.model}</p>
+                    <p className="text-xs text-gray-400 mb-4">{stage} · {taskLabel(r.task)}{hasApproach ? " · " + approachLabel(stage, approachOf(r)) : ""} · {runTime(r.timestamp)}</p>
+                    <div className="flex gap-4 flex-wrap mb-4">
+                      {Object.entries(r.metrics).map(([k,v]) => (
+                        <div key={k}><p className="text-xs text-gray-400">{k}</p><p className="text-sm font-mono text-gray-800">{fmt(v)}</p></div>
+                      ))}
+                    </div>
+                    {imgs.length ? (
+                      <div className="grid grid-cols-2 gap-4">
+                        {imgs.map(img => (
+                          <div key={img} className="border border-gray-100 rounded-xl p-3">
+                            <p className="font-mono text-xs text-gray-500 mb-2 truncate">{img}</p>
+                            {stage !== "detection" && <div className="mb-2"><ImgThumb image={img} /></div>}
+                            <RunImageCell snap={snap} image={img} conf={conf} />
+                          </div>
+                        ))}
+                      </div>
+                    ) : <InfoBox>Metrics shown above. This run has <strong>no visual snapshot</strong> (it predates run-history) — re-run it to capture the images/overlay.</InfoBox>}
+                  </>
+                );
+              })()}
+
+              {view.type === "compare" && (() => {
+                const runs = view.ids.map(runById).filter(Boolean);
+                if (runs.length < 2) return <InfoBox>Select at least two runs to compare.</InfoBox>;
+                const labels = [];
+                runs.forEach(r => Object.keys(r.metrics).forEach(k => { if (!labels.includes(k)) labels.push(k); }));
+                const imgs = [];
+                view.ids.filter(id => snaps[id]?.view).forEach(id => runImages(snaps[id]).forEach(im => { if (!imgs.includes(im)) imgs.push(im); }));
+                return (
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="text-sm border-collapse">
+                        <thead>
+                          <tr>
+                            <th className="text-left text-xs text-gray-400 font-medium p-2 sticky left-0 bg-white">Metric</th>
+                            {runs.map(r => (
+                              <th key={r.id} className="text-left text-xs font-medium p-2 min-w-[170px]">
+                                <p className="text-gray-700 truncate">{r.model}</p>
+                                <p className="text-gray-300 font-normal">{taskLabel(r.task)}{hasApproach ? " · " + approachLabel(stage, approachOf(r)) : ""}</p>
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {labels.map(lbl => (
+                            <tr key={lbl} className="border-t border-gray-50">
+                              <td className="text-gray-500 p-2 sticky left-0 bg-white">{lbl}</td>
+                              {runs.map(r => <td key={r.id} className="p-2 font-mono text-gray-800">{fmt(r.metrics[lbl])}</td>)}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {imgs.length ? (
+                      <>
+                        <p className="text-xs text-gray-400 mt-4 mb-2">Per-image (only runs with a saved snapshot)</p>
+                        <div className="space-y-4">
+                          {imgs.map(img => (
+                            <div key={img} className="border border-gray-100 rounded-xl p-3">
+                              <p className="font-mono text-xs text-gray-500 mb-2 truncate">{img}</p>
+                              <div className="grid gap-3" style={{ gridTemplateColumns: `150px repeat(${runs.length}, minmax(0,1fr))` }}>
+                                <div><ImgThumb image={img} /></div>
+                                {runs.map(r => (
+                                  <div key={r.id}>
+                                    <p className="text-[11px] text-gray-400 mb-1 truncate">{r.model}</p>
+                                    {snaps[r.id]?.view ? <RunImageCell snap={snaps[r.id]} image={img} conf={conf} /> : <p className="text-xs text-gray-300">no snapshot</p>}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    ) : <p className="text-xs text-gray-400 mt-4">Metrics compared above. None of these runs has a visual snapshot yet — re-run them to compare images/overlays too.</p>}
+                  </>
+                );
+              })()}
+            </div>
+          </div>
         </div>
       )}
-
-      {/* Single run dashboard */}
-      {openSnap && (openSnap._empty ? (
-        <InfoBox>This run has no saved snapshot (it predates run-history). Re-run it to capture the full dashboard.</InfoBox>
-      ) : (
-        <Panel title={`${openSnap.model}`} badge={`${openSnap.stage} · ${taskLabel(openSnap.task)} · ${runTime(openSnap.timestamp)}`}>
-          <div className="flex gap-4 flex-wrap mb-4">
-            {runMetricPairs(openSnap).map(([k,v]) => (
-              <div key={k}><p className="text-xs text-gray-400">{k}</p><p className="text-sm font-mono text-gray-800">{v}</p></div>
-            ))}
-            <div className="flex-1" /><Btn small onClick={() => setOpenSnap(null)}>close</Btn>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {runImages(openSnap).map(img => (
-              <div key={img} className="border border-gray-100 rounded-xl p-3">
-                <p className="font-mono text-xs text-gray-500 mb-2 truncate">{img}</p>
-                {openSnap.stage !== "detection" && <div className="mb-2"><ImgThumb image={img} /></div>}
-                <RunImageCell snap={openSnap} image={img} conf={conf} />
-              </div>
-            ))}
-          </div>
-        </Panel>
-      ))}
-
-      {/* Side-by-side comparison */}
-      {compareSnaps && compareSnaps.length > 0 && (() => {
-        const labels = [];
-        compareSnaps.forEach(s => runMetricPairs(s).forEach(([k]) => { if (!labels.includes(k)) labels.push(k); }));
-        const imgs = [];
-        compareSnaps.forEach(s => runImages(s).forEach(im => { if (!imgs.includes(im)) imgs.push(im); }));
-        const pairMap = s => Object.fromEntries(runMetricPairs(s));
-        return (
-          <Panel title="Comparison" badge={`${compareSnaps.length} runs`}>
-            <div className="flex justify-end mb-2"><Btn small onClick={() => setCompareSnaps(null)}>close</Btn></div>
-            <div className="overflow-x-auto">
-              <table className="text-sm border-collapse">
-                <thead>
-                  <tr>
-                    <th className="text-left text-xs text-gray-400 font-medium p-2 sticky left-0 bg-white">Metric</th>
-                    {compareSnaps.map((s, i) => (
-                      <th key={i} className="text-left text-xs font-medium p-2 min-w-[180px]">
-                        <p className="text-gray-700 truncate">{s.model}</p>
-                        <p className="text-gray-300 font-normal">{taskLabel(s.task)} · {runTime(s.timestamp)}</p>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {labels.map(lbl => (
-                    <tr key={lbl} className="border-t border-gray-50">
-                      <td className="text-gray-500 p-2 sticky left-0 bg-white">{lbl}</td>
-                      {compareSnaps.map((s, i) => <td key={i} className="p-2 font-mono text-gray-800">{pairMap(s)[lbl] ?? "—"}</td>)}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <p className="text-xs text-gray-400 mt-4 mb-2">Per-image (same image across the selected runs)</p>
-            <div className="space-y-4">
-              {imgs.map(img => (
-                <div key={img} className="border border-gray-100 rounded-xl p-3">
-                  <p className="font-mono text-xs text-gray-500 mb-2 truncate">{img}</p>
-                  <div className="grid gap-3" style={{ gridTemplateColumns: `160px repeat(${compareSnaps.length}, minmax(0,1fr))` }}>
-                    <div><ImgThumb image={img} /></div>
-                    {compareSnaps.map((s, i) => (
-                      <div key={i}>
-                        <p className="text-[11px] text-gray-400 mb-1 truncate">{s.model}</p>
-                        <RunImageCell snap={s} image={img} conf={conf} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Panel>
-        );
-      })()}
     </div>
   );
 }
