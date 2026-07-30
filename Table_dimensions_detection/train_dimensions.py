@@ -20,14 +20,14 @@ import argparse
 import yaml
 import torch
 
-# Make project root importable 
+# make project root importable
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from utils.dataset import build_dataloader
 from utils.metrics import DetectionMetrics
 
 
-# Model factory 
+# model factory
 def load_model(cfg: dict, weights_override: str = None):
     """
     Instantiate a model from config.
@@ -56,7 +56,7 @@ def load_model(cfg: dict, weights_override: str = None):
         )
 
 
-#  Train 
+# train
 def train(cfg: dict, model):
     print(f"\n{'='*55}")
     print(f"  TASK     : {cfg['task'].upper()}")
@@ -90,7 +90,7 @@ def train(cfg: dict, model):
     return best_weights
 
 
-# Evaluate 
+# evaluate
 def evaluate(cfg: dict, model):
     print(f"\n[EVAL] Running evaluation on validation set...")
 
@@ -106,7 +106,6 @@ def evaluate(cfg: dict, model):
     metrics     = DetectionMetrics(iou_threshold=iou_thresh)
 
     for images, targets in val_loader:
-        # APRÈS
         preds = model.predict(list(images), conf_threshold=conf_thresh,
                             imgsz=cfg["training"]["imgsz"])
 
@@ -115,7 +114,7 @@ def evaluate(cfg: dict, model):
         for t in list(targets):
             remapped = {
                 "boxes":  t["boxes"],
-                "labels": t["labels"] - 1,  # shift 1→0
+                "labels": t["labels"] - 1,
             }
             remapped_targets.append(remapped)
 
@@ -124,7 +123,6 @@ def evaluate(cfg: dict, model):
     results = metrics.compute()
     metrics.print_report(results, category_names)
 
-    # Optionally save results to JSON
     if cfg["evaluation"].get("save_results", False):
         out_dir = cfg["evaluation"]["results_dir"]
         os.makedirs(out_dir, exist_ok=True)
@@ -140,7 +138,7 @@ def evaluate(cfg: dict, model):
     return results
 
 
-# Main 
+# main
 def main():
     parser = argparse.ArgumentParser(description="Dimension Detection — Train & Eval")
     parser.add_argument("--config",    default="configs/dimensions.yaml",
@@ -156,7 +154,6 @@ def main():
     with open(args.config) as f:
         cfg = yaml.safe_load(f)
 
-    # CLI override for model
     if args.model:
         cfg["model"]["name"] = args.model
         cfg["training"]["run_name"] = f"{args.model}_{cfg['model']['size']}"
@@ -170,7 +167,6 @@ def main():
         evaluate(cfg, model)
     else:
         best_weights = train(cfg, model)
-        # Reload best weights for evaluation
         model = load_model(cfg, weights_override=best_weights)
         evaluate(cfg, model)
 

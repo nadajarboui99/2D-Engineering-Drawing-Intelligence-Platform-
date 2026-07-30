@@ -1,8 +1,6 @@
-# ─────────────────────────────────────────────
-# OCR Config
-# ─────────────────────────────────────────────
+# OCR config
 
-# Change this one line to switch OCR model
+# change this one line to switch OCR model
 ocr:
   model: easyocr       # "easyocr" | "tesseract"
 

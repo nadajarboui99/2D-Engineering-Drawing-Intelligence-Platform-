@@ -31,7 +31,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "pro
 from prompt_builder import load_schema, build_prompt
 
 
-# ── Model factory ──────────────────────────────────────────────────────────────
+# model factory
 
 def load_vlm(cfg: dict, model_override: str = None):
     """
@@ -44,15 +44,12 @@ def load_vlm(cfg: dict, model_override: str = None):
         s = cfg["vlm"]["claude"]
         return ClaudeVLM(model=s["model_name"], max_tokens=s["max_tokens"])
 
-    # elif model_name == "gpt4o":
-    #     from gpt4o_vlm import GPT4oVLM
-    #     return GPT4oVLM(...)
 
     else:
         raise ValueError(f"Unknown VLM '{model_name}'. Add it to load_vlm() in run_vlm.py")
 
 
-# ── OCR results loader ────────────────────────────────────────────────────────
+# OCR results loader
 
 def load_ocr_results(json_path: str) -> dict:
     """Returns dict keyed by image name → OCR result for that image."""
@@ -82,7 +79,7 @@ def format_cropped_text(ocr_result: dict) -> str:
     return "\n".join(lines)
 
 
-# ── Process one image, one mode ───────────────────────────────────────────────
+# process one image, one mode
 
 def run_mode(image_name: str, mode: str, vlm, schema: list,
             cfg: dict, ocr_by_image: dict) -> dict:
@@ -124,7 +121,7 @@ def find_image_path(images_dir: str, image_name: str) -> str:
     raise FileNotFoundError(f"No image found for {image_name} in {images_dir}")
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+# main
 
 def main():
     parser = argparse.ArgumentParser()
@@ -148,7 +145,6 @@ def main():
     else:
         image_names = list(ocr_by_image.keys())
         if not image_names:
-            # Fallback: scan images_dir directly
             image_names = [Path(f).stem for f in os.listdir(cfg["io"]["images_dir"])
                           if f.lower().endswith((".jpg", ".jpeg", ".png"))]
 
@@ -184,7 +180,6 @@ def main():
 
             print(f"    → {json.dumps(extracted, indent=2)[:200]}...")
 
-    # Combined results — useful for comparing modes side by side
     combined_path = os.path.join(output_dir, "all_results.json")
     with open(combined_path, "w") as f:
         json.dump(all_results, f, indent=2)

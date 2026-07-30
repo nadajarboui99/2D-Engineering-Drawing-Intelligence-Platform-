@@ -11,7 +11,7 @@ import importlib
 
 REGISTRY_PATH = os.path.join(os.path.dirname(__file__), "..", "detection_registry.json")
 
-# Seed architectures (scaffold — deps not installed until the user chooses to).
+# seed architectures, deps are not installed until a model is actually picked
 BUILTIN_ARCHS = [
     {
         "id":            "table-transformer",

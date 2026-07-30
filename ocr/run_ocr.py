@@ -19,15 +19,15 @@ import numpy as np
 from PIL import Image
 from pathlib import Path
 
-# ── Make models/ importable ──────────────────────────────────────────────────
+# make models/ importable
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "models"))
 
-# ── Make detection module importable ─────────────────────────────────────────
+# make detection module importable
 DETECTION_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "Table_dimensions_detection")
 sys.path.insert(0, DETECTION_DIR)
 
 
-# ── Model factories ───────────────────────────────────────────────────────────
+# model factories
 
 def load_detector(cfg: dict, task: str):
     from models.yolov11 import YOLOv11Detector
@@ -61,7 +61,7 @@ def load_ocr(cfg: dict, ocr_model_override: str = None):
         raise ValueError(f"Unknown OCR model '{model_name}'. Options: easyocr | tesseract")
 
 
-# ── Crop helper ───────────────────────────────────────────────────────────────
+# crop helper
 
 def crop_patch(image: Image.Image, box: list, padding: int = 4) -> Image.Image:
     w, h = image.size
@@ -72,7 +72,7 @@ def crop_patch(image: Image.Image, box: list, padding: int = 4) -> Image.Image:
     return image.crop((x1, y1, x2, y2))
 
 
-# ── Process one image ─────────────────────────────────────────────────────────
+# process one image
 
 def process_image(image_path: str, detector, ocr_model, cfg: dict,
                   task: str, output_dir: str) -> dict:
@@ -80,7 +80,6 @@ def process_image(image_path: str, detector, ocr_model, cfg: dict,
     image      = Image.open(image_path).convert("RGB")
     image_name = Path(image_path).stem
 
-    # Detect
     preds  = detector.predict([np.array(image)],
                               conf_threshold=cfg["detection"]["conf_threshold"],
                               imgsz=cfg["detection"]["imgsz"])
@@ -92,7 +91,6 @@ def process_image(image_path: str, detector, ocr_model, cfg: dict,
         print(f"  [WARN] No detections in {image_name}")
         return {"image": image_name, "task": task, "detections": []}
 
-    # Crop + OCR
     detections = []
     crops_dir  = os.path.join(output_dir, "crops", image_name)
     if cfg["io"]["save_crops"]:
@@ -122,7 +120,6 @@ def process_image(image_path: str, detector, ocr_model, cfg: dict,
         "detections": detections,
     }
 
-    # Save per-image JSON
     if cfg["io"]["save_json"]:
         json_path = os.path.join(output_dir, "json", f"{image_name}.json")
         os.makedirs(os.path.dirname(json_path), exist_ok=True)
@@ -132,7 +129,7 @@ def process_image(image_path: str, detector, ocr_model, cfg: dict,
     return result
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+# main
 
 def main():
     parser = argparse.ArgumentParser()
@@ -178,7 +175,6 @@ def main():
         result = process_image(path, detector, ocr_model, cfg, task, output_dir)
         all_results.append(result)
 
-    # Save combined JSON → ready to pass to VLM
     if cfg["io"]["save_json"]:
         out = os.path.join(output_dir, f"{task}_{cfg['ocr']['model']}_results.json")
         with open(out, "w") as f:

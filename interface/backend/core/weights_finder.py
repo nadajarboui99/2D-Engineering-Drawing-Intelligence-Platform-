@@ -86,7 +86,7 @@ def find_best_weights(task: str) -> str | None:
             best_map  = map50
             best_path = weights_path
 
-    # best_map stays <= 0 only when no run had positive metrics — fall back to newest.
+    # best_map stays <= 0 only when no run had positive metrics, so fall back to newest
     return best_path if best_map > 0 else fallback_path
 
 

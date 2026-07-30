@@ -30,11 +30,9 @@ class COCODetectionDataset(Dataset):
         with open(annotations_file) as f:
             coco = json.load(f)
 
-        # Build id → image info map
         self.images = {img["id"]: img for img in coco["images"]}
         self.categories = {cat["id"]: cat["name"] for cat in coco["categories"]}
 
-        # Group annotations by image_id
         self.annotations = {}
         for ann in coco["annotations"]:
             iid = ann["image_id"]
@@ -49,7 +47,6 @@ class COCODetectionDataset(Dataset):
         image_id = self.image_ids[idx]
         img_info = self.images[image_id]
 
-        # Load image
         img_path = os.path.join(self.images_dir, img_info["file_name"])
         image = Image.open(img_path).convert("RGB")
 

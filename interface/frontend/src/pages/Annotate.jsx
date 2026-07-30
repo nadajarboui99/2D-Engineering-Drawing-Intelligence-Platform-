@@ -5,11 +5,10 @@ import { Panel, FormRow, Select, Btn, Badge, InfoBox } from "../components/ui";
 const META_DEFAULT = { standard: "unknown", source_type: "unknown", clutter: "med", has_gdt: false, difficulty: "med" };
 const CLASS_COLOR = { dimension: "#6366F1", table: "#F59E0B" };
 
-// In-progress annotation, kept outside React so it survives tab switches
-// (unmount/remount within the app). localStorage (below) covers full reloads.
+// in-progress annotation, kept outside React so it survives tab switches
 let SESSION = null;
-const DRAFT_IMG = "annotate_draft_img";   // {stem,w,h,isNew,dataUrl} — heavy, written on image load
-const DRAFT_ANN = "annotate_draft_ann";   // {regions,feat,meta,drawClass,scale} — light, written on edit
+const DRAFT_IMG = "annotate_draft_img";   // {stem,w,h,isNew,dataUrl}, written on image load
+const DRAFT_ANN = "annotate_draft_ann";   // {regions,feat,meta,drawClass,scale}, written on edit
 
 function coerce(v, type) {
   if (v === "" || v == null) return null;
@@ -76,19 +75,16 @@ export default function AnnotatePage() {
     } catch { /* ignore */ }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Keep work across in-app tab switches.
   useEffect(() => {
     SESSION = { pending, img, regions, feat, meta, drawClass, scale, sel };
   }, [pending, img, regions, feat, meta, drawClass, scale, sel]);
 
-  // Autosave the (light) annotation part to localStorage on every edit.
   useEffect(() => {
     if (!img) return;
     try { localStorage.setItem(DRAFT_ANN, JSON.stringify({ regions, feat, meta, drawClass, scale })); }
     catch { /* quota — ignore */ }
   }, [img, regions, feat, meta, drawClass, scale]);
 
-  // Warn before reloading/closing the tab with unsaved changes.
   useEffect(() => {
     if (!dirty) return;
     const h = (e) => { e.preventDefault(); e.returnValue = ""; };
@@ -101,7 +97,7 @@ export default function AnnotatePage() {
   function fitScale(w) { return w ? Math.min(1, 760 / w) : 1; }
   function clearDraftStorage() { try { localStorage.removeItem(DRAFT_IMG); localStorage.removeItem(DRAFT_ANN); } catch { /* ignore */ } }
 
-  // ── loading images ────────────────────────────────────────────────
+  // loading images
   function onFiles(e) {
     const items = [...e.target.files].map(f => ({ file: f, stem: f.name.replace(/\.[^.]+$/, "") }));
     setPending(p => [...p, ...items]);
@@ -163,7 +159,7 @@ export default function AnnotatePage() {
     image.src = url;
   }
 
-  // ── drawing (SVG viewBox = natural image coords) ──────────────────
+  // drawing (SVG viewBox = natural image coords)
   function toNat(e) {
     const r = svgRef.current.getBoundingClientRect();
     const x = (e.clientX - r.left) * (img.w / r.width);
@@ -201,7 +197,7 @@ export default function AnnotatePage() {
   function updateRegion(i, patch) { setRegions(rs => rs.map((r, j) => j === i ? { ...r, ...patch } : r)); setDirty(true); }
   function deleteRegion(i) { setRegions(rs => rs.filter((_, j) => j !== i)); setSel(null); setDirty(true); }
 
-  // ── save ──────────────────────────────────────────────────────────
+  // save
   async function save() {
     if (!img) return;
     setSaving(true); setMsg("");

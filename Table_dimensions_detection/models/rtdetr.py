@@ -16,7 +16,7 @@ class RTDETRDetector:
     as YOLOv11Detector so you can swap them with a single config line.
     """
 
-    # Available sizes: l (large), x (xlarge)
+    # available sizes: l (large), x (xlarge)
     MODEL_MAP = {
         "l": "rtdetr-l.pt",
         "x": "rtdetr-x.pt",
@@ -72,11 +72,11 @@ class RTDETRDetector:
         """
         import numpy as np
 
-        # Convert tensors to numpy arrays (Ultralytics doesn't accept tensors directly)
+        # convert tensors to numpy arrays, Ultralytics doesn't accept tensors directly
         images_np = []
         for img in images:
             if hasattr(img, "permute"):
-                # tensor [C, H, W] → numpy [H, W, C] uint8
+                # tensor [C, H, W] to numpy [H, W, C] uint8
                 images_np.append((img.permute(1, 2, 0).numpy() * 255).astype(np.uint8))
             else:
                 images_np.append(img)

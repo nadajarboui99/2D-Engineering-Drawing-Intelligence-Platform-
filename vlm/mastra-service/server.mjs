@@ -1,7 +1,7 @@
 // Local Mastra service for VLM feature extraction.
 // The Python eval backend POSTs {model, prompt, images[]} to /extract and gets
-// back {text, usage}. This is the ONLY layer that talks to the model provider —
-// all evaluation/metrics/UI stays in Python.
+// back {text, usage}. This is the only layer that talks to the model provider,
+// all evaluation, metrics and UI stay in Python.
 import { config } from "dotenv";
 import { fileURLToPath } from "url";
 import path from "path";

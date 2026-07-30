@@ -29,7 +29,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 
-# ── Model factories ───────────────────────────────────────────────────────────
+# model factories
 
 def load_detector(cfg: dict, task: str):
     from models.yolov11 import YOLOv11Detector
@@ -58,7 +58,7 @@ def load_ocr(cfg: dict, ocr_model_override: str = None):
         raise ValueError(f"Unknown OCR model '{model_name}'. Use: easyocr | tesseract")
 
 
-# ── Crop helper ───────────────────────────────────────────────────────────────
+# crop helper
 
 def crop_patch(image: Image.Image, box: list, padding: int = 4) -> Image.Image:
     """
@@ -74,7 +74,7 @@ def crop_patch(image: Image.Image, box: list, padding: int = 4) -> Image.Image:
     return image.crop((x1, y1, x2, y2))
 
 
-# ── Process one image ─────────────────────────────────────────────────────────
+# process one image
 
 def process_image(image_path: str, detector, ocr_model, cfg: dict,
                   task: str, output_dir: str) -> dict:
@@ -82,7 +82,6 @@ def process_image(image_path: str, detector, ocr_model, cfg: dict,
     image = Image.open(image_path).convert("RGB")
     image_name = Path(image_path).stem
 
-    # 1. Detect
     conf_thresh = cfg["detection"]["conf_threshold"]
     imgsz       = cfg["detection"]["imgsz"]
     preds       = detector.predict([np.array(image)],
@@ -97,7 +96,6 @@ def process_image(image_path: str, detector, ocr_model, cfg: dict,
         print(f"  [WARN] No detections in {image_name}")
         return {"image": image_name, "detections": []}
 
-    # 2. Crop + OCR each box
     detections = []
     crops_dir  = os.path.join(output_dir, "crops", image_name)
     if cfg["io"]["save_crops"]:
@@ -106,7 +104,6 @@ def process_image(image_path: str, detector, ocr_model, cfg: dict,
     for i, (box, score, label) in enumerate(zip(boxes, scores, labels)):
         crop = crop_patch(image, box)
 
-        # OCR
         text = ocr_model.read(crop)
 
         detection = {
@@ -118,7 +115,6 @@ def process_image(image_path: str, detector, ocr_model, cfg: dict,
         }
         detections.append(detection)
 
-        # Save crop
         if cfg["io"]["save_crops"]:
             crop_path = os.path.join(crops_dir, f"crop_{i:03d}.jpg")
             crop.save(crop_path)
@@ -132,7 +128,6 @@ def process_image(image_path: str, detector, ocr_model, cfg: dict,
         "detections": detections,
     }
 
-    # Save per-image JSON
     if cfg["io"]["save_json"]:
         json_path = os.path.join(output_dir, "json", f"{image_name}.json")
         os.makedirs(os.path.dirname(json_path), exist_ok=True)
@@ -142,7 +137,7 @@ def process_image(image_path: str, detector, ocr_model, cfg: dict,
     return result
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+# main
 
 def main():
     parser = argparse.ArgumentParser(description="OCR Pipeline")
@@ -170,11 +165,9 @@ def main():
     print(f"  OCR MODEL : {cfg['ocr']['model']}")
     print(f"{'='*55}\n")
 
-    # Load models
     detector  = load_detector(cfg, task)
     ocr_model = load_ocr(cfg, args.ocr_model)
 
-    # Collect images
     if args.image:
         image_paths = [args.image]
     else:
@@ -194,7 +187,6 @@ def main():
                                task, output_dir)
         all_results.append(result)
 
-    # Save combined JSON (ready to pass to VLM)
     if cfg["io"]["save_json"]:
         combined_path = os.path.join(output_dir, f"{task}_{cfg['ocr']['model']}_results.json")
         with open(combined_path, "w") as f:

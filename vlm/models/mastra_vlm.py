@@ -23,8 +23,8 @@ from models.base import BaseVLM
 MASTRA_URL = os.environ.get("MASTRA_URL", "http://127.0.0.1:8787")
 MAX_EDGE   = 1568   # Anthropic (and most VLMs) resize above this anyway; keeps tokens/cost sane.
 
-# Rough price table (USD per 1M tokens: input, output). Prefix match; used only
-# for the cost estimate shown in the dashboard — not billing-accurate.
+# rough price table in USD per 1M tokens, input then output, matched by prefix
+# used only for the dashboard cost estimate, not billing-accurate
 _PRICES = [
     ("claude-opus",    (15.0, 75.0)),
     ("claude-sonnet",  (3.0,  15.0)),
@@ -49,7 +49,7 @@ class MastraVLMWrapper(BaseVLM):
         self.model      = model
         self.max_tokens = max_tokens
         self.url        = (service_url or MASTRA_URL).rstrip("/")
-        # Resource usage of the most recent extract() call (read by the router).
+        # resource usage of the most recent extract() call
         self.last_meta  = {}
 
     def _image_to_dataurl(self, image: Image.Image) -> str:
@@ -121,6 +121,5 @@ class MastraVLMWrapper(BaseVLM):
             return {"error": f"Mastra service call failed: {e}"}
 
 
-# Backward-compatible aliases so existing imports keep working.
 LiteLLMWrapper = MastraVLMWrapper
 ClaudeVLM      = MastraVLMWrapper

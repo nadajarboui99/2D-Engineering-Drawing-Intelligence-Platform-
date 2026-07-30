@@ -22,14 +22,12 @@ def convert(coco_json: str, images_dir: str, output_dir: str):
     with open(coco_json) as f:
         coco = json.load(f)
 
-    # Map image_id → image info
     images = {img["id"]: img for img in coco["images"]}
 
     # Map original category_id → zero-indexed class id
     cat_ids = sorted(set(cat["id"] for cat in coco["categories"]))
     cat_map = {cat_id: idx for idx, cat_id in enumerate(cat_ids)}
 
-    # Write category names to a file (useful for data.yaml)
     names_path = os.path.join(output_dir, "categories.txt")
     cat_names = {cat["id"]: cat["name"] for cat in coco["categories"]}
     with open(names_path, "w") as f:
@@ -37,7 +35,6 @@ def convert(coco_json: str, images_dir: str, output_dir: str):
             f.write(f"{cat_map[cat_id]}: {cat_names[cat_id]}\n")
     print(f"Category mapping saved to {names_path}")
 
-    # Group annotations by image
     anns_by_image = {}
     for ann in coco["annotations"]:
         anns_by_image.setdefault(ann["image_id"], []).append(ann)
@@ -47,7 +44,6 @@ def convert(coco_json: str, images_dir: str, output_dir: str):
         w, h = img_info["width"], img_info["height"]
         anns = anns_by_image.get(image_id, [])
 
-        # Derive label filename from image filename
         stem = os.path.splitext(img_info["file_name"])[0]
         label_path = os.path.join(output_dir, stem + ".txt")
 

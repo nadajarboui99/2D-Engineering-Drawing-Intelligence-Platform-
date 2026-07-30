@@ -24,7 +24,6 @@ def set_key(provider: str, key: str):
     data = _load()
     data[provider] = key
     _save(data)
-    # Also set as env var for the current process (litellm reads from env)
     env_map = {
         "anthropic": "ANTHROPIC_API_KEY",
         "openai":    "OPENAI_API_KEY",

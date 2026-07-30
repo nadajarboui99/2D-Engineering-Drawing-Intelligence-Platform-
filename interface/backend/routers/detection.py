@@ -73,11 +73,9 @@ class DetectionConfig(BaseModel):
 
 @router.get("/best-weights/{task}")
 def get_best_weights(task: str):
-    # First check registry (user-uploaded)
     registered = list_weights(task)
     if registered:
         return {"path": registered[0]["path"], "found": True, "name": registered[0]["name"]}
-    # Fallback to auto-detected from runs/
     path = find_best_weights(task)
     return {"path": path, "found": path is not None, "name": None}
 
@@ -103,8 +101,7 @@ def get_weights_list(task: str):
             "source": "trained",
         })
 
-    # Custom-architecture models (e.g. Table Transformer) — no .pt path; loaded
-    # via their wrapper. Tagged available=False when their deps aren't installed.
+    # custom-architecture models have no .pt path, they load via their wrapper
     arch_models = [{
         "id":        f"arch_{m['id']}",
         "arch_id":   m["id"],
@@ -142,7 +139,6 @@ async def run_detection(task: str, cfg: DetectionConfig, background: BackgroundT
             "--model",  cfg.model_name,
         ]
 
-        # Patch config on the fly
         import yaml
         cfg_path = os.path.join(DETECTION_DIR, "configs", f"{'tables' if task == 'tables' else 'dimensions'}.yaml")
         with open(cfg_path) as f:
@@ -202,7 +198,6 @@ async def eval_detection(task: str, background: BackgroundTasks, cfg: EvalConfig
         script_path = os.path.join(DETECTION_DIR, script)
         cfg_path    = os.path.join(DETECTION_DIR, "configs", f"{'tables' if task == 'tables' else 'dimensions'}.yaml")
 
-        # Honor the image size chosen in the UI (evaluate() reads it from config).
         if cfg.imgsz:
             import yaml
             with open(cfg_path) as f:
@@ -211,15 +206,12 @@ async def eval_detection(task: str, background: BackgroundTasks, cfg: EvalConfig
             with open(cfg_path, "w") as f:
                 yaml.dump(data, f)
 
-        # The model class must match the checkpoint, not whatever is in the config.
-        # Run names encode the architecture (e.g. yolov11_n-5, rtdetr_x), so infer it.
         model_name = "rtdetr" if "rtdetr" in best.lower() else "yolov11"
         job.log(f"Using model architecture: {model_name}")
 
         sys.argv = [script, "--config", cfg_path, "--eval_only", "--weights", best, "--model", model_name]
 
-        # The train scripts use dataset paths relative to Table_dimensions_detection/,
-        # so run from there and restore the cwd afterwards.
+        # train scripts use dataset paths relative to Table_dimensions_detection/
         prev_cwd = os.getcwd()
         os.chdir(DETECTION_DIR)
         try:
@@ -257,7 +249,6 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
         from PIL import Image
         from core.detection_eval import evaluate as det_eval
 
-        # "both" scores + overlays table AND dimension detectors together.
         targets = (["table", "dimension"] if task == "both"
                    else ["dimension"] if task == "dimensions" else ["table"])
 
@@ -281,7 +272,6 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
         if not gt_viz:
             raise RuntimeError(f"No {' or '.join(targets)} boxes annotated yet — nothing to score.")
 
-        # Best model per target (for "both" always auto; for single, honor the picked model).
         models = {}
         for t in targets:
             t_task = "tables" if t == "table" else "dimensions"
@@ -328,7 +318,6 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
                 preds_viz.setdefault(stem, []).extend(top)
                 job.log(f"{stem} [{t}]: {len(boxes)} raw preds vs {len(gt_cls[t].get(stem, []))} annotated")
 
-        # Metrics: score each class, then micro-combine for the headline.
         per_class = {}
         tp = fp = fn = n_gt = n_pred = 0
         maps = []
@@ -365,12 +354,10 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
                      "recall": metrics["recall"], "f1": metrics["f1"]},
             extra={"on": "annotated", "n_gt": n_gt, "tp": tp, "fp": fp, "fn": fn, "images": len(stems)},
         )
-        # Persist so the page auto-loads the overlay next time (like OCR/VLM).
         out_dir = os.path.join(DETECTION_DIR, "results")
         os.makedirs(out_dir, exist_ok=True)
         with open(os.path.join(out_dir, f"annotated_{task}.json"), "w") as f:
             json.dump({**metrics, "model_label": model_label}, f)
-        # History snapshot — full dashboard, re-openable from the Results page.
         save_snapshot(entry["id"], {"stage": "detection", "task": task, "model": model_label,
                                     "timestamp": entry["timestamp"], "metrics": {k: metrics[k] for k in ("map50","precision","recall","f1","tp","fp","fn","n_gt","n_pred")},
                                     "view": {"images": metrics["images"], "per_class": metrics.get("per_class"),

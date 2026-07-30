@@ -1,4 +1,4 @@
-# ───────────────────────── Secrets / credentials ─────────────────────────
+# secrets and credentials
 .env
 *.env
 **/.env
@@ -7,7 +7,7 @@
 *.key
 *.pem
 
-# ───────────────────────────── Python ─────────────────────────────────────
+# python
 venv/
 .venv/
 env/
@@ -18,7 +18,7 @@ __pycache__/
 .pytest_cache/
 .ipynb_checkpoints/
 
-# ─────────────────────────── Node / frontend ──────────────────────────────
+# node and frontend
 node_modules/
 dist/
 build/
@@ -27,7 +27,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# ──────────── ML model weights (heavy; downloadable / re-trainable) ────────
+# ML model weights, heavy and re-trainable
 *.pt
 *.pth
 *.onnx
@@ -35,21 +35,21 @@ yarn-error.log*
 *.tflite
 *.h5
 
-# ───────────── Training data & run outputs (heavy, regenerable) ────────────
+# training data and run outputs, heavy and regenerable
 Table_dimensions_detection/data/
 Table_dimensions_detection/runs/
 Table_dimensions_detection/results/
 
-# ─────────────── Generated evaluation outputs & crops ──────────────────────
+# generated evaluation outputs and crops
 ocr/results/
 vlm/results/
 interface/backend/run_snapshots/
 Table_dimensions_detection/results/annotated_*.json
 
-# NOTE: ground-truth annotations (ocr/data/ground_truth, vlm/data/ground_truth,
-# dataset/) are intentionally NOT ignored — they are small and part of the project.
+# ground-truth annotations in ocr/data/ground_truth, vlm/data/ground_truth and
+# dataset/ are intentionally not ignored, they are small and part of the project
 
-# ─────────────────────────── OS / editor ──────────────────────────────────
+# OS and editor
 .DS_Store
 **/.DS_Store
 Thumbs.db
@@ -58,6 +58,6 @@ Thumbs.db
 .idea/
 .vscode/
 
-# ─────────────────────────────── Misc ─────────────────────────────────────
+# misc
 nohup.out
 *.log

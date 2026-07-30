@@ -24,17 +24,11 @@ def enhance(image: Image.Image, level: str = "basic") -> Image.Image:
 
     if level == "full":
         w, h = image.size
-        # 1. Upscale 4x
         image = image.resize((w * 4, h * 4), Image.LANCZOS)
-        # 2. Convert to grayscale
         image = image.convert("L")
-        # 3. Denoise
         image = image.filter(ImageFilter.MedianFilter(size=3))
-        # 4. Boost contrast
         image = ImageEnhance.Contrast(image).enhance(2.0)
-        # 5. Sharpen
         image = image.filter(ImageFilter.SHARPEN)
-        # 6. Adaptive binarization via numpy
         arr       = np.array(image)
         threshold = arr.mean()
         arr       = (arr > threshold).astype(np.uint8) * 255

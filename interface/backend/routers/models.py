@@ -60,7 +60,6 @@ async def install_model(req: ModelInstallRequest, background: BackgroundTasks):
         registry = load_registry()
         task_list = registry.setdefault(req.task, [])
 
-        # Remove existing entry with same name
         registry[req.task] = [m for m in task_list if m["name"] != req.name]
         registry[req.task].append({
             "name":         req.name,

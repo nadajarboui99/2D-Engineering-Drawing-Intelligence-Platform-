@@ -137,7 +137,7 @@ export default function VLMPage() {
   const [prompt, setPrompt]   = useState(DEFAULT_PROMPTS.whole_image);
   const [promptSaved, setPromptSaved] = useState(false);
   const [compare, setCompare] = useState(null);
-  const [mView, setMView]     = useState("whole_image");  // metrics filter — independent of run config
+  const [mView, setMView]     = useState("whole_image");  // metrics filter, independent of run config
   const [detail, setDetail]   = useState(null);           // {mode: [{image, fields, metrics}]}
   const [gtImages, setGtImages] = useState([]);
   const [numImages, setNumImages] = useState(0);
@@ -157,13 +157,11 @@ export default function VLMPage() {
     api.getVLMDetail().then(d => { setDetail(d.detail); setGtImages(d.gt_images || []); }).catch(() => { setDetail(null); setGtImages([]); });
   }, [mView, results]);
 
-  // Reset the random ordering/count whenever the evaluated image set changes.
   useEffect(() => {
     setOrder(shuffle(gtImages));
     setNumImages(gtImages.length);
   }, [gtImages.join(",")]);
 
-  // Sync prompt when mode changes
   useEffect(() => {
     api.getPrompt(cfg.mode)
       .then(r => setPrompt(r.text?.trim() ? r.text : DEFAULT_PROMPTS[cfg.mode]))

@@ -26,8 +26,7 @@ class LiteLLMWrapper(BaseVLM):
         self.litellm    = litellm
         self.model      = model
         self.max_tokens = max_tokens
-        # Resource usage of the MOST RECENT extract() call (tokens, latency, cost).
-        # Read this from the caller right after extract() returns.
+        # resource usage of the most recent extract() call
         self.last_meta  = {}
 
     def _image_to_base64(self, image: Image.Image) -> str:
@@ -80,7 +79,6 @@ class LiteLLMWrapper(BaseVLM):
             self.last_meta = self._usage_from(response, time.perf_counter() - t0)
             raw_text = response.choices[0].message.content.strip()
 
-            # Strip markdown fences if present
             if raw_text.startswith("```"):
                 raw_text = raw_text.split("```")[1]
                 if raw_text.startswith("json"):
@@ -96,5 +94,4 @@ class LiteLLMWrapper(BaseVLM):
             return {"error": str(e)}
 
 
-# Keep backward-compatible alias
 ClaudeVLM = LiteLLMWrapper

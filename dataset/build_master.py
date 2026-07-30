@@ -34,7 +34,7 @@ UNIFIED_DIR    = os.path.join(ROOT, "dataset", "master", "unified")
 LEGACY_DIM_DIR = os.path.join(ROOT, "dataset", "master", "dimensions")
 SCHEMA_PATH    = os.path.join(ROOT, "vlm", "configs", "feature_schema.yaml")
 
-# Optional: detection val.json — only used to PRE-FILL dimension boxes when an image matches.
+# optional detection val.json, only used to pre-fill dimension boxes when an image matches
 DIM_COCO   = os.path.join(ROOT, "Table_dimensions_detection", "data", "dimensions", "val", "val.json")
 DIM_IMAGES = os.path.join(ROOT, "Table_dimensions_detection", "data", "dimensions", "val", "images")
 
@@ -124,7 +124,6 @@ def build(args):
     feature_names = _feature_names()
     cat, anns, images = _load_coco()
 
-    # Collect selected images: everything pasted in selected_images/, plus any --ids from val.json.
     selected = {}   # stem -> {"coco": img|None, "src": path|None, "size": (w,h)}
     if os.path.isdir(SELECTED_DIR):
         for f in sorted(os.listdir(SELECTED_DIR)):
@@ -166,7 +165,6 @@ def build(args):
     for stem, info in sorted(selected.items()):
         img = info["coco"]
 
-        # Make sure the image lives in selected_images/ so every stage runs on it.
         if info["src"] is None and img is not None:
             source = os.path.join(DIM_IMAGES, img["file_name"])
             if os.path.exists(source):
@@ -178,7 +176,7 @@ def build(args):
         prior_texts, prior_tables, prior_feats, prior_meta = _prior(stem)
 
         regions = []
-        if img is not None:  # bonus: pre-fill dimension boxes from val.json
+        if img is not None:
             for i, a in enumerate(sorted(anns.get(img["id"], []), key=lambda x: x.get("id", 0))):
                 bbox = [round(v, 2) for v in a["bbox"]]
                 regions.append({"id": i, "class": cat.get(a["category_id"], "dimension"),
@@ -187,7 +185,7 @@ def build(args):
         else:
             blank += 1
 
-        for j, t in enumerate(prior_tables):     # keep table regions you already added
+        for j, t in enumerate(prior_tables):
             t = dict(t); t["id"] = len(regions) + j
             regions.append(t)
 

@@ -108,7 +108,6 @@ async def save(payload: str = Form(...), image: UploadFile = File(None)):
     os.makedirs(SELECTED_DIR, exist_ok=True)
     os.makedirs(UNIFIED_DIR, exist_ok=True)
 
-    # Save the uploaded image (new images) into selected_images/.
     if image is not None:
         ext = os.path.splitext(image.filename or "")[1].lower()
         if ext not in IMG_EXT:
@@ -116,7 +115,7 @@ async def save(payload: str = Form(...), image: UploadFile = File(None)):
         with open(os.path.join(SELECTED_DIR, stem + ext), "wb") as f:
             shutil.copyfileobj(image.file, f)
 
-    # Normalize regions (ids by order; keep cells only for tables).
+    # ids by order, cells only for tables
     regions = []
     for i, r in enumerate(data.get("regions", [])):
         bbox = [round(float(v)) for v in (r.get("bbox") or [0, 0, 0, 0])][:4]
@@ -144,7 +143,6 @@ async def save(payload: str = Form(...), image: UploadFile = File(None)):
     with open(os.path.join(UNIFIED_DIR, f"{stem}.json"), "w") as f:
         json.dump(record, f, indent=2, ensure_ascii=False)
 
-    # Regenerate the per-stage ground truth (best-effort; never fails the save).
     _rebuild_gt()
 
     return {"ok": True, "image": stem, "regions": len(regions)}

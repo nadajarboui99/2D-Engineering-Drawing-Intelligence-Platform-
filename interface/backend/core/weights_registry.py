@@ -33,7 +33,6 @@ def register(name: str, task: str, path: str, source: str = "upload") -> dict:
         "source":   source,
         "added_at": datetime.utcnow().isoformat(),
     }
-    # Remove existing entry with same name+task
     data = [e for e in data if not (e["name"] == name and e["task"] == task)]
     data.append(entry)
     _save(data)

@@ -63,14 +63,11 @@ class YOLOv11Detector:
         Returns list of dicts: {boxes [N,4], scores [N], labels [N]}
         compatible with DetectionMetrics.update()
         """
-        # APRÈS
-        
-
-        # Convert tensors to numpy arrays (YOLO doesn't accept tensors directly)
+        # convert tensors to numpy arrays, YOLO doesn't accept tensors directly
         images_np = []
         for img in images:
             if hasattr(img, 'numpy'):
-                # tensor [C, H, W] → numpy [H, W, C] uint8
+                # tensor [C, H, W] to numpy [H, W, C] uint8
                 arr = (img.permute(1, 2, 0).numpy() * 255).astype(np.uint8)
                 images_np.append(arr)
             else:

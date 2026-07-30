@@ -63,7 +63,6 @@ class DetectionMetrics:
         self.all_targets.extend(targets)
 
     def compute(self) -> dict:
-        # Collect all class ids
         all_classes = set()
         for t in self.all_targets:
             all_classes.update(t["labels"].tolist())
@@ -87,7 +86,6 @@ class DetectionMetrics:
                 if pred_boxes.shape[0] == 0:
                     continue
 
-                # Sort by score descending
                 order = pred_scores.argsort(descending=True)
                 pred_boxes = pred_boxes[order]
                 pred_scores = pred_scores[order]
@@ -114,7 +112,6 @@ class DetectionMetrics:
                 aps.append(0)
                 continue
 
-            # Sort by score
             order = np.argsort(scores_list)[::-1]
             tp_arr = np.array(tp_list)[order]
             fp_arr = np.array(fp_list)[order]

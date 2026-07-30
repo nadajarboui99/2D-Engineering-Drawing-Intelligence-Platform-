@@ -35,7 +35,6 @@ function Chips({ tokens, flags }) {
 
 function cov(m) { return m?.word_coverage != null ? `${(m.word_coverage * 100).toFixed(0)}%` : "—"; }
 
-// Shows the crops for one drawing so you can judge patch quality.
 function CropStrip({ image, model, source }) {
   const [data, setData] = useState(null);
   useEffect(() => { api.getOCRCrops(image, model, source).then(setData).catch(() => setData({ crops: [], count: 0 })); }, [image, model, source]);
@@ -113,7 +112,7 @@ export default function OCRPage() {
   const n = Math.max(1, Math.min(numImages || total, total));
   const selected = order.slice(0, n).filter(Boolean);
   const recBy = appr => Object.fromEntries((detail?.[appr] || []).map(r => [r.image, r]));
-  // Which data key the single-approach views read (crop tab depends on the source toggle).
+  // crop tab reads a different key depending on the source toggle
   const approachKey = view === "crop" ? (cropSource === "gt" ? "gtcrop" : "crop") : view;
 
   return (

@@ -1,8 +1,6 @@
-# ─────────────────────────────────────────────
-# VLM Config
-# ─────────────────────────────────────────────
+# VLM config
 
-# Change this one line to switch VLM model
+# change this one line to switch VLM model
 vlm:
   model: claude          # "claude" | (add more later: "gpt4o", "qwen_vl")
 
@@ -10,7 +8,7 @@ vlm:
     model_name: claude-sonnet-4-6
     max_tokens: 1500
 
-# Which input mode(s) to run — can list multiple to compare
+# which input modes to run, can list multiple to compare
 modes:
   - whole_image          # raw image only
   - whole_image_ocr      # raw image + OCR text overlay

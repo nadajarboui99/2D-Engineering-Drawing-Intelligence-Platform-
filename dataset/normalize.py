@@ -19,7 +19,7 @@ raw annotated text, so "⌀25±0.1" and "DIA 25 +/- 0.10 mm" score as equal.
 """
 import re
 
-# ---- symbol unification (applied before comparison) ------------------------
+# symbol unification, applied before comparison
 _DIAM = ["⌀", "Ø", "ø", "∅"]
 _SUBS = [
     (r"[，]", ","),
@@ -63,7 +63,7 @@ def texts_equal(a, b) -> bool:
     return normalize_text(a) == normalize_text(b)
 
 
-# ---- numeric equivalence ---------------------------------------------------
+# numeric equivalence
 def to_number(v):
     if isinstance(v, bool):
         return None
@@ -87,7 +87,7 @@ def numbers_equal(a, b, rel_tol: float = 0.02, abs_tol: float = 0.5) -> bool:
     return abs(na - nb) <= max(abs_tol, rel_tol * abs(nb))
 
 
-# ---- dimension parsing -----------------------------------------------------
+# dimension parsing
 _UNIT_RE = re.compile(r"\b(mm|cm|m|in|inch|deg)\b", re.I)
 
 
@@ -163,7 +163,7 @@ def dims_equal(pred, gt, rel_tol: float = 0.02, abs_tol: float = 0.5) -> dict:
 
 
 if __name__ == "__main__":
-    # Self-test — quick sanity checks.
+    # self-test, quick sanity checks
     assert texts_equal("R 10", "r10")
     assert texts_equal("25,5", "25.5")
     assert texts_equal("⌀25", "DIA 25") and texts_equal("Ø25", "phi 25")

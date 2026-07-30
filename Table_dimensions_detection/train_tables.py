@@ -26,7 +26,7 @@ from utils.dataset import build_dataloader
 from utils.metrics import DetectionMetrics
 
 
-# Model factory (identical to train_dimensions.py)
+# model factory, identical to train_dimensions.py
 def load_model(cfg: dict, weights_override: str = None):
     model_name  = cfg["model"]["name"].lower()
     model_size  = cfg["model"].get("size", "n")
@@ -48,7 +48,7 @@ def load_model(cfg: dict, weights_override: str = None):
         raise ValueError(f"Unknown model '{model_name}'.")
 
 
-# Train 
+# train
 def train(cfg: dict, model):
     print(f"\n{'='*55}")
     print(f"  TASK     : {cfg['task'].upper()}")
@@ -82,7 +82,7 @@ def train(cfg: dict, model):
     return best_weights
 
 
-# Evaluate 
+# evaluate
 def evaluate(cfg: dict, model):
     print(f"\n[EVAL] Running evaluation on validation set...")
 
@@ -120,7 +120,7 @@ def evaluate(cfg: dict, model):
     return results
 
 
-# Main 
+# main
 def main():
     parser = argparse.ArgumentParser(description="Table Detection — Train & Eval")
     parser.add_argument("--config",    default="configs/tables.yaml")

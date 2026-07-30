@@ -8,8 +8,6 @@ def fix_categories(json_path, output_path):
     for cat in coco["categories"]:
         cat["name"] = cat["name"].lower()
 
-    # Find if there are now duplicate categories (table + Table both → table)
-    # Keep only unique ones and remap annotation category_ids
     seen = {}
     id_remap = {}
     new_categories = []
@@ -22,7 +20,6 @@ def fix_categories(json_path, output_path):
         # if duplicate, map old id → existing id
         id_remap[cat["id"]] = seen[name]
 
-    # Update annotations to use remapped category ids
     for ann in coco["annotations"]:
         ann["category_id"] = id_remap[ann["category_id"]]
 
@@ -34,7 +31,6 @@ def fix_categories(json_path, output_path):
     print(f"Done. Categories now: {[c['name'] for c in new_categories]}")
     print(f"Saved to {output_path}")
 
-# Run for both train and val
 fix_categories("data/tables/train/train.json", "data/tables/train/train.json")
 fix_categories("data/tables/valid/val.json",   "data/tables/valid/val.json")
 
@@ -45,10 +41,8 @@ def fix_dimensions(json_path, output_path):
     # Keep only the real class, remove "New-Drawings"
     real_categories = [c for c in coco["categories"] if c["name"] != "New-Drawings"]
     
-    # Get the ids to remove
     fake_ids = {c["id"] for c in coco["categories"] if c["name"] == "New-Drawings"}
     
-    # Remove annotations that belong to fake categories
     coco["annotations"] = [
         ann for ann in coco["annotations"] 
         if ann["category_id"] not in fake_ids

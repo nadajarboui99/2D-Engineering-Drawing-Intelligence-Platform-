@@ -208,15 +208,12 @@ def evaluate(results, mode: str = None, gt: dict = None) -> dict:
     if mode:
         rows = [r for r in rows if r.get("mode") == mode]
 
-    # Per-field outcome categories (see module docstring):
-    #   present GT  -> correct | wrong | missed
-    #   absent  GT  -> hallucinated | abstained
     correct = wrong = missed = hallucinated = abstained = 0
     present_total = absent_total = 0
     images = 0
     exact_images = 0
     per_field_totals = {}   # field -> [correct, present_total]
-    seen = set()            # one score per image (guards against stale duplicate results)
+    seen = set()            # one score per image
     ape_sum = 0.0           # numeric closeness: sum of |pred-gt|/|gt| over numeric attempts
     ape_count = 0
 
@@ -236,14 +233,11 @@ def evaluate(results, mode: str = None, gt: dict = None) -> dict:
             pred = extracted.get(field)
             pred_present = pred is not None and pred != "" and pred != []
 
-            if gt_val is not None:            # field truly present in the drawing
+            if gt_val is not None:
                 present_total += 1
                 slot = per_field_totals.setdefault(field, [0, 0])
                 slot[1] += 1
 
-                # Numeric closeness: for numeric fields the model gave a number for,
-                # accumulate the absolute % error (capped at 200% so one wild value
-                # can't dominate). Tells near-misses (51 vs 50) from wild ones (500 vs 50).
                 gt_num, pred_num = _to_number(gt_val), (_to_number(pred) if pred_present else None)
                 if gt_num is not None and pred_num is not None:
                     ape_sum += min(abs(pred_num - gt_num) / max(abs(gt_num), 1e-9), 2.0)
@@ -258,7 +252,7 @@ def evaluate(results, mode: str = None, gt: dict = None) -> dict:
                 else:
                     wrong += 1
                     image_perfect = False
-            else:                             # field truly absent
+            else:
                 absent_total += 1
                 if pred_present:
                     hallucinated += 1
@@ -279,14 +273,11 @@ def evaluate(results, mode: str = None, gt: dict = None) -> dict:
         "mode": mode,
         "evaluated_images": images,
         "gt_images": len(gt),
-        # Accuracy over fields that SHOULD have a value (unchanged meaning).
         "field_accuracy":     round(correct / present_total, 4) if present_total else 0.0,
-        # Full-schema correctness: right value OR correctly left null.
         "overall_accuracy":   round((correct + abstained) / total_fields, 4) if total_fields else 0.0,
         "error_rate":         round(wrong / present_total, 4) if present_total else 0.0,
         "miss_rate":          round(missed / present_total, 4) if present_total else 0.0,
         "hallucination_rate": round(hallucinated / absent_total, 4) if absent_total else 0.0,
-        # Mean absolute % error over numeric fields the model attempted (lower = closer).
         "numeric_mape":       round(ape_sum / ape_count, 4) if ape_count else None,
         "numeric_scored":     ape_count,
         "exact_match":        round(exact_images / images, 4),

@@ -111,8 +111,6 @@ def _score_image(pred_texts, gt_texts) -> dict:
         if best_i >= 0:
             used[best_i] = True
 
-        # Cap per-string edit distance at the GT length so CER/WER stay in [0, 1]
-        # (a totally-wrong string is 100% error, not more).
         acc["char_edits"] += min(_edit_distance(gt, best), len(gt))
         acc["gt_chars"]   += max(1, len(gt))
         acc["word_edits"] += min(_edit_distance(gt.split(), best.split()), len(gt.split()))

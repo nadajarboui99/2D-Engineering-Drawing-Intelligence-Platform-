@@ -1,5 +1,4 @@
 // Shared renderers that turn a saved run SNAPSHOT into its visual dashboard.
-// Used by the Results page for both "open one run" and side-by-side comparison.
 import { API_BASE } from "../api/client";
 
 const imgUrl = stem => `${API_BASE}/annotation/image/${encodeURIComponent(stem)}`;
@@ -22,7 +21,6 @@ const VERDICT = {
 const pct = v => v == null ? "—" : `${(v * 100).toFixed(0)}%`;
 const num = v => v == null ? "—" : (Number.isInteger(v) ? String(v) : v.toFixed(3));
 
-// One line of headline metrics for a snapshot, by stage.
 export function runMetricPairs(snap) {
   const m = snap?.metrics || {};
   if (snap?.stage === "detection")
@@ -38,14 +36,12 @@ export function runMetricPairs(snap) {
   return Object.entries(m).map(([k, v]) => [k, num(v)]);
 }
 
-// Image ids present in a snapshot.
 export function runImages(snap) {
   const v = snap?.view || {};
   if (snap?.stage === "detection") return (v.images || []).map(im => im.image);
   return (v.detail || []).map(d => d.image);
 }
 
-// The visual for ONE image within a run (a comparison cell / single-run row).
 export function RunImageCell({ snap, image, conf = 0.25 }) {
   const v = snap?.view || {};
   if (snap?.stage === "detection") {

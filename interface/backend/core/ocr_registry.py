@@ -9,9 +9,7 @@ import importlib
 
 REGISTRY_PATH = os.path.join(os.path.dirname(__file__), "..", "ocr_registry.json")
 
-# Built-in supported models. wrapper_module/wrapper_class point at a class in
-# ocr/models/ implementing BaseOCR.read(); the loader imports it dynamically, so
-# adding a new architecture is just a wrapper file + a registry entry.
+# wrapper_module/wrapper_class point at a BaseOCR subclass in ocr/models/
 BUILTIN_MODELS = [
     {
         "id":          "easyocr",

@@ -2,7 +2,6 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(__file__))
 
-# Load saved API keys into environment at startup
 from core.api_keys import load_all_to_env
 load_all_to_env()
 

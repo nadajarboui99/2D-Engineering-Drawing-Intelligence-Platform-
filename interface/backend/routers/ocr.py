@@ -22,8 +22,7 @@ from core.results_store import log_run, save_snapshot
 from core import ocr_eval
 from core.image_enhancement import enhance
 
-# Fixed crop pre-processing (no longer a user choice): 2x upscale + sharpen —
-# helps small annotations without the risk of binarization wiping low-contrast text.
+# fixed crop pre-processing: 2x upscale plus sharpen
 CROP_ENHANCE = "basic"
 
 router = APIRouter()
@@ -54,8 +53,7 @@ def _load_ocr(model_name: str):
     import importlib
     from core.ocr_registry import get_model
 
-    # Force `from models.base import BaseOCR` to resolve against ocr/, not vlm/ or
-    # Table_dimensions_detection/, then re-import fresh.
+    # resolve models.base against ocr/, not vlm/ or Table_dimensions_detection/
     _prioritize_paths(OCR_DIR, os.path.join(OCR_DIR, "models"))
     for m in ("models", "models.base", "base", "easyocr_model", "tesseract_model",
               "trocr_model", "paddleocr_model"):
@@ -63,7 +61,6 @@ def _load_ocr(model_name: str):
 
     entry = get_model(model_name)
     if not entry:
-        # back-compat: bare names still work
         entry = {"easyocr": {"wrapper_module": "easyocr_model", "wrapper_class": "EasyOCRModel"},
                  "tesseract": {"wrapper_module": "tesseract_model", "wrapper_class": "TesseractModel"}}.get(model_name)
     if not entry or not entry.get("wrapper_module"):
@@ -115,7 +112,6 @@ def _unified_ready() -> bool:
 
 
 def _get_images_dir(task: str) -> str:
-    # Once a unified evaluation set is selected, every task/stage runs on it.
     if _unified_ready():
         return UNIFIED_DIR
     if task == "tables":
@@ -204,7 +200,7 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
                     "bbox": [round(v, 2) for v in box],
                     "text": text,
                 })
-        else:  # full image — OCR the whole drawing, one detection per text region found
+        else:  # full image, OCR the whole drawing, one detection per text region
             for j, (text, conf) in enumerate(_read_regions(ocr, image)):
                 detections.append({
                     "id": j, "class": task,
@@ -232,7 +228,6 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
     with open(combined, "w") as f:
         json.dump(all_results, f, indent=2)
 
-    # Coverage stats (always available)
     all_dets = [d for r in all_results for d in r.get("detections", [])]
     with_text = sum(1 for d in all_dets if (d.get("text") or "").strip())
     avg_conf  = (sum(d.get("confidence", 0) for d in all_dets) / len(all_dets)) if all_dets else 0
@@ -254,7 +249,6 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
         metrics=run_metrics,
         extra={"conf_threshold": cfg.conf_threshold, "mode": label, "crop_source": cfg.crop_source},
     )
-    # History snapshot: per-image whole-text detail vs the union GT (re-openable).
     gt_union = ocr_eval.load_whole_image_gt()
     pred_by  = {r["image"]: [d.get("text", "") for d in r["detections"]] for r in all_results}
     snap_detail = [{"image": r["image"], **ocr_eval.whole_text_detail(pred_by[r["image"]], gt_union.get(r["image"], []))}
@@ -292,7 +286,6 @@ async def run_ocr(cfg: OCRConfig, background: BackgroundTasks):
 def get_results(task: str, model: str, mode: str = "crop"):
     path = os.path.join(OCR_DIR, "results", f"{task}_{model}_{mode}_results.json")
     if not os.path.exists(path):
-        # Back-compat with older un-moded result files
         legacy = os.path.join(OCR_DIR, "results", f"{task}_{model}_results.json")
         path = legacy if os.path.exists(legacy) else path
     if not os.path.exists(path):
@@ -331,7 +324,7 @@ def _load_crop_pred(model: str, label: str = "crop") -> dict:
     for task in ("tables", "dimensions"):
         path = os.path.join(OCR_DIR, "results", f"{task}_{model}_{label}_results.json")
         if not os.path.exists(path) and label == "crop":
-            path = os.path.join(OCR_DIR, "results", f"{task}_{model}_results.json")  # legacy
+            path = os.path.join(OCR_DIR, "results", f"{task}_{model}_results.json")
         if not os.path.exists(path):
             continue
         with open(path) as f:

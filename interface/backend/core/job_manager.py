@@ -42,7 +42,7 @@ class Job:
             "finished_at": self.finished_at,
         }
 
-# In-memory store (replace with Redis for production)
+# in-memory store
 _jobs: dict[str, Job] = {}
 
 

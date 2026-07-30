@@ -51,7 +51,7 @@ def evaluate(preds_by_image, gt_by_image, iou_thr=0.5, conf=0.25):
     if n_gt == 0:
         return {"available": False, "note": "No ground-truth boxes for this class."}
 
-    # ---- AP@iou (all predictions, all scores) ----
+    # AP@iou (all predictions, all scores)
     scored = []          # (score, is_tp) across all images
     for img, gts in gt_by_image.items():
         preds = preds_by_image.get(img, [])
@@ -74,7 +74,7 @@ def evaluate(preds_by_image, gt_by_image, iou_thr=0.5, conf=0.25):
         mpre[i] = max(mpre[i], mpre[i + 1])
     ap = sum((mrec[i + 1] - mrec[i]) * mpre[i + 1] for i in range(len(mrec) - 1))
 
-    # ---- headline precision/recall/F1 at a confidence threshold ----
+    # headline precision/recall/F1 at a confidence threshold
     tp = fp = matched_gt = 0
     for img, gts in gt_by_image.items():
         preds = [p for p in preds_by_image.get(img, []) if p[4] >= conf]

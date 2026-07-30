@@ -1,13 +1,25 @@
+# detection models
 torch
 torchvision
 ultralytics
-pyyaml
+
+# shared
 numpy
-opencv-python
 pillow
-matplotlib
-tqdm
-pycocotools
+pyyaml
+
+# backend api
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+
+# ocr engines
 easyocr
 pytesseract
-anthropic
+
+# optional, install only if you pick these models in the app
+# transformers    TrOCR and Table Transformer
+# paddlepaddle
+# paddleocr
+# litellm         only for the standalone vlm/run_vlm.py script

@@ -43,7 +43,6 @@ def _unified_ready() -> bool:
 
 
 def _get_images_dir(task: str) -> str:
-    # Once a unified evaluation set is selected, every task/stage runs on it.
     if _unified_ready():
         return UNIFIED_DIR
     if task == "tables":
@@ -52,9 +51,8 @@ def _get_images_dir(task: str) -> str:
 
 
 def _load_ocr_results(task: str, ocr_model: str) -> dict:
-    # Crop-mode OCR (per task): detections carry both text AND bbox — used for the
-    # "cropped_ocr" context (full image + crop text + box coordinates).
-    # task "both" merges the tables + dimensions crop detections per image.
+    # crop-mode OCR per task, detections carry both text and bbox
+    # task "both" merges the tables and dimensions crop detections per image
     if task == "both":
         merged = {}
         for t in ("tables", "dimensions"):
@@ -64,7 +62,7 @@ def _load_ocr_results(task: str, ocr_model: str) -> dict:
         return merged
     candidates = [
         os.path.join(OCR_DIR, "results", f"{task}_{ocr_model}_crop_results.json"),
-        os.path.join(OCR_DIR, "results", f"{task}_{ocr_model}_results.json"),  # legacy
+        os.path.join(OCR_DIR, "results", f"{task}_{ocr_model}_results.json"),
     ]
     path = next((p for p in candidates if os.path.exists(p)), None)
     if not path:
@@ -75,8 +73,7 @@ def _load_ocr_results(task: str, ocr_model: str) -> dict:
 
 
 def _load_full_image_ocr(ocr_model: str) -> dict:
-    # Whole-image OCR (task-agnostic, keyed "all"): the text read off the whole page.
-    # Used for the "whole_image_ocr" context.
+    # whole-image OCR, task-agnostic and keyed "all"
     path = os.path.join(OCR_DIR, "results", f"all_{ocr_model}_full_results.json")
     if not os.path.exists(path):
         return {}
@@ -96,8 +93,7 @@ def _vlm_setup(cfg: VLMConfig):
     from core.api_keys import load_all_to_env
     load_all_to_env()
 
-    # Force `from models.base import BaseVLM` to resolve against vlm/, not ocr/ or
-    # Table_dimensions_detection/ which also ship a top-level `models` package.
+    # resolve models.base against vlm/, not ocr/ or Table_dimensions_detection/
     for d in (os.path.join(VLM_DIR, "prompts"), os.path.join(VLM_DIR, "models"), VLM_DIR):
         if d in sys.path:
             sys.path.remove(d)
@@ -148,7 +144,6 @@ def _process_mode(mode: str, task_label: str, crop_task, cfg: VLMConfig, ctx: di
             job.log(f"  [WARN] image not found: {image_name}")
             continue
 
-        # Every mode SEES the full drawing; context modes add OCR text as TEXT context.
         images = [PILImage.open(img_path).convert("RGB")]
 
         if mode == "whole_image":
@@ -211,17 +206,14 @@ async def run_vlm(cfg: VLMConfig, background: BackgroundTasks):
     def _run(job, cfg):
         combined_all = _run_vlm(cfg, job)
 
-        # Save combined
         combined_path = os.path.join(VLM_DIR, "results", "all_results.json")
         os.makedirs(os.path.dirname(combined_path), exist_ok=True)
 
-        # Merge with existing results
         existing = []
         if os.path.exists(combined_path):
             with open(combined_path) as f:
                 existing = json.load(f)
 
-        # Overwrite entries with same image+mode+task
         key = lambda r: (r["image"], r["mode"], r.get("task",""))
         existing_map = {key(r): r for r in existing}
         for r in combined_all:
@@ -230,7 +222,6 @@ async def run_vlm(cfg: VLMConfig, background: BackgroundTasks):
         with open(combined_path, "w") as f:
             json.dump(list(existing_map.values()), f, indent=2)
 
-        # Log to unified results store, grouped by mode
         for mode in cfg.modes:
             mode_results = [r for r in combined_all if r["mode"] == mode and not r["extracted"].get("error")]
             if not mode_results:
@@ -246,7 +237,6 @@ async def run_vlm(cfg: VLMConfig, background: BackgroundTasks):
                          **res},
                 extra={"mode": mode, "vlm_model": cfg.vlm_model},
             )
-            # History snapshot: per-image field verdicts + accuracy (re-openable).
             gt  = vlm_eval.load_unified_gt()
             det = [{"image": r["image"], **vlm_eval.image_detail(r.get("extracted") or {}, gt.get(r["image"], {}))}
                    for r in mode_results if r["image"] in gt]
@@ -312,7 +302,6 @@ def get_metrics(task: str = None, mode: str = None):
     with open(path) as f:
         results = json.load(f)
     out = vlm_eval.evaluate(results, mode)
-    # Resource usage is available even without ground truth.
     rows = [r for r in results if not (r.get("extracted") or {}).get("error")]
     if mode:
         rows = [r for r in rows if r.get("mode") == mode]

@@ -14,7 +14,7 @@ import numpy as np
 
 class TableTransformerDetector:
     def __init__(self, weights: str = None, model_name: str = "microsoft/table-transformer-detection"):
-        # Lazy import — heavy deps load only when this model is actually used.
+        # lazy import, heavy deps load only when this model is actually used
         import torch
         from transformers import AutoModelForObjectDetection, AutoImageProcessor
         self.torch = torch

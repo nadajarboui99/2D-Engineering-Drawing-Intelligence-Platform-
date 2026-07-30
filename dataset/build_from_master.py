@@ -43,8 +43,6 @@ def _write(path, obj):
 def build():
     files = sorted(glob.glob(os.path.join(UNIFIED_DIR, "*.json")))
     if not files:
-        # Nothing annotated (e.g. all deleted): clear the ground-truth files so
-        # scoring falls back to "no ground truth" rather than showing stale data.
         for parts in (("ocr", "data", "ground_truth", "dimensions.json"),
                       ("ocr", "data", "ground_truth", "tables.json"),
                       ("ocr", "data", "ground_truth", "_whole_image.json"),
@@ -63,7 +61,6 @@ def build():
     cat_id = {"dimension": 1, "table": 2}
     ann_id = 0
 
-    # counts for the summary
     n_dim_txt = n_tbl_txt = n_feat = 0
 
     for img_i, path in enumerate(files):
@@ -106,9 +103,6 @@ def build():
         if parsed_rows:
             dims_parsed[stem] = parsed_rows
 
-        # Keep the FULL schema including explicit nulls: a null field means
-        # "truly absent in this drawing", which is what lets scoring detect
-        # hallucinations (model invented a value) and misses (model returned null).
         feats = {}
         for name, spec in (rec.get("features") or {}).items():
             val = spec.get("value") if isinstance(spec, dict) else spec
@@ -117,12 +111,9 @@ def build():
             vlm_gt[stem] = feats
             n_feat += sum(1 for v in feats.values() if v is not None)
 
-    # write per-stage files
     _write(_out("ocr", "data", "ground_truth", "dimensions.json"), ocr_dim)
     _write(_out("ocr", "data", "ground_truth", "tables.json"), ocr_tbl)
     _write(_out("ocr", "data", "ground_truth", "_whole_image.json"), ocr_whole)
-    # VLM extracts ONE unified feature set per drawing (fields come from both the
-    # title block and the dimensions), so there is a single task-independent answer key.
     _write(_out("vlm", "data", "ground_truth", "unified.json"), vlm_gt)
     _write(_out("dataset", "derived", "unified_detection.coco.json"), coco)
     _write(_out("dataset", "derived", "dimensions_parsed.json"), dims_parsed)

@@ -17,8 +17,7 @@ function iou(a, b) {
   return ua > 0 ? inter / ua : 0;
 }
 
-// Draws the drawing with GT boxes (green=found / red=missed) and predicted boxes,
-// class-aware: table preds purple, dimension preds blue.
+// GT boxes green=found, red=missed; preds purple=table, blue=dimension
 const asBox  = g => Array.isArray(g) ? { box: g, cls: null } : g;
 const asPred = p => Array.isArray(p) ? { box: p, score: 1, cls: null } : p;
 
@@ -88,7 +87,6 @@ export default function DetectionPage() {
       if (w.length > 0 && !selectedW) setSelectedW(w[0].id);
       const r = await api.getDetectionResults(task);
       setResults(r);
-      // Auto-load the last saved annotated eval (metrics + box overlay) for this task.
       const saved = await api.getDetectionAnnotated(task);
       if (saved && saved.images?.length) {
         setAnnotated(saved);

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { api, pollJob } from "../api/client";
 import { Panel, FormRow, Select, Input, Btn, JobLog, InfoBox, RadioGroup, Badge } from "../components/ui";
 
-// ─── FULL PIPELINE ────────────────────────────────────────────────────────────
+// full pipeline
 export function PipelinePage() {
   const [cfg, setCfg] = useState({
     stages: ["detection","ocr","vlm"],
@@ -93,7 +93,7 @@ export function PipelinePage() {
   );
 }
 
-// ─── FEATURES ─────────────────────────────────────────────────────────────────
+// features
 export function FeaturesPage() {
   const [features, setFeatures] = useState([]);
   const [form, setForm]         = useState({ name:"", type:"number", unit:"mm", description:"" });
@@ -139,7 +139,7 @@ export function FeaturesPage() {
   );
 }
 
-// ─── ADD MODEL ────────────────────────────────────────────────────────────────
+// add model
 export function ModelsPage() {
   const [tab, setTab]           = useState("detection");
   const [form, setForm]         = useState({ name:"", install_cmd:"", module_class:"", module_path:"" });

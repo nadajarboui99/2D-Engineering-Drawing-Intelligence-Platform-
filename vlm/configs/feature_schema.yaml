@@ -1,8 +1,5 @@
-# ─────────────────────────────────────────────────────────
-# Feature Schema — the ground truth list of fields the VLM
-# must extract. Edit this file ONLY to add/remove features;
-# nothing else in the code needs to change.
-# ─────────────────────────────────────────────────────────
+# feature schema, the ground truth list of fields the VLM must extract
+# edit this file only to add or remove features, nothing else in the code changes
 
 features:
   - name: length_before_bend
@@ -79,5 +76,3 @@ features:
     type: string
     unit: null
     description: "Drawing number / identifier from the title block"
-
-# Add new features here later — no code changes needed elsewhere.
