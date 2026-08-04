@@ -40,11 +40,29 @@ BUILTIN_MODELS = [
     },
     {
         "id":          "paddleocr",
-        "label":       "PaddleOCR",
-        "description": "Full OCR pipeline (detection + recognition), strong on dense documents.",
-        "install_cmd": "pip install paddlepaddle paddleocr",
+        "label":       "PaddleOCR (fr)",
+        "description": "Classical detection + recognition pipeline; strong on dense/rotated text. Configured for French.",
+        "install_cmd": "pip install paddleocr paddlepaddle",
         "check_import": "paddleocr",
         "wrapper_module": "paddleocr_model", "wrapper_class": "PaddleOCRModel",
+        "source":      "builtin",
+    },
+    {
+        "id":          "got-ocr2",
+        "label":       "GOT-OCR 2.0",
+        "description": "Modern end-to-end (OCR-free) reader; downloads weights from HuggingFace on first use.",
+        "install_cmd": "pip install transformers torch",
+        "check_import": "transformers",
+        "wrapper_module": "got_ocr_model", "wrapper_class": "GOTOCRModel",
+        "source":      "builtin",
+    },
+    {
+        "id":          "vlm-ocr",
+        "label":       "VLM-as-OCR (via Mastra)",
+        "description": "Transcribes text with a vision-language model through the local Mastra service (must be running). No local weights.",
+        "install_cmd": "(needs the Mastra service running — no pip install)",
+        "check_import": "PIL",   # no heavy dep; the runtime need is the Mastra service
+        "wrapper_module": "vlm_ocr_model", "wrapper_class": "VLMOCRModel",
         "source":      "builtin",
     },
 ]
@@ -63,11 +81,16 @@ def _save_custom(data: list):
 
 
 def is_installed(check_import: str) -> bool:
-    try:
-        importlib.import_module(check_import.split(".")[0])
-        return True
-    except ImportError:
-        return False
+    """True only if EVERY listed module (comma-separated) imports."""
+    for mod in (check_import or "").split(","):
+        mod = mod.strip().split(".")[0]
+        if not mod:
+            continue
+        try:
+            importlib.import_module(mod)
+        except Exception:
+            return False
+    return True
 
 
 def list_models() -> list:

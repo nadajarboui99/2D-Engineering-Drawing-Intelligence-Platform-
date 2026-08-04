@@ -56,7 +56,7 @@ def _load_ocr(model_name: str):
     # resolve models.base against ocr/, not vlm/ or Table_dimensions_detection/
     _prioritize_paths(OCR_DIR, os.path.join(OCR_DIR, "models"))
     for m in ("models", "models.base", "base", "easyocr_model", "tesseract_model",
-              "trocr_model", "paddleocr_model"):
+              "trocr_model", "paddleocr_model", "got_ocr_model", "vlm_ocr_model"):
         sys.modules.pop(m, None)
 
     entry = get_model(model_name)
@@ -158,9 +158,11 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
     elif use_gt:
         job.log(f"[{task}] Using GROUND-TRUTH boxes as crop source (OCR ceiling).")
 
+    from core.eval_set import draft_stems
+    _drafts = draft_stems()
     image_files = sorted([
         f for f in os.listdir(images_dir)
-        if f.lower().endswith((".jpg", ".jpeg", ".png"))
+        if f.lower().endswith((".jpg", ".jpeg", ".png")) and os.path.splitext(f)[0] not in _drafts
     ])
 
     job.log(f"[{task}] Processing {len(image_files)} images ({label} mode)...")

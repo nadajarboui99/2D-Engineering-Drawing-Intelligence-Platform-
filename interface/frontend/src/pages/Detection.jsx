@@ -163,11 +163,21 @@ export default function DetectionPage() {
                 : <Select value={selectedW} onChange={setSelectedW}
                     options={weights.map(w => ({ value: w.id, label: w.name }))} />}
             </FormRow>
-            {selectedW && (
-              <p className="text-xs text-gray-400 font-mono truncate pl-[8.75rem]">
-                {weights.find(w => w.id === selectedW)?.path}
-              </p>
-            )}
+            {selectedW && (() => {
+              const sw = weights.find(w => w.id === selectedW);
+              if (!sw) return null;
+              if (sw.source === "custom-arch") {
+                return (
+                  <p className="text-xs pl-[8.75rem]">
+                    <span className="text-gray-400">Zero-shot · weights download from HuggingFace on first run · </span>
+                    {sw.available
+                      ? <span className="text-emerald-600">✓ ready — click Run evaluation</span>
+                      : <span className="text-amber-600">⚠ install first: <code className="bg-gray-100 px-1 rounded">{sw.install_cmd}</code></span>}
+                  </p>
+                );
+              }
+              return <p className="text-xs text-gray-400 font-mono truncate pl-[8.75rem]">{sw.path}</p>;
+            })()}
           </>
         )}
 

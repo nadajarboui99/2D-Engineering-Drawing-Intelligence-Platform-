@@ -65,6 +65,9 @@ def build():
 
     for img_i, path in enumerate(files):
         rec = json.load(open(path))
+        # Skip drafts — unfinished annotations are not part of the evaluation.
+        if rec.get("status") == "draft":
+            continue
         stem = rec.get("image") or os.path.splitext(os.path.basename(path))[0]
         coco["images"].append({"id": img_i, "file_name": stem,
                                "width": rec.get("width"), "height": rec.get("height")})

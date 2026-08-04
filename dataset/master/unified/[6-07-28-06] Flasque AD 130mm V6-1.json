@@ -1,0 +1,203 @@
+{
+  "image": "[6-07-28-06] Flasque AD 130mm V6-1",
+  "width": 1240,
+  "height": 1755,
+  "status": "draft",
+  "meta": {
+    "standard": "unknown",
+    "source_type": "unknown",
+    "clutter": "med",
+    "has_gdt": false,
+    "difficulty": "med"
+  },
+  "regions": [
+    {
+      "id": 0,
+      "class": "table",
+      "bbox": [
+        224,
+        1472,
+        958,
+        224
+      ],
+      "text": "",
+      "cells": []
+    },
+    {
+      "id": 1,
+      "class": "dimension",
+      "bbox": [
+        460,
+        363,
+        61,
+        63
+      ],
+      "text": ""
+    },
+    {
+      "id": 2,
+      "class": "dimension",
+      "bbox": [
+        250,
+        439,
+        69,
+        72
+      ],
+      "text": ""
+    },
+    {
+      "id": 3,
+      "class": "dimension",
+      "bbox": [
+        145,
+        652,
+        80,
+        26
+      ],
+      "text": ""
+    },
+    {
+      "id": 4,
+      "class": "dimension",
+      "bbox": [
+        232,
+        1083,
+        46,
+        42
+      ],
+      "text": ""
+    },
+    {
+      "id": 5,
+      "class": "dimension",
+      "bbox": [
+        987,
+        566,
+        77,
+        61
+      ],
+      "text": ""
+    },
+    {
+      "id": 6,
+      "class": "dimension",
+      "bbox": [
+        696,
+        597,
+        60,
+        60
+      ],
+      "text": ""
+    },
+    {
+      "id": 7,
+      "class": "dimension",
+      "bbox": [
+        539,
+        831,
+        44,
+        25
+      ],
+      "text": ""
+    },
+    {
+      "id": 8,
+      "class": "dimension",
+      "bbox": [
+        438,
+        816,
+        35,
+        45
+      ],
+      "text": ""
+    },
+    {
+      "id": 9,
+      "class": "dimension",
+      "bbox": [
+        1030,
+        201,
+        30,
+        32
+      ],
+      "text": ""
+    }
+  ],
+  "features": {
+    "length_before_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "length_after_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width_before_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "width_after_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "height_before_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "height_after_bend": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "circular_holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "noncircular_holes_count": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "circular_hole_diameters": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "part_name": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "drawing_number": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

@@ -13,10 +13,10 @@ from models.base import BaseOCR
 
 
 class PaddleOCRModel(BaseOCR):
-    def __init__(self, lang: str = "en"):
+    def __init__(self, lang: str = "fr"):   # drawings are French; angle-cls for rotated text
         # Lazy import so the backend never touches paddle unless this model runs.
         from paddleocr import PaddleOCR
-        print("[PaddleOCR] Loading …")
+        print(f"[PaddleOCR] Loading (lang={lang}) …")
         self.ocr = PaddleOCR(use_angle_cls=True, lang=lang, show_log=False)
 
     def read(self, image: Image.Image) -> str:

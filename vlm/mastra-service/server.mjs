@@ -83,6 +83,30 @@ app.post("/extract", async (req, res) => {
   }
 });
 
+// VLM-as-OCR: transcribe an image's text exactly (exposed to the OCR stage).
+const OCR_PROMPT = "Transcribe every piece of text exactly as written. " +
+  "Preserve symbols (⌀, ±, R), decimals (comma or dot), and case. Output text only.";
+
+app.post("/ocr", async (req, res) => {
+  const { model, image, images } = req.body || {};
+  const imgs = images || (image ? [image] : []);
+  if (!imgs.length) return res.status(400).json({ error: "image is required" });
+  try {
+    const agent = new Agent({
+      name: "vlm-ocr",
+      instructions: "You are an OCR engine. Transcribe text from images exactly — no commentary.",
+      model: anthropic(resolveModel(model)),
+    });
+    const content = [...imgs.map(toImagePart), { type: "text", text: OCR_PROMPT }];
+    const result = await agent.generate([{ role: "user", content }], {
+      modelSettings: { maxOutputTokens: 2000 },
+    });
+    res.json({ text: result?.text ?? "", usage: normUsage(result?.usage), model: resolveModel(model) });
+  } catch (e) {
+    res.json({ error: String(e?.message || e) });
+  }
+});
+
 const PORT = process.env.MASTRA_PORT || 8787;
 app.listen(PORT, "127.0.0.1", () =>
   console.log(`[mastra] VLM service listening on http://127.0.0.1:${PORT}`)

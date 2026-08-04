@@ -11,21 +11,33 @@ import importlib
 
 REGISTRY_PATH = os.path.join(os.path.dirname(__file__), "..", "detection_registry.json")
 
-# seed architectures, deps are not installed until a model is actually picked
+# Seed zero-shot architectures (scaffold — HF weights download on first use).
+# check_import lists EVERY module the wrapper needs (comma-separated); all must
+# import for the model to report as available.
+def _arch(id, label, task, module, cls, install, check, desc):
+    return {"id": id, "label": label, "task": task, "arch": module,
+            "wrapper_module": module, "wrapper_class": cls, "weights": None,
+            "install_cmd": install, "check_import": check,
+            "description": desc, "source": "builtin"}
+
 BUILTIN_ARCHS = [
-    {
-        "id":            "table-transformer",
-        "label":         "Table Transformer (DETR)",
-        "task":          "tables",
-        "arch":          "table_transformer",
-        "wrapper_module": "table_transformer",
-        "wrapper_class":  "TableTransformerDetector",
-        "weights":        None,   # downloads from HuggingFace on first use
-        "install_cmd":    "pip install transformers torch timm",
-        "check_import":   "transformers",
-        "description":    "Microsoft Table Transformer — table detection trained on PubTables-1M (generic, off-the-shelf).",
-        "source":         "builtin",
-    },
+    _arch("table-transformer", "Table Transformer (DETR)", "tables",
+          "table_transformer", "TableTransformerDetector",
+          "pip install transformers timm torch", "transformers,timm,torch",
+          "Microsoft Table Transformer — table detection trained on PubTables-1M (zero-shot, generic)."),
+    _arch("grounding-dino", "Grounding DINO (open-vocab)", "dimensions",
+          "grounding_dino", "GroundingDINODetector",
+          "pip install transformers torch", "transformers,torch",
+          "Open-vocabulary, text-prompted detector. Zero-shot dimensions via prompt 'dimension . measurement . numeric value . tolerance .'."),
+    # Florence-2 is a unified detector — offered for both tasks (same wrapper, "<OD>").
+    _arch("florence2-tables", "Florence-2 (unified OD)", "tables",
+          "florence2", "Florence2Detector",
+          "pip install transformers timm einops torch", "transformers,timm,einops,torch",
+          "Microsoft Florence-2 — unified zero-shot detection via the <OD> task."),
+    _arch("florence2-dimensions", "Florence-2 (unified OD)", "dimensions",
+          "florence2", "Florence2Detector",
+          "pip install transformers timm einops torch", "transformers,timm,einops,torch",
+          "Microsoft Florence-2 — unified zero-shot detection via the <OD> task."),
 ]
 
 
@@ -42,11 +54,16 @@ def _save_custom(data: list):
 
 
 def is_installed(check_import: str) -> bool:
-    try:
-        importlib.import_module((check_import or "").split(".")[0])
-        return True
-    except Exception:
-        return False
+    """True only if EVERY listed module (comma-separated) imports."""
+    for mod in (check_import or "").split(","):
+        mod = mod.strip().split(".")[0]
+        if not mod:
+            continue
+        try:
+            importlib.import_module(mod)
+        except Exception:
+            return False
+    return True
 
 
 def list_models(task: str = None) -> list:

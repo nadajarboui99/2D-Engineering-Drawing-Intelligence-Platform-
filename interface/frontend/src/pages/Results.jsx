@@ -41,7 +41,14 @@ export default function ResultsPage() {
   useEffect(() => { setSelected(new Set()); }, [taskF, approachF]);
 
   async function load() {
-    try { setAllRuns(await api.getAllResults(stage)); setSummary(await api.getSummary()); } catch {}
+    try {
+      let runs = await api.getAllResults(stage);
+      // Detection has legacy TRAINING-metric runs logged too; the Results page
+      // is about EVALUATION on your annotated set, so keep only annotated runs.
+      if (stage === "detection") runs = runs.filter(r => r.extra?.on === "annotated");
+      setAllRuns(runs);
+      setSummary(await api.getSummary());
+    } catch {}
   }
   async function remove(id) {
     await api.deleteRun(id);

@@ -16,12 +16,12 @@ class TableTransformerDetector:
     def __init__(self, weights: str = None, model_name: str = "microsoft/table-transformer-detection"):
         # lazy import, heavy deps load only when this model is actually used
         import torch
-        from transformers import AutoModelForObjectDetection, AutoImageProcessor
+        from transformers import DetrImageProcessor, TableTransformerForObjectDetection
         self.torch = torch
         name = weights or model_name
         print(f"[TableTransformer] Loading {name} …")
-        self.processor = AutoImageProcessor.from_pretrained(name)
-        self.model = AutoModelForObjectDetection.from_pretrained(name)
+        self.processor = DetrImageProcessor.from_pretrained(name)
+        self.model = TableTransformerForObjectDetection.from_pretrained(name)
         self.model.eval()
 
     def predict(self, images, conf_threshold: float = 0.25, imgsz: int = 640):

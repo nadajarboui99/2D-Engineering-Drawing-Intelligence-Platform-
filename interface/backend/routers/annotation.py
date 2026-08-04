@@ -54,6 +54,7 @@ def list_annotations():
                 "features": sum(1 for s in feats.values()
                                 if (s.get("value") if isinstance(s, dict) else s) not in (None, "")),
                 "has_image": _find_image(stem) is not None,
+                "status": rec.get("status", "complete"),   # missing = complete (back-compat)
             })
     return out
 
@@ -132,10 +133,14 @@ async def save(payload: str = Form(...), image: UploadFile = File(None)):
         else:
             feats[k] = {"value": v, "text": "", "bbox": None}
 
+    # "draft" = saved so work isn't lost, but NOT part of evaluation until the
+    # user marks it complete. Anything else counts as complete.
+    status = "draft" if data.get("status") == "draft" else "complete"
     record = {
         "image": stem,
         "width": data.get("width"),
         "height": data.get("height"),
+        "status": status,
         "meta": data.get("meta") or dict(META_DEFAULT),
         "regions": regions,
         "features": feats,
@@ -145,4 +150,4 @@ async def save(payload: str = Form(...), image: UploadFile = File(None)):
 
     _rebuild_gt()
 
-    return {"ok": True, "image": stem, "regions": len(regions)}
+    return {"ok": True, "image": stem, "regions": len(regions), "status": status}

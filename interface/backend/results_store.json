@@ -882,5 +882,194 @@
       "crop_source": "detector"
     },
     "timestamp": "2026-07-24T15:23:42.948254"
+  },
+  {
+    "id": "detection_tables_yolov11_n-2-annotated_1785228892",
+    "stage": "detection",
+    "task": "tables",
+    "model": "yolov11_n-2 \u00b7 annotated",
+    "metrics": {
+      "map50": 0.5938,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "extra": {
+      "on": "annotated",
+      "n_gt": 4,
+      "tp": 0,
+      "fp": 0,
+      "fn": 4,
+      "images": 4
+    },
+    "timestamp": "2026-07-28T10:54:52.819255"
+  },
+  {
+    "id": "detection_tables_Table-Transformer-DETR-annotated_1785761590",
+    "stage": "detection",
+    "task": "tables",
+    "model": "Table Transformer (DETR) \u00b7 annotated",
+    "metrics": {
+      "map50": 0.25,
+      "precision": 0.3333,
+      "recall": 0.25,
+      "f1": 0.2857
+    },
+    "extra": {
+      "on": "annotated",
+      "n_gt": 4,
+      "tp": 1,
+      "fp": 2,
+      "fn": 3,
+      "images": 4
+    },
+    "timestamp": "2026-08-03T14:53:10.112558"
+  },
+  {
+    "id": "detection_tables_Table-Transformer-DETR-annotated_1785761640",
+    "stage": "detection",
+    "task": "tables",
+    "model": "Table Transformer (DETR) \u00b7 annotated",
+    "metrics": {
+      "map50": 0.25,
+      "precision": 0.3333,
+      "recall": 0.25,
+      "f1": 0.2857
+    },
+    "extra": {
+      "on": "annotated",
+      "n_gt": 4,
+      "tp": 1,
+      "fp": 2,
+      "fn": 3,
+      "images": 4
+    },
+    "timestamp": "2026-08-03T14:54:00.737881"
+  },
+  {
+    "id": "ocr_all_tesseract_full_1785761682",
+    "stage": "ocr",
+    "task": "all",
+    "model": "tesseract_full",
+    "metrics": {
+      "coverage": 1.0,
+      "avg_confidence": 0.7078,
+      "total_patches": 464,
+      "cer": 0.8691,
+      "wer": 0.9066,
+      "exact_match": 0.2326,
+      "f1": 0.1855
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "full",
+      "crop_source": "detector"
+    },
+    "timestamp": "2026-08-03T14:54:42.309149"
+  },
+  {
+    "id": "ocr_all_trocr_full_1785761717",
+    "stage": "ocr",
+    "task": "all",
+    "model": "trocr_full",
+    "metrics": {
+      "coverage": 1.0,
+      "avg_confidence": 1.0,
+      "total_patches": 4,
+      "cer": 0.9969,
+      "wer": 1.0,
+      "exact_match": 0.0,
+      "f1": 0.0
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "full",
+      "crop_source": "detector"
+    },
+    "timestamp": "2026-08-03T14:55:17.709055"
+  },
+  {
+    "id": "ocr_all_got-ocr2_full_1785762027",
+    "stage": "ocr",
+    "task": "all",
+    "model": "got-ocr2_full",
+    "metrics": {
+      "coverage": 1.0,
+      "avg_confidence": 1.0,
+      "total_patches": 4,
+      "cer": 1.0,
+      "wer": 1.0,
+      "exact_match": 0.0,
+      "f1": 0.0
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "full",
+      "crop_source": "detector"
+    },
+    "timestamp": "2026-08-03T15:00:27.190456"
+  },
+  {
+    "id": "ocr_all_tesseract_full_1785762871",
+    "stage": "ocr",
+    "task": "all",
+    "model": "tesseract_full",
+    "metrics": {
+      "coverage": 1.0,
+      "avg_confidence": 0.7078,
+      "total_patches": 464,
+      "cer": 0.8691,
+      "wer": 0.9066,
+      "exact_match": 0.2326,
+      "f1": 0.1855
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "full",
+      "crop_source": "detector"
+    },
+    "timestamp": "2026-08-03T15:14:31.660468"
+  },
+  {
+    "id": "ocr_all_trocr_full_1785762907",
+    "stage": "ocr",
+    "task": "all",
+    "model": "trocr_full",
+    "metrics": {
+      "coverage": 1.0,
+      "avg_confidence": 1.0,
+      "total_patches": 4,
+      "cer": 0.9969,
+      "wer": 1.0,
+      "exact_match": 0.0,
+      "f1": 0.0
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "full",
+      "crop_source": "detector"
+    },
+    "timestamp": "2026-08-03T15:15:07.627730"
+  },
+  {
+    "id": "ocr_all_got-ocr2_full_1785763209",
+    "stage": "ocr",
+    "task": "all",
+    "model": "got-ocr2_full",
+    "metrics": {
+      "coverage": 1.0,
+      "avg_confidence": 1.0,
+      "total_patches": 4,
+      "cer": 1.0,
+      "wer": 1.0,
+      "exact_match": 0.0,
+      "f1": 0.0
+    },
+    "extra": {
+      "conf_threshold": 0.25,
+      "mode": "full",
+      "crop_source": "detector"
+    },
+    "timestamp": "2026-08-03T15:20:09.775140"
   }
 ]

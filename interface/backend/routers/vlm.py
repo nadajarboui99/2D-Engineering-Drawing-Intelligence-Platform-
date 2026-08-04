@@ -105,10 +105,12 @@ def _vlm_setup(cfg: VLMConfig):
     from mastra_vlm import MastraVLMWrapper
     from pathlib import Path
 
+    from core.eval_set import draft_stems
+    _drafts = draft_stems()
     images_dir = _get_images_dir(cfg.task if cfg.task != "both" else "dimensions")
     image_names = sorted({
         Path(f).stem for f in os.listdir(images_dir)
-        if f.lower().endswith((".jpg", ".jpeg", ".png"))
+        if f.lower().endswith((".jpg", ".jpeg", ".png")) and Path(f).stem not in _drafts
     })
     return {
         "schema":       load_schema(os.path.join(VLM_DIR, "configs", "feature_schema.yaml")),

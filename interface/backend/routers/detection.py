@@ -261,6 +261,8 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
         gt_viz = {}
         for p in masters:
             rec  = json.load(open(p))
+            if rec.get("status") == "draft":
+                continue   # unfinished annotation — not part of evaluation
             stem = rec.get("image") or os.path.splitext(os.path.basename(p))[0]
             for r in rec.get("regions", []):
                 cls = r.get("class")
@@ -400,6 +402,8 @@ async def eval_annotated_detail(task: str, background: BackgroundTasks, cfg: Eva
         gt_by_image = {}
         for p in masters:
             rec  = json.load(open(p))
+            if rec.get("status") == "draft":
+                continue   # unfinished annotation — not part of evaluation
             stem = rec.get("image") or os.path.splitext(os.path.basename(p))[0]
             gt_by_image[stem] = [[r["bbox"][0], r["bbox"][1], r["bbox"][0] + r["bbox"][2], r["bbox"][1] + r["bbox"][3]]
                                  for r in rec.get("regions", []) if r.get("class") == target and r.get("bbox")]

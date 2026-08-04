@@ -24,13 +24,16 @@ def best_result(stage: str, task: str):
 
 @router.get("/summary")
 def summary():
-    """Best run per stage, across ALL tasks (tasks are now heterogeneous — some
-    runs are 'all'/'both', not just tables/dimensions), plus the tasks present."""
+    """Best run per stage, across ALL tasks. Detection is restricted to
+    EVALUATION runs (on the annotated set) — legacy training-metric runs are
+    excluded so the 'best' isn't a training score."""
     out = {}
     for stage in ["detection", "ocr", "vlm"]:
-        key   = METRIC_KEYS[stage]
-        runs  = get_runs(stage)
-        best  = get_best(stage, None, key)
+        key  = METRIC_KEYS[stage]
+        runs = get_runs(stage)
+        if stage == "detection":
+            runs = [r for r in runs if r.get("extra", {}).get("on") == "annotated"]
+        best = max(runs, key=lambda r: r["metrics"].get(key, 0)) if runs else None
         out[stage] = {
             "best":  best,
             "tasks": sorted({r["task"] for r in runs}),

@@ -198,12 +198,12 @@ export default function AnnotatePage() {
   function deleteRegion(i) { setRegions(rs => rs.filter((_, j) => j !== i)); setSel(null); setDirty(true); }
 
   // save
-  async function save() {
+  async function save(status = "draft") {
     if (!img) return;
     setSaving(true); setMsg("");
     try {
       const payload = {
-        image: img.stem, width: img.w, height: img.h, meta,
+        image: img.stem, width: img.w, height: img.h, meta, status,
         regions: regions.map((r, i) => ({
           id: i, class: r.class, bbox: r.bbox, text: r.text,
           ...(r.class === "table" ? { cells: r.cells || [] } : {}),
@@ -219,16 +219,18 @@ export default function AnnotatePage() {
         file = new File([blob], img.stem + ext, { type: blob.type || "image/png" });
       }
       const res = await saveAnnotation(payload, file);
-      setMsg(`Saved ✓ (${res.regions} regions)`);
+      setMsg(status === "complete" ? `Completed ✓ — now in the evaluation set (${res.regions} regions)`
+                                   : `Draft saved ✓ — not in the evaluation set yet (${res.regions} regions)`);
       setPending(p => p.filter(it => it.stem !== img.stem));
-      setImg(im => im ? { ...im, isNew: false, dataUrl: null, url: `${API_BASE}/annotation/image/${encodeURIComponent(im.stem)}` } : im);
+      setImg(im => im ? { ...im, isNew: false, dataUrl: null, status, url: `${API_BASE}/annotation/image/${encodeURIComponent(im.stem)}` } : im);
       setDirty(false); clearDraftStorage();
       refreshExisting();
     } catch (e) {
       setMsg("Error: " + e.message);
     } finally { setSaving(false); }
   }
-  saveRef.current = () => { if (img && !saving) save(); };
+  // Ctrl/Cmd+S = quick draft save (never accidentally promotes to the eval set).
+  saveRef.current = () => { if (img && !saving) save("draft"); };
 
   const fs = 11 / (scale || 1);   // label ~11px on screen at any zoom (viewBox scales it back down)
 
@@ -271,6 +273,7 @@ export default function AnnotatePage() {
                   className={`text-xs rounded-lg border flex items-center ${img?.stem === it.image ? "border-gray-900 bg-gray-50" : "border-gray-200"}`}>
                   <button onClick={() => loadExisting(it.image)} className="pl-2.5 pr-1.5 py-1 flex items-center gap-1.5 hover:bg-gray-50 rounded-l-lg">
                     {it.image.slice(0, 20)}
+                    {it.status === "draft" && <Badge variant="amber">draft</Badge>}
                     <Badge variant={it.with_text === it.regions && it.regions > 0 ? "green" : "gray"}>{it.with_text}/{it.regions}</Badge>
                   </button>
                   <button onClick={() => deleteExisting(it.image)} title="Delete annotation"
@@ -378,10 +381,14 @@ export default function AnnotatePage() {
               </div>
             </Panel>
 
-            <div className="flex items-center gap-3">
-              <Btn primary onClick={save} loading={saving} disabled={saving}>✓ Save annotation</Btn>
+            <div className="flex items-center gap-3 flex-wrap">
+              <Btn onClick={() => save("draft")} loading={saving} disabled={saving}>💾 Save draft</Btn>
+              <Btn primary onClick={() => save("complete")} loading={saving} disabled={saving}>✓ Save &amp; mark complete</Btn>
               {msg && <span className={`text-xs ${msg.startsWith("Error") ? "text-red-500" : "text-emerald-600"}`}>{msg}</span>}
             </div>
+            <p className="text-xs text-gray-400 mt-2">
+              <strong>Draft</strong> keeps your work but stays out of evaluation. <strong>Mark complete</strong> adds it to the evaluation set and ground truth. (Ctrl/Cmd+S saves a draft.)
+            </p>
           </div>
         </div>
       )}
