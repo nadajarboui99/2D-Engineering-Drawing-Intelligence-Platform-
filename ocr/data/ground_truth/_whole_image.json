@@ -58,7 +58,9 @@
     "12,50",
     "30,72",
     "43,22",
+    "Ø12,50",
     "25",
+    "Ø12,50",
     "ASSEMBLY WEIGHT kg MATERIAL MAT SPEC Project : POTAIN 0.10 1.0037 (S235JR) DRAWN : Yannick ODDOS 11/12/2025 CHECKED : APPROVED : Forankra 8 rue Jacques de Vaucanson 69780 MIONS FR 04.72.45.01.20 - TOLERANCE - FINISH: TITLE : ANGLE : LENGTH : EUROPEAN PROJECTION TREATMENT : crochet tourillon Scale : 1/2 Sheet : Size : A4 DRW NBR : potin-10-03 REV :"
   ],
   "Plan 5": [
@@ -74,23 +76,5 @@
     "9",
     "390",
     "50"
-  ],
-  "Plan 6": [
-    "32,5",
-    "60",
-    "45",
-    "15",
-    "15",
-    "35",
-    "70",
-    "3",
-    "70",
-    "48",
-    "27",
-    "73",
-    "M5 Déb",
-    "20",
-    "16,5",
-    "37"
   ]
 }

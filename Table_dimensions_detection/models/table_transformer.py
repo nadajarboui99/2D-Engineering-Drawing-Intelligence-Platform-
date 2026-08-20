@@ -23,6 +23,11 @@ class TableTransformerDetector:
         self.processor = DetrImageProcessor.from_pretrained(name)
         self.model = TableTransformerForObjectDetection.from_pretrained(name)
         self.model.eval()
+        # TATR-detection has two classes: {0: 'table', 1: 'table rotated'}. We only
+        # want upright tables; keep label 0 so 'table rotated' boxes don't count as
+        # false positives. Resolved from config so it survives label-id changes.
+        self.keep_labels = {i for i, lab in self.model.config.id2label.items()
+                            if str(lab).strip().lower() == "table"} or {0}
 
     def predict(self, images, conf_threshold: float = 0.25, imgsz: int = 640):
         from PIL import Image
@@ -35,9 +40,11 @@ class TableTransformerDetector:
             target = self.torch.tensor([[pil.height, pil.width]])
             post = self.processor.post_process_object_detection(
                 res, threshold=conf_threshold, target_sizes=target)[0]
+            labels = post["labels"].cpu().numpy().astype(int)
+            keep = np.array([l in self.keep_labels for l in labels], dtype=bool)
             out.append({
-                "boxes":  post["boxes"].cpu().numpy(),     # xyxy
-                "scores": post["scores"].cpu().numpy(),
-                "labels": post["labels"].cpu().numpy().astype(int),
+                "boxes":  post["boxes"].cpu().numpy()[keep],     # xyxy, 'table' only
+                "scores": post["scores"].cpu().numpy()[keep],
+                "labels": labels[keep],
             })
         return out

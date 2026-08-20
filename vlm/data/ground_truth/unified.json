@@ -35,7 +35,7 @@
     ],
     "cut_perimeter": "440,6897",
     "material": "1.0037 (S235JR)",
-    "standard": "null",
+    "standard": null,
     "part_name": "crochet tourillon",
     "drawing_number": "potin-10-03"
   },
@@ -57,22 +57,5 @@
     "standard": "null",
     "part_name": "Omega 34Ah V3",
     "drawing_number": "null"
-  },
-  "Plan 6": {
-    "length_before_bend": null,
-    "length_after_bend": null,
-    "width_before_bend": null,
-    "width_after_bend": null,
-    "height_before_bend": null,
-    "height_after_bend": null,
-    "bends_count": null,
-    "circular_holes_count": null,
-    "noncircular_holes_count": null,
-    "circular_hole_diameters": null,
-    "cut_perimeter": null,
-    "material": null,
-    "standard": null,
-    "part_name": null,
-    "drawing_number": null
   }
 }

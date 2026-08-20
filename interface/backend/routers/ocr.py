@@ -35,6 +35,9 @@ class OCRConfig(BaseModel):
     crop_source:     str   = "detector"   # "detector" (model boxes) | "gt" (ground-truth boxes = OCR ceiling)
     conf_threshold:  float = 0.25
     imgsz:           int   = 640
+    # Which detector produces the crops (crop mode only). None = best trained weights.
+    detection_arch_id: str | None = None   # registry arch model (e.g. "doclayout-yolo")
+    detection_weights: str | None = None   # explicit .pt path (trained YOLO/RT-DETR)
 
 
 def _prioritize_paths(*dirs):
@@ -56,7 +59,7 @@ def _load_ocr(model_name: str):
     # resolve models.base against ocr/, not vlm/ or Table_dimensions_detection/
     _prioritize_paths(OCR_DIR, os.path.join(OCR_DIR, "models"))
     for m in ("models", "models.base", "base", "easyocr_model", "tesseract_model",
-              "trocr_model", "paddleocr_model", "got_ocr_model", "vlm_ocr_model"):
+              "trocr_model", "paddleocr_model", "got_ocr_model", "vlm_ocr_model", "doctr_model"):
         sys.modules.pop(m, None)
 
     entry = get_model(model_name)
@@ -119,6 +122,50 @@ def _get_images_dir(task: str) -> str:
     return os.path.join(DETECTION_DIR, "data", "dimensions", "val", "images")
 
 
+def _run_name(weights: str) -> str:
+    """Human id for a trained checkpoint = its run folder name (…/<run>/weights/best.pt)."""
+    try:
+        return os.path.basename(os.path.dirname(os.path.dirname(weights)))
+    except Exception:
+        return "trained"
+
+
+def _load_arch_detector_for_ocr(arch_id: str):
+    """Load a registry arch detector (DocLayout-YOLO, Grounding DINO, …) so crops
+    can be produced by the same zero-shot models the detection stage benchmarks."""
+    import importlib
+    from core import detection_registry
+    entry = detection_registry.get_model(arch_id)
+    if not entry:
+        raise RuntimeError(f"Unknown detection arch model: {arch_id}")
+    _prioritize_paths(DETECTION_DIR, os.path.join(DETECTION_DIR, "models"))
+    for m in ("models", "models.yolov11", "models.rtdetr", "models.base", entry["wrapper_module"]):
+        sys.modules.pop(m, None)
+    mod = importlib.import_module(entry["wrapper_module"])
+    cls = getattr(mod, entry["wrapper_class"])
+    return cls(weights=entry.get("weights")), entry["id"]
+
+
+def _resolve_crop_detector(task: str, cfg: OCRConfig, job):
+    """Returns (detector, det_id). det_id tags the output so crops from different
+    detectors coexist and the VLM composer can select among them."""
+    if cfg.detection_arch_id:
+        job.log(f"[{task}] Crop detector: {cfg.detection_arch_id} (arch)")
+        return _load_arch_detector_for_ocr(cfg.detection_arch_id)
+    weights = cfg.detection_weights or find_best_weights(task)
+    if not weights:
+        raise RuntimeError(f"No trained weights found for {task}. Train detection first, or use GT crops / full image.")
+    job.log(f"[{task}] Crop detector weights: {weights}")
+    _prioritize_paths(DETECTION_DIR, os.path.join(DETECTION_DIR, "models"))
+    for m in ("models", "models.yolov11", "models.rtdetr", "models.base"):
+        sys.modules.pop(m, None)
+    if "rtdetr" in weights.lower():
+        from models.rtdetr import RTDETRDetector
+        return RTDETRDetector(weights=weights), _run_name(weights)
+    from models.yolov11 import YOLOv11Detector
+    return YOLOv11Detector(weights=weights), _run_name(weights)
+
+
 def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
     import numpy as np
     from PIL import Image
@@ -126,8 +173,17 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
 
     mode = cfg.mode if cfg.mode in ("crop", "full") else "crop"
     use_gt = mode == "crop" and cfg.crop_source == "gt"
-    # File/namespace label: full | crop (detector boxes) | gtcrop (ground-truth boxes).
-    label = "full" if mode == "full" else ("gtcrop" if use_gt else "crop")
+    explicit_det = bool(cfg.detection_arch_id or cfg.detection_weights)
+    # File/namespace label (the "source tag"):
+    #   full | gtcrop (ground-truth boxes) | crop (default best detector) |
+    #   crop-<det_id> (a specific chosen detector — lets crops from different
+    #   detectors coexist so the VLM composer can select among them).
+    if mode == "full":
+        label = "full"
+    elif use_gt:
+        label = "gtcrop"
+    else:
+        label = "crop"   # may be refined to crop-<det_id> once the detector loads
 
     job.log(f"[{task}] Loading OCR model: {cfg.ocr_model}...")
     ocr = _load_ocr(cfg.ocr_model)
@@ -139,24 +195,19 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
     os.makedirs(crops_dir, exist_ok=True)
     os.makedirs(json_dir,  exist_ok=True)
 
-    # Detector-box crops need trained weights; GT-box crops and whole-image do not.
+    # Detector-box crops need a detector; GT-box crops and whole-image do not.
     detector = None
+    det_id = None
     if mode == "crop" and not use_gt:
-        weights = find_best_weights(task)
-        if not weights:
-            raise RuntimeError(f"No trained weights found for {task}. Train detection first, or use GT crops / full image.")
-        job.log(f"[{task}] Loading detector from {weights}...")
-        _prioritize_paths(DETECTION_DIR, os.path.join(DETECTION_DIR, "models"))
-        for m in ("models", "models.yolov11", "models.rtdetr", "models.base"):
-            sys.modules.pop(m, None)
-        if "rtdetr" in weights.lower():
-            from models.rtdetr import RTDETRDetector
-            detector = RTDETRDetector(weights=weights)
-        else:
-            from models.yolov11 import YOLOv11Detector
-            detector = YOLOv11Detector(weights=weights)
+        detector, det_id = _resolve_crop_detector(task, cfg, job)
+        if explicit_det:                       # tag file so multiple detectors coexist
+            label = f"crop-{det_id}"
     elif use_gt:
+        det_id = "gt"
         job.log(f"[{task}] Using GROUND-TRUTH boxes as crop source (OCR ceiling).")
+    # re-derive OCR-model-namespaced dir now that `label` is final
+    json_dir = os.path.join(output_dir, "json", task, label)
+    os.makedirs(json_dir, exist_ok=True)
 
     from core.eval_set import draft_stems
     _drafts = draft_stems()
@@ -203,7 +254,15 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
                     "text": text,
                 })
         else:  # full image, OCR the whole drawing, one detection per text region
-            for j, (text, conf) in enumerate(_read_regions(ocr, image)):
+            # Downscale huge scans (some are ~35 MP) so full-image OCR — EasyOCR in
+            # particular — doesn't hang. Cap the long edge; small callouts survive.
+            FULL_MAX_EDGE = 2600
+            fw, fh = image.size
+            ocr_img = image
+            if max(fw, fh) > FULL_MAX_EDGE:
+                s = FULL_MAX_EDGE / max(fw, fh)
+                ocr_img = image.resize((int(fw * s), int(fh * s)))
+            for j, (text, conf) in enumerate(_read_regions(ocr, ocr_img)):
                 detections.append({
                     "id": j, "class": task,
                     "confidence": round(float(conf), 4),
@@ -249,7 +308,7 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
     entry = log_run(
         stage="ocr", task=task, model=f"{cfg.ocr_model}_{label}",
         metrics=run_metrics,
-        extra={"conf_threshold": cfg.conf_threshold, "mode": label, "crop_source": cfg.crop_source},
+        extra={"conf_threshold": cfg.conf_threshold, "mode": label, "crop_source": cfg.crop_source, "detector": det_id},
     )
     gt_union = ocr_eval.load_whole_image_gt()
     pred_by  = {r["image"]: [d.get("text", "") for d in r["detections"]] for r in all_results}
@@ -260,6 +319,7 @@ def _run_ocr_for_task(task: str, cfg: OCRConfig, job):
         "stage": "ocr", "task": task, "model": f"{cfg.ocr_model} · {label}", "approach": label,
         "timestamp": entry["timestamp"],
         "metrics": {k: snap_agg.get(k) for k in ("word_coverage", "char_coverage", "word_precision",
+                                                 "cer", "wer", "exact_match",
                                                  "matched_words", "n_gt_words", "n_pred_words", "evaluated_images")},
         "view": {"approach": label, "ocr_model": cfg.ocr_model, "detail": snap_detail},
     })

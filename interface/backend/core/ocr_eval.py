@@ -206,11 +206,15 @@ def evaluate_whole(predicted_by_image: dict, gt: dict = None) -> dict:
         lcs_sum += m["_lcs"]; gt_chars += m["_gt_chars"]
     if imgs == 0:
         return {"available": True, "evaluated_images": 0, "gt_images": len(gt)}
+    # Also compute the classic string-level CER / WER / exact-match (per annotated
+    # string, best-matched) so the accuracy of what was read is reported too.
+    strv = evaluate(predicted_by_image, "all", gt=gt)
     return {
         "available": True, "evaluated_images": imgs, "gt_images": len(gt),
         "word_coverage":  round(tot_matched / tot_gt, 4) if tot_gt else 0.0,
         "char_coverage":  round(lcs_sum / gt_chars, 4) if gt_chars else 0.0,
         "word_precision": round(tot_matched / tot_pred, 4) if tot_pred else 0.0,
+        "cer": strv.get("cer"), "wer": strv.get("wer"), "exact_match": strv.get("exact_match"),
         "n_gt_words": tot_gt, "n_pred_words": tot_pred, "matched_words": tot_matched,
     }
 

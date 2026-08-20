@@ -112,7 +112,15 @@ class MastraVLMWrapper(BaseVLM):
                 if raw.startswith("json"):
                     raw = raw[4:]
                 raw = raw.strip()
-            return json.loads(raw)
+            try:
+                return json.loads(raw)
+            except json.JSONDecodeError:
+                # The model added preamble/prose around the JSON — recover the
+                # outermost {...} object so a custom prompt can't break parsing.
+                s, e = raw.find("{"), raw.rfind("}")
+                if s != -1 and e != -1 and e > s:
+                    return json.loads(raw[s:e + 1])
+                raise
 
         except json.JSONDecodeError as e:
             return {"error": f"JSON parse failed: {e}", "raw": raw[:300]}

@@ -59,6 +59,8 @@ function CropStrip({ image, model, source }) {
 export default function OCRPage() {
   const [view, setView]             = useState("full");        // full | crop | compare
   const [cropSource, setCropSource] = useState("detector");    // detector | gt (crop tab only)
+  const [detChoice, setDetChoice]   = useState("default");     // "default" | "a:<archId>" | "w:<path>"
+  const [detOpts, setDetOpts]       = useState([]);            // selectable detectors for the task
   const [cfg, setCfg]               = useState({ ocr_model: "easyocr", task: "both", conf_threshold: 0.25 });
   const [logs, setLogs]             = useState([]);
   const [running, setRunning]       = useState(false);
@@ -74,6 +76,19 @@ export default function OCRPage() {
 
   useEffect(() => { loadModels(); }, []);
   useEffect(() => { refreshDetail(); }, [cfg.ocr_model]);
+
+  // Detectors selectable as the crop source (single-task only; "both" uses best per task).
+  useEffect(() => {
+    if (cfg.task === "both") { setDetOpts([]); return; }
+    api.getWeightsList(cfg.task).then(list => {
+      const opts = [{ value: "default", label: "Best (auto)" }];
+      (list || []).forEach(m => {
+        if (m.source === "custom-arch" && m.available) opts.push({ value: `a:${m.arch_id}`, label: m.name });
+        else if (m.path) opts.push({ value: `w:${m.path}`, label: m.name });
+      });
+      setDetOpts(opts);
+    }).catch(() => setDetOpts([]));
+  }, [cfg.task]);
   useEffect(() => { setOrder(shuffle(gtImages)); setNumImages(gtImages.length); }, [gtImages.join(",")]);
 
   function refreshDetail() {
@@ -99,7 +114,11 @@ export default function OCRPage() {
     try {
       const mode = view;  // "full" | "crop"
       const task = view === "full" ? "all" : cfg.task;
-      const { job_id } = await api.runOCR({ ...cfg, task, mode, crop_source: cropSource });
+      // Encode the chosen detector so the crop result is tagged (composer can pick it).
+      const det = (mode === "crop" && cropSource === "detector" && cfg.task !== "both") ? detChoice : "default";
+      const detection_arch_id = det.startsWith("a:") ? det.slice(2) : null;
+      const detection_weights = det.startsWith("w:") ? det.slice(2) : null;
+      const { job_id } = await api.runOCR({ ...cfg, task, mode, crop_source: cropSource, detection_arch_id, detection_weights });
       await pollJob(job_id, setLogs);
       refreshDetail();
     } catch (e) {
@@ -138,6 +157,11 @@ export default function OCRPage() {
                   <Select value={cfg.task} onChange={v => setCfg(c=>({...c,task:v}))}
                     options={[{value:"both",label:"Both (tables + dimensions)"},{value:"tables",label:"Tables"},{value:"dimensions",label:"Dimensions"}]} />
                 </FormRow>
+                {cropSource === "detector" && cfg.task !== "both" && detOpts.length > 0 && (
+                  <FormRow label="Detector" hint="Which detection model produces the crops — tags the result so the VLM composer can select it">
+                    <Select value={detChoice} onChange={setDetChoice} options={detOpts} />
+                  </FormRow>
+                )}
                 {cropSource === "detector" && (
                   <FormRow label="Conf threshold" hint={`Min detection confidence. Current: ${cfg.conf_threshold}`}>
                     <input type="range" min="0.1" max="0.9" step="0.05" value={cfg.conf_threshold}
@@ -177,10 +201,11 @@ export default function OCRPage() {
 
           {compare?.[approachKey]?.evaluated_images ? (
             <Panel title={`Metrics · ${APPROACHES[approachKey]}`} badge={`${compare[approachKey].evaluated_images} images scored`}>
-              <div className="grid grid-cols-3 gap-3 mb-3">
+              <div className="grid grid-cols-4 gap-3 mb-3">
                 <MetricCard label="Word coverage" value={cov(compare[approachKey])} good={compare[approachKey].word_coverage > 0.7} sub="of annotated words found" />
                 <MetricCard label="Char coverage" value={`${(compare[approachKey].char_coverage*100).toFixed(0)}%`} good={compare[approachKey].char_coverage > 0.7} sub="of annotated characters" />
                 <MetricCard label="Word precision" value={`${(compare[approachKey].word_precision*100).toFixed(0)}%`} good={compare[approachKey].word_precision > 0.6} sub="of OCR words that were annotated" />
+                <MetricCard label="CER" value={compare[approachKey].cer != null ? compare[approachKey].cer.toFixed(2) : "—"} good={compare[approachKey].cer != null && compare[approachKey].cer < 0.2} sub="char error on read text · lower better" />
               </div>
               <p className="text-xs text-gray-400">
                 Whole-text scoring: all annotated text vs all OCR output (block-aware — correct for table paragraphs).
@@ -208,6 +233,7 @@ export default function OCRPage() {
                     <th className="text-right font-medium py-2 px-3">Word coverage</th>
                     <th className="text-right font-medium py-2 px-3">Char coverage</th>
                     <th className="text-right font-medium py-2 px-3">Word precision</th>
+                    <th className="text-right font-medium py-2 px-3">CER</th>
                     <th className="text-right font-medium py-2 pl-3">Words found</th>
                   </tr></thead>
                   <tbody>
@@ -222,6 +248,7 @@ export default function OCRPage() {
                           <td className="text-right px-3 font-mono text-gray-800">{pct(c?.word_coverage)}</td>
                           <td className="text-right px-3 font-mono text-gray-500">{pct(c?.char_coverage)}</td>
                           <td className="text-right px-3 font-mono text-gray-500">{pct(c?.word_precision)}</td>
+                          <td className="text-right px-3 font-mono text-gray-500">{c?.cer != null ? c.cer.toFixed(2) : "—"}</td>
                           <td className="text-right pl-3 font-mono text-gray-500">{c ? `${c.matched_words}/${c.n_gt_words}` : "—"}</td>
                         </tr>
                       );

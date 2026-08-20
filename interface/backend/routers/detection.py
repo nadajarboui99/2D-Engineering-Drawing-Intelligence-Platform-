@@ -179,6 +179,10 @@ class EvalConfig(BaseModel):
     weights_path: str | None = None
     arch_id:      str | None = None   # custom-architecture model (registry id), single-task only
     imgsz:        int | None = None
+    conf:         float = 0.25         # confidence threshold for the P/R/F1 operating point
+    tiled:        bool = False         # slice big images into tiles instead of one shrunk pass
+    tile:         int = 1024           # tile edge length (native px) when tiled
+    overlap:      float = 0.2          # fractional overlap between neighbouring tiles
 
 
 @router.post("/eval/{task}")
@@ -248,6 +252,7 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
         import numpy as np
         from PIL import Image
         from core.detection_eval import evaluate as det_eval
+        from core.tiled_inference import sliced_predict
 
         targets = (["table", "dimension"] if task == "both"
                    else ["dimension"] if task == "dimensions" else ["table"])
@@ -297,6 +302,10 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
             return None
 
         imgsz = cfg.imgsz or 640
+        if cfg.tiled:
+            job.log(f"Tiled inference ON — {cfg.tile}px tiles, {int(cfg.overlap*100)}% overlap (+ full-image pass)")
+        else:
+            job.log(f"Whole-image inference at imgsz {imgsz}")
         stems = sorted(gt_viz.keys())
         preds_cls = {t: {} for t in targets}   # class → {stem: [(x1,y1,x2,y2,score)]}
         preds_viz = {}                          # stem → [{box, score, cls}]
@@ -310,8 +319,14 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
             im = Image.open(ip).convert("RGB")
             img_dims[stem] = im.size
             for t, (model, _) in models.items():
-                out = model.predict([np.array(im)], conf_threshold=0.001, imgsz=imgsz)[0]
-                boxes, scores = out["boxes"].tolist(), out["scores"].tolist()
+                if cfg.tiled:
+                    tb = sliced_predict(model, im, conf_threshold=0.001,
+                                        tile=cfg.tile, overlap=cfg.overlap, imgsz=cfg.tile)
+                    boxes = [[b[0], b[1], b[2], b[3]] for b in tb]
+                    scores = [b[4] for b in tb]
+                else:
+                    out = model.predict([np.array(im)], conf_threshold=0.001, imgsz=imgsz)[0]
+                    boxes, scores = out["boxes"].tolist(), out["scores"].tolist()
                 preds_cls[t][stem] = [(b[0], b[1], b[2], b[3], s) for b, s in zip(boxes, scores)]
                 top = sorted(
                     [{"box": [round(v, 1) for v in b], "score": round(s, 4), "cls": t}
@@ -323,13 +338,16 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
         per_class = {}
         tp = fp = fn = n_gt = n_pred = 0
         maps = []
+        best_f1s = []
         for t in targets:
-            m = det_eval(preds_cls[t], gt_cls[t], iou_thr=0.5, conf=0.25)
+            m = det_eval(preds_cls[t], gt_cls[t], iou_thr=0.5, conf=cfg.conf)
             per_class[t] = m
             tp += m.get("tp", 0); fp += m.get("fp", 0); fn += m.get("fn", 0)
             n_gt += m.get("n_gt", 0); n_pred += m.get("n_pred", 0)
             if m.get("map50") is not None:
                 maps.append(m["map50"])
+            if m.get("best_f1") is not None:
+                best_f1s.append(m["best_f1"])
         prec = tp / (tp + fp) if (tp + fp) else 0.0
         rec_ = tp / (tp + fn) if (tp + fn) else 0.0
         f1   = 2 * prec * rec_ / (prec + rec_) if (prec + rec_) else 0.0
@@ -337,9 +355,12 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
             "available": True,
             "map50": round(sum(maps) / len(maps), 4) if maps else 0.0,
             "precision": round(prec, 4), "recall": round(rec_, 4), "f1": round(f1, 4),
+            "best_f1": round(sum(best_f1s) / len(best_f1s), 4) if best_f1s else 0.0,
             "tp": tp, "fp": fp, "fn": fn, "n_gt": n_gt, "n_pred": n_pred,
-            "conf_threshold": 0.25, "iou_threshold": 0.5,
-            "per_class": {t: {k: per_class[t].get(k) for k in ("map50","precision","recall","f1","tp","fp","fn","n_gt")} for t in targets},
+            "conf_threshold": cfg.conf, "iou_threshold": 0.5,
+            "tiled": cfg.tiled, "tile": cfg.tile if cfg.tiled else None,
+            "inference_mode": (f"tiled {cfg.tile}px" if cfg.tiled else f"whole {imgsz}px"),
+            "per_class": {t: {k: per_class[t].get(k) for k in ("map50","precision","recall","f1","best_f1","best_conf","tp","fp","fn","n_gt")} for t in targets},
             "images": [{"image": s, "width": img_dims.get(s, (1000, 1000))[0], "height": img_dims.get(s, (1000, 1000))[1],
                         "gt": gt_viz.get(s, []), "pred": preds_viz.get(s, []),
                         "n_pred_total": sum(len(preds_cls[t].get(s, [])) for t in targets)} for s in stems if s in img_dims],
@@ -353,7 +374,7 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
         entry = log_run(
             stage="detection", task=task, model=f"{model_label} · annotated",
             metrics={"map50": metrics["map50"], "precision": metrics["precision"],
-                     "recall": metrics["recall"], "f1": metrics["f1"]},
+                     "recall": metrics["recall"], "f1": metrics["f1"], "best_f1": metrics["best_f1"]},
             extra={"on": "annotated", "n_gt": n_gt, "tp": tp, "fp": fp, "fn": fn, "images": len(stems)},
         )
         out_dir = os.path.join(DETECTION_DIR, "results")
@@ -361,9 +382,10 @@ async def eval_annotated(task: str, background: BackgroundTasks, cfg: EvalConfig
         with open(os.path.join(out_dir, f"annotated_{task}.json"), "w") as f:
             json.dump({**metrics, "model_label": model_label}, f)
         save_snapshot(entry["id"], {"stage": "detection", "task": task, "model": model_label,
-                                    "timestamp": entry["timestamp"], "metrics": {k: metrics[k] for k in ("map50","precision","recall","f1","tp","fp","fn","n_gt","n_pred")},
+                                    "timestamp": entry["timestamp"], "metrics": {k: metrics[k] for k in ("map50","precision","recall","f1","best_f1","tp","fp","fn","n_gt","n_pred")},
                                     "view": {"images": metrics["images"], "per_class": metrics.get("per_class"),
-                                             "conf_threshold": metrics["conf_threshold"], "iou_threshold": metrics["iou_threshold"]}})
+                                             "conf_threshold": metrics["conf_threshold"], "iou_threshold": metrics["iou_threshold"],
+                                             "inference_mode": metrics["inference_mode"]}})
         return metrics
 
     background.add_task(run_job, job, _run, task=task, cfg=cfg)

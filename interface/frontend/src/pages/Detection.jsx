@@ -62,16 +62,19 @@ export default function DetectionPage() {
   const [task, setTask]           = useState("tables");
   const [weights, setWeights]     = useState([]);
   const [selectedW, setSelectedW] = useState("");
-  const [imgsz, setImgsz]         = useState(640);
+  const [imgsz, setImgsz]         = useState(1280);
   const [results, setResults]     = useState([]);
   const [logs, setLogs]           = useState([]);
   const [annotated, setAnnotated] = useState(null);   // metrics + per-image boxes
   const [annRunning, setAnnRunning] = useState(false);
   // Box-overlay viewer
   const [conf, setConf]           = useState(0.25);
+  const [tiled, setTiled]         = useState(true);
+  const [tile, setTile]           = useState(1024);
   const [numImages, setNumImages] = useState(0);
   const [order, setOrder]         = useState([]);
   const [zoomRec, setZoomRec]     = useState(null);
+  const [modelRuns, setModelRuns] = useState([]);   // all logged detection runs (for the leaderboard)
 
   // Upload form
   const [uploadName, setUploadName] = useState("");
@@ -87,6 +90,8 @@ export default function DetectionPage() {
       if (w.length > 0 && !selectedW) setSelectedW(w[0].id);
       const r = await api.getDetectionResults(task);
       setResults(r);
+      // All logged annotated-eval runs, for the per-task model leaderboard.
+      api.getAllResults("detection").then(setModelRuns).catch(() => setModelRuns([]));
       const saved = await api.getDetectionAnnotated(task);
       if (saved && saved.images?.length) {
         setAnnotated(saved);
@@ -121,7 +126,7 @@ export default function DetectionPage() {
     setAnnRunning(true); setLogs([]); setAnnotated(null);
     try {
       const archId = (w && w.source === "custom-arch") ? w.arch_id : null;
-      const { job_id } = await api.evalDetectionAnnotated(task, task === "both" ? null : w?.path, imgsz, task === "both" ? null : archId);
+      const { job_id } = await api.evalDetectionAnnotated(task, task === "both" ? null : w?.path, imgsz, task === "both" ? null : archId, conf, tiled, tile);
       const result = await pollJob(job_id, setLogs);
       setAnnotated(result);
       const imgs = (result?.images || []).map(im => im.image);
@@ -146,11 +151,58 @@ export default function DetectionPage() {
   }));
   const best = results[0] ?? null;
 
+  // Latest annotated-eval run per model for a task, ranked by recall.
+  const leaderboardFor = (t) => Object.values(
+    modelRuns.filter(r => r.extra?.on === "annotated" && r.task === t)
+      .reduce((a, r) => { if (!a[r.model] || r.timestamp > a[r.model].timestamp) a[r.model] = r; return a; }, {})
+  ).sort((a, b) => (b.metrics?.recall ?? 0) - (a.metrics?.recall ?? 0));
+
   return (
     <div>
-      <Tabs tabs={[{id:"tables",label:"Tables"},{id:"dimensions",label:"Dimensions"},{id:"both",label:"Both"}]}
+      <Tabs tabs={[{id:"tables",label:"Tables"},{id:"dimensions",label:"Dimensions"},{id:"both",label:"Both"},{id:"compare",label:"⇄ Compare"}]}
         active={task} onChange={t => { setTask(t); setSelectedW(""); setLogs([]); setAnnotated(null); }} />
 
+      {task === "compare" && (
+        <>
+          <InfoBox>Every model's <strong>latest evaluation</strong> on your annotated set, per task, ranked by recall. Run models in the Tables / Dimensions / Both tabs to populate this.</InfoBox>
+          {[["tables","Tables"],["dimensions","Dimensions"],["both","Tables + Dimensions"]].map(([t,label]) => {
+            const rows = leaderboardFor(t);
+            return (
+              <Panel key={t} title={`Model comparison · ${label}`} badge={rows.length ? `${rows.length} models` : undefined}>
+                {rows.length === 0 ? <p className="text-sm text-gray-300 py-4 text-center">No evaluations yet for {label} — run a model in that tab.</p> : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead><tr className="text-xs text-gray-400 border-b border-gray-100">
+                        <th className="text-left font-medium py-2 pr-3">Model</th>
+                        <th className="text-right font-medium py-2 px-3">Recall</th>
+                        <th className="text-right font-medium py-2 px-3">Precision</th>
+                        <th className="text-right font-medium py-2 px-3">F1</th>
+                        <th className="text-right font-medium py-2 px-3">mAP@0.5</th>
+                        <th className="text-right font-medium py-2 pl-3">TP/FP/FN</th>
+                      </tr></thead>
+                      <tbody>
+                        {rows.map((r,i) => (
+                          <tr key={r.id} className={`border-b border-gray-50 last:border-0 ${i===0?"bg-emerald-50/60":""}`}>
+                            <td className="py-2 pr-3 text-gray-700">{r.model.replace(" · annotated","")} {i===0 && <Badge variant="green">best recall</Badge>}</td>
+                            <td className="text-right px-3 font-mono text-gray-800">{r.metrics?.recall?.toFixed(3) ?? "—"}</td>
+                            <td className="text-right px-3 font-mono text-gray-500">{r.metrics?.precision?.toFixed(3) ?? "—"}</td>
+                            <td className="text-right px-3 font-mono text-gray-500">{r.metrics?.f1?.toFixed(3) ?? "—"}</td>
+                            <td className="text-right px-3 font-mono text-gray-500">{r.metrics?.map50?.toFixed(3) ?? "—"}</td>
+                            <td className="text-right pl-3 font-mono text-gray-400">{r.extra?.tp}/{r.extra?.fp}/{r.extra?.fn}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </Panel>
+            );
+          })}
+          <p className="text-xs text-gray-400">Ranked by <strong>recall</strong> — the trustworthy signal here; mAP can look high while recall is 0 because it aggregates low-confidence boxes.</p>
+        </>
+      )}
+
+      {task !== "compare" && (<>
       {/* Model selection — pick from trained runs found on disk (auto for "both") */}
       <Panel title="Model">
         {task === "both" ? (
@@ -203,21 +255,49 @@ export default function DetectionPage() {
 
       {/* Eval config */}
       <Panel title="Evaluation">
-        <FormRow label="Image size" hint="Must match the size the model was trained on">
-          <Select value={imgsz} onChange={v => setImgsz(Number(v))}
-            options={[{value:640,label:"640px"},{value:1280,label:"1280px"}]} />
+        <p className="mb-3 text-xs text-gray-500">Keep tiling on · compare on <strong className="text-indigo-600">Best-F1</strong>.</p>
+        <FormRow label="Tiled inference" hint="Slice each drawing into full-res tiles instead of shrinking it — catches tiny objects. Standard setting.">
+          <div className="flex items-center gap-3">
+            <button type="button" onClick={() => setTiled(v => !v)}
+              className={`relative w-11 h-6 rounded-full transition ${tiled ? "bg-gray-900" : "bg-gray-300"}`}>
+              <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition ${tiled ? "translate-x-5" : ""}`} />
+            </button>
+            <span className="text-sm text-gray-500">{tiled ? "on" : "off"}</span>
+            {tiled && (
+              <Select value={tile} onChange={v => setTile(Number(v))}
+                options={[{value:768,label:"768px tiles"},{value:1024,label:"1024px tiles"},{value:1280,label:"1280px tiles"}]} />
+            )}
+          </div>
+        </FormRow>
+        {!tiled && (
+          <FormRow label="Image size" hint="Whole-image resolution (used only when tiling is off).">
+            <Select value={imgsz} onChange={v => setImgsz(Number(v))}
+              options={[{value:640,label:"640px"},{value:1280,label:"1280px"},{value:1536,label:"1536px"}]} />
+          </FormRow>
+        )}
+        <FormRow label="Confidence" hint="Operating point for the P/R/F1 cards. Doesn't affect Best-F1.">
+          <div className="flex items-center gap-2">
+            <input type="range" min="0.05" max="0.9" step="0.05" value={conf}
+              onChange={e => setConf(parseFloat(e.target.value))} className="w-40 accent-gray-900" />
+            <strong className="text-gray-700 w-8 text-sm">{conf.toFixed(2)}</strong>
+          </div>
         </FormRow>
         <Btn primary onClick={runAnnotatedEval} loading={annRunning} disabled={annRunning || (task !== "both" && !selectedW)}>
           ▶ Run evaluation
         </Btn>
         {task !== "both" && !selectedW && <p className="text-xs text-red-400 mt-2">Select a model first.</p>}
-        <p className="text-xs text-gray-400 mt-2">Evaluates on the images you labelled in the Annotate tab — metrics plus the predicted-vs-annotated box overlay appear below.</p>
       </Panel>
 
       {(annRunning || logs.length > 0) && <Panel title="Live logs"><JobLog logs={logs} /></Panel>}
 
       {annotated?.available && (
         <Panel title="Results — on YOUR annotated set" badge="real test">
+          {annotated.best_f1 != null && (
+            <div className="mb-3 rounded-xl border-2 border-indigo-200 bg-indigo-50 px-4 py-3 flex items-baseline gap-3">
+              <span className="text-3xl font-bold text-indigo-700">{annotated.best_f1.toFixed(3)}</span>
+              <span className="text-sm text-indigo-600">Best-F1</span>
+            </div>
+          )}
           <div className="grid grid-cols-4 gap-3">
             <MetricCard label="mAP@0.5"   value={annotated.map50?.toFixed(3)}     good={annotated.map50 > 0.8} />
             <MetricCard label="Precision" value={annotated.precision?.toFixed(3)} good={annotated.precision > 0.8} sub="of detections correct" />
@@ -225,8 +305,8 @@ export default function DetectionPage() {
             <MetricCard label="F1"        value={annotated.f1?.toFixed(3)}        good={annotated.f1 > 0.8} />
           </div>
           <p className="text-xs text-gray-400 mt-2">
-            {annotated.n_gt} annotated boxes · TP {annotated.tp} · FP {annotated.fp} · FN {annotated.fn}
-            {" "}· conf ≥ {annotated.conf_threshold} · IoU ≥ {annotated.iou_threshold}
+            {annotated.n_gt} boxes · TP {annotated.tp} · FP {annotated.fp} · FN {annotated.fn} · conf ≥ {annotated.conf_threshold} · IoU ≥ {annotated.iou_threshold}
+            {annotated.inference_mode && <span className="ml-1 px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">{annotated.inference_mode}</span>}
           </p>
           {annotated.per_class && Object.keys(annotated.per_class).length > 1 && (
             <div className="grid grid-cols-2 gap-3 mt-3">
@@ -234,6 +314,7 @@ export default function DetectionPage() {
                 <div key={cls} className="border border-gray-100 rounded-lg p-3">
                   <p className="text-xs font-medium text-gray-600 mb-1 capitalize">{cls}</p>
                   <p className="text-xs text-gray-500 font-mono">mAP {m.map50?.toFixed(3)} · R {m.recall?.toFixed(3)} · P {m.precision?.toFixed(3)} · TP {m.tp}/FN {m.fn} of {m.n_gt}</p>
+                  {m.best_f1 != null && <p className="text-[11px] text-indigo-600 font-mono mt-0.5">best F1 {m.best_f1.toFixed(3)}{m.best_conf != null && ` @ conf ${m.best_conf.toFixed(2)}`}</p>}
                 </div>
               ))}
             </div>
@@ -348,6 +429,7 @@ export default function DetectionPage() {
         <p className="text-xs text-gray-400 mt-2">Then upload <code className="bg-gray-100 px-1 rounded">runs/detect/.../weights/best.pt</code> above.</p>
       </Collapsible>
       ──────────────────────────────────────────────────────────────────────── */}
+      </>)}
     </div>
   );
 }

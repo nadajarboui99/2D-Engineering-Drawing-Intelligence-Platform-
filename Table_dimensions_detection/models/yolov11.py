@@ -56,12 +56,16 @@ class YOLOv11Detector:
         )
         return results
 
-    def predict(self, images, conf_threshold: float = 0.25, imgsz: int = 640):
+    def predict(self, images, conf_threshold: float = 0.25, imgsz: int = 640,
+                max_det: int = 1000):
         """
         Run inference on a list of PIL images or file paths.
 
         Returns list of dicts: {boxes [N,4], scores [N], labels [N]}
         compatible with DetectionMetrics.update()
+
+        max_det caps predictions per image (Ultralytics default 300). Mechanical
+        drawings can carry hundreds of dimension callouts, so we raise it.
         """
         # convert tensors to numpy arrays, YOLO doesn't accept tensors directly
         images_np = []
@@ -77,6 +81,7 @@ class YOLOv11Detector:
             source=images_np,
             conf=conf_threshold,
             imgsz=imgsz,
+            max_det=max_det,
             device=self.device,
             verbose=False,
         )

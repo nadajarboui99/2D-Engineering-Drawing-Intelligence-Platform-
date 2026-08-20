@@ -57,6 +57,15 @@ BUILTIN_MODELS = [
         "source":      "builtin",
     },
     {
+        "id":          "doctr",
+        "label":       "docTR (Mindee)",
+        "description": "Two-stage dedicated OCR: DBNet detector + CRNN recognizer. Torch-native, multi-line capable. Weights download on first use.",
+        "install_cmd": "pip install python-doctr[torch]",
+        "check_import": "doctr",
+        "wrapper_module": "doctr_model", "wrapper_class": "DocTRModel",
+        "source":      "builtin",
+    },
+    {
         "id":          "vlm-ocr",
         "label":       "VLM-as-OCR (via Mastra)",
         "description": "Transcribes text with a vision-language model through the local Mastra service (must be running). No local weights.",

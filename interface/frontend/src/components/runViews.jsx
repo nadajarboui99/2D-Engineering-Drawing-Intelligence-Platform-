@@ -25,14 +25,18 @@ export function runMetricPairs(snap) {
   const m = snap?.metrics || {};
   if (snap?.stage === "detection")
     return [["mAP@0.5", num(m.map50)], ["Precision", num(m.precision)], ["Recall", num(m.recall)],
-            ["F1", num(m.f1)], ["TP/FP/FN", `${m.tp}/${m.fp}/${m.fn}`]];
+            ["F1", num(m.f1)], ["Best F1", m.best_f1 != null ? num(m.best_f1) : "—"], ["TP/FP/FN", `${m.tp}/${m.fp}/${m.fn}`]];
   if (snap?.stage === "ocr")
     return [["Word cov.", pct(m.word_coverage)], ["Char cov.", pct(m.char_coverage)],
-            ["Word prec.", pct(m.word_precision)], ["Words found", `${m.matched_words}/${m.n_gt_words}`]];
-  if (snap?.stage === "vlm")
+            ["Word prec.", pct(m.word_precision)], ["CER", m.cer != null ? num(m.cer) : "—"],
+            ["Words found", `${m.matched_words}/${m.n_gt_words}`]];
+  if (snap?.stage === "vlm") {
+    const v = snap?.view || {};
+    const prov = v.crop_detector ? `${v.crop_detector} → ${v.ocr_model}`
+               : (v.ocr_model ? `${v.ocr_model} (page)` : "image only");
     return [["Field acc.", num(m.field_accuracy)], ["Halluc.", num(m.hallucination_rate)],
-            ["Miss", num(m.miss_rate)], ["Num %off", m.numeric_mape != null ? pct(m.numeric_mape) : "—"],
-            ["Exact", num(m.exact_match)]];
+            ["Miss", num(m.miss_rate)], ["Exact", num(m.exact_match)], ["Context", prov]];
+  }
   return Object.entries(m).map(([k, v]) => [k, num(v)]);
 }
 

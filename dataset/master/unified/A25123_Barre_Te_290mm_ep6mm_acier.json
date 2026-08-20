@@ -1,8 +1,8 @@
 {
-  "image": "Plan 4",
-  "width": 1754,
-  "height": 1241,
-  "status": "complete",
+  "image": "A25123_Barre_Te_290mm_ep6mm_acier",
+  "width": 3308,
+  "height": 2339,
+  "status": "draft",
   "meta": {
     "standard": "unknown",
     "source_type": "unknown",
@@ -13,165 +13,187 @@
   "regions": [
     {
       "id": 0,
-      "class": "dimension",
+      "class": "table",
       "bbox": [
-        608,
-        521,
-        34,
-        25
+        1813,
+        1866,
+        1417,
+        395
       ],
-      "text": "50"
+      "text": "TOLERANCES GENERALES: +/- 0.1 mm MATERIAU: Acier doux A37 ECHELLE: 1:1 MASSE: 710.62 g DESIGNATION: Barre Té 290mm ep6mm acier NOM: Florent Duquesne DATE: 22/10/2025 27 RUE DIÊNA 59100 ROUBAIX DelTech -el 00 2014%0 FAX 03.28.33.45.91 REFERENCE ARTICLE: N° DE PLAN: SP- A25123 INDICE: 00 LANGAGE: FR FEUILLE: 1/1",
+      "cells": []
     },
     {
       "id": 1,
       "class": "dimension",
       "bbox": [
-        542,
-        569,
-        39,
-        26
+        1736,
+        142,
+        49,
+        34
       ],
-      "text": "25"
+      "text": "40"
     },
     {
       "id": 2,
       "class": "dimension",
       "bbox": [
-        847,
-        475,
-        19,
-        27
+        1661,
+        207,
+        44,
+        36
       ],
-      "text": "5"
+      "text": "20"
     },
     {
       "id": 3,
       "class": "dimension",
       "bbox": [
-        347,
-        627,
-        28,
-        72
+        1950,
+        401,
+        40,
+        53
       ],
-      "text": "12,50"
+      "text": "35"
     },
     {
       "id": 4,
       "class": "dimension",
       "bbox": [
-        1135,
-        119,
-        73,
-        29
+        2026,
+        663,
+        37,
+        76
       ],
-      "text": "12,50"
+      "text": "105"
     },
     {
       "id": 5,
       "class": "dimension",
       "bbox": [
-        978,
-        268,
-        30,
-        73
+        1280,
+        179,
+        86,
+        39
       ],
-      "text": "30,72"
+      "text": "Ø14"
     },
     {
       "id": 6,
       "class": "dimension",
       "bbox": [
-        924,
-        485,
-        27,
-        75
+        1079,
+        817,
+        69,
+        35
       ],
-      "text": "43,22"
+      "text": "125"
     },
     {
       "id": 7,
       "class": "dimension",
       "bbox": [
-        1246,
-        469,
-        83,
-        84
+        484,
+        1249,
+        37,
+        50
       ],
-      "text": "Ø12,50"
+      "text": "290"
     },
     {
       "id": 8,
       "class": "dimension",
       "bbox": [
-        861,
-        694,
-        30,
-        42
+        537,
+        1170,
+        37,
+        53
       ],
-      "text": "25"
+      "text": "20"
     },
     {
       "id": 9,
       "class": "dimension",
       "bbox": [
-        755,
-        817,
-        83,
-        83
+        713,
+        1444,
+        54,
+        38
       ],
-      "text": "Ø12,50"
+      "text": "30"
     },
     {
       "id": 10,
-      "class": "table",
+      "class": "dimension",
       "bbox": [
-        550,
-        934,
-        1160,
-        261
+        339,
+        1459,
+        119,
+        39
       ],
-      "text": "ASSEMBLY WEIGHT kg MATERIAL MAT SPEC Project : POTAIN 0.10 1.0037 (S235JR) DRAWN : Yannick ODDOS 11/12/2025 CHECKED : APPROVED : Forankra 8 rue Jacques de Vaucanson 69780 MIONS FR 04.72.45.01.20 - TOLERANCE - FINISH: TITLE : ANGLE : LENGTH : EUROPEAN PROJECTION TREATMENT : crochet tourillon Scale : 1/2 Sheet : Size : A4 DRW NBR : potin-10-03 REV :",
-      "cells": []
+      "text": "3xØ14"
+    },
+    {
+      "id": 11,
+      "class": "dimension",
+      "bbox": [
+        1732,
+        1522,
+        62,
+        35
+      ],
+      "text": "290"
+    },
+    {
+      "id": 12,
+      "class": "dimension",
+      "bbox": [
+        2839,
+        423,
+        38,
+        37
+      ],
+      "text": "6"
     }
   ],
   "features": {
     "length_before_bend": {
-      "value": null,
+      "value": 290,
       "text": "",
       "bbox": null
     },
     "length_after_bend": {
-      "value": 50,
+      "value": null,
       "text": "",
       "bbox": null
     },
     "width_before_bend": {
-      "value": null,
+      "value": 145,
       "text": "",
       "bbox": null
     },
     "width_after_bend": {
-      "value": 25,
-      "text": "",
-      "bbox": null
-    },
-    "height_before_bend": {
       "value": null,
       "text": "",
       "bbox": null
     },
+    "height_before_bend": {
+      "value": 6,
+      "text": "",
+      "bbox": null
+    },
     "height_after_bend": {
-      "value": "43,22",
+      "value": null,
       "text": "",
       "bbox": null
     },
     "bends_count": {
-      "value": 2,
+      "value": 0,
       "text": "",
       "bbox": null
     },
     "circular_holes_count": {
-      "value": 3,
+      "value": 4,
       "text": "",
       "bbox": null
     },
@@ -182,35 +204,36 @@
     },
     "circular_hole_diameters": {
       "value": [
-        12.5,
-        12.5,
-        12.5
+        14,
+        14,
+        14,
+        14
       ],
       "text": "",
       "bbox": null
     },
     "cut_perimeter": {
-      "value": "440,6897",
-      "text": "",
-      "bbox": null
-    },
-    "material": {
-      "value": "1.0037 (S235JR)",
-      "text": "",
-      "bbox": null
-    },
-    "standard": {
       "value": null,
       "text": "",
       "bbox": null
     },
+    "material": {
+      "value": "Acier doux A37",
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": "European",
+      "text": "",
+      "bbox": null
+    },
     "part_name": {
-      "value": "crochet tourillon",
+      "value": "Barre Té 290mm ep6mm acier",
       "text": "",
       "bbox": null
     },
     "drawing_number": {
-      "value": "potin-10-03",
+      "value": "A25123",
       "text": "",
       "bbox": null
     }

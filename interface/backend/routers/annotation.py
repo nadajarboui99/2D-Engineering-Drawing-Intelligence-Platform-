@@ -13,7 +13,7 @@ import shutil
 import subprocess
 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 SELECTED_DIR = os.path.join(ROOT, "dataset", "selected_images")
@@ -97,6 +97,39 @@ def delete_annotation(stem: str):
         raise HTTPException(404, f"no annotation found for {stem}")
     _rebuild_gt()
     return {"ok": True, "removed": removed}
+
+
+@router.post("/render-pdf")
+async def render_pdf(pdf: UploadFile = File(...), page: int = Form(0)):
+    """Rasterize one page of an uploaded PDF drawing to PNG so it can be
+    annotated like an image. Uses pypdfium2 (no system deps). Returns PNG bytes;
+    nothing is saved — the frontend treats it as a new image and uploads it only
+    on save, keeping the existing draft/eval behavior."""
+    import io
+    try:
+        import pypdfium2 as pdfium
+    except Exception:
+        raise HTTPException(500, "PDF support needs pypdfium2 (pip install pypdfium2).")
+    raw = await pdf.read()
+    try:
+        doc = pdfium.PdfDocument(raw)
+        n = len(doc)
+        if n == 0:
+            raise HTTPException(400, "PDF has no pages.")
+        idx = max(0, min(page, n - 1))
+        pg = doc[idx]
+        w_pt, h_pt = pg.get_size()                     # points (1/72 inch)
+        # ~200 DPI, but cap the long edge so huge sheets stay manageable.
+        scale = min(200 / 72.0, 4000.0 / max(w_pt, h_pt))
+        pil = pg.render(scale=scale).to_pil().convert("RGB")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(400, f"Could not read PDF: {e}")
+    buf = io.BytesIO()
+    pil.save(buf, format="PNG")
+    return Response(content=buf.getvalue(), media_type="image/png",
+                    headers={"X-Pdf-Pages": str(n), "X-Rendered-Page": str(idx)})
 
 
 @router.post("/save")

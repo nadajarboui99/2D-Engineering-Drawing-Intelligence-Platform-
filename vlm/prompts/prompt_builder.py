@@ -24,17 +24,29 @@ def build_json_template(features: list) -> str:
     return "\n".join(lines)
 
 
-def build_prompt(features: list, mode: str, text_context: str = "") -> str:
+def build_prompt(features: list, mode: str, text_context: str = "",
+                 custom_instruction: str = "") -> str:
     """
     mode: "whole_image" | "whole_image_ocr" | "cropped_ocr"
+
+    custom_instruction: optional user-written intro (from the prompt editor). It
+    REPLACES only the opening instruction — the JSON schema template and the
+    mode-specific OCR context block are ALWAYS appended, so a custom prompt can
+    never accidentally drop the schema or the OCR text the mode is supposed to use.
     """
     template = build_json_template(features)
 
-    base_instruction = f"""You are analyzing a 2D mechanical engineering drawing.
-Extract the following manufacturing features and return ONLY a valid JSON object,
-no preamble, no explanation, no markdown code fences.
+    intro = (custom_instruction.strip() if custom_instruction and custom_instruction.strip()
+             else "You are analyzing a 2D mechanical engineering drawing.\n"
+                  "Extract the following manufacturing features from it.")
 
-If a feature is not present or cannot be determined, use null.
+    # These rules are ALWAYS appended, whatever the (custom) intro says — so a
+    # changed prompt can never drop the JSON-output contract or the schema.
+    base_instruction = f"""{intro}
+
+Return ONLY a single valid JSON object matching the schema below — no preamble,
+no explanation, no markdown code fences. If a feature is not present or cannot be
+determined, use null.
 
 Expected JSON schema:
 {template}

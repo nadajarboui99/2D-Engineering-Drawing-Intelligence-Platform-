@@ -30,7 +30,11 @@ class VLMConfig(BaseModel):
     vlm_model:  str        = "claude"
     modes:      List[str]  = ["whole_image", "whole_image_ocr", "cropped_ocr"]
     task:       str        = "tables"   # "tables" | "dimensions" | "both"
-    ocr_model:  str        = "easyocr"
+    ocr_model:  str        = "easyocr"  # which OCR output feeds the context modes
+    # cropped_ocr: which detector's crops to use. "" / "default" = the legacy
+    # best-detector crop file; "gt" = ground-truth crops (ceiling); or a det_id
+    # (e.g. "doclayout-yolo", "yolov11_n-5") to use that detector's tagged crops.
+    crop_detector: str     = "default"
 
 
 REPO_ROOT   = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
@@ -50,20 +54,32 @@ def _get_images_dir(task: str) -> str:
     return os.path.join(DETECTION_DIR, "data", "dimensions", "val", "images")
 
 
-def _load_ocr_results(task: str, ocr_model: str) -> dict:
+def _crop_source_tag(crop_detector: str) -> str:
+    """Map the composer's crop_detector choice to the OCR result-file source tag."""
+    cd = (crop_detector or "default").strip()
+    if cd in ("", "default", "best"):
+        return "crop"                  # legacy best-detector crop file
+    if cd == "gt":
+        return "gtcrop"                # ground-truth crops (ceiling)
+    return f"crop-{cd}"                # a specific detector's tagged crops
+
+
+def _load_ocr_results(task: str, ocr_model: str, crop_detector: str = "default") -> dict:
     # crop-mode OCR per task, detections carry both text and bbox
     # task "both" merges the tables and dimensions crop detections per image
     if task == "both":
         merged = {}
         for t in ("tables", "dimensions"):
-            for img, rec in _load_ocr_results(t, ocr_model).items():
+            for img, rec in _load_ocr_results(t, ocr_model, crop_detector).items():
                 merged.setdefault(img, {"image": img, "detections": []})
                 merged[img]["detections"].extend(rec.get("detections", []))
         return merged
+    tag = _crop_source_tag(crop_detector)
     candidates = [
-        os.path.join(OCR_DIR, "results", f"{task}_{ocr_model}_crop_results.json"),
-        os.path.join(OCR_DIR, "results", f"{task}_{ocr_model}_results.json"),
+        os.path.join(OCR_DIR, "results", f"{task}_{ocr_model}_{tag}_results.json"),
     ]
+    if tag == "crop":  # backward-compat with older untagged filename
+        candidates.append(os.path.join(OCR_DIR, "results", f"{task}_{ocr_model}_results.json"))
     path = next((p for p in candidates if os.path.exists(p)), None)
     if not path:
         return {}
@@ -128,7 +144,7 @@ def _process_mode(mode: str, task_label: str, crop_task, cfg: VLMConfig, ctx: di
     from PIL import Image as PILImage
     from core.config_loader import read_text
 
-    crop_ocr   = _load_ocr_results(crop_task, cfg.ocr_model) if mode == "cropped_ocr" else {}
+    crop_ocr   = _load_ocr_results(crop_task, cfg.ocr_model, cfg.crop_detector) if mode == "cropped_ocr" else {}
     output_dir = os.path.join(VLM_DIR, "results", task_label)
     os.makedirs(output_dir, exist_ok=True)
     results = []
@@ -168,8 +184,12 @@ def _process_mode(mode: str, task_label: str, crop_task, cfg: VLMConfig, ctx: di
         else:
             continue
 
+        # A saved custom prompt only overrides the intro; the schema template and
+        # the OCR context are always appended by build_prompt (so a custom prompt
+        # can't silently drop them — that was the bug that made all modes behave
+        # like "image only" and tanked accuracy).
         custom_prompt = read_text(f"prompts_{mode}")
-        prompt = custom_prompt if custom_prompt.strip() else ctx["build_prompt"](ctx["schema"], mode, text_context)
+        prompt = ctx["build_prompt"](ctx["schema"], mode, text_context, custom_instruction=custom_prompt)
 
         extracted = ctx["vlm"].extract(images, text_context, prompt)
 
@@ -180,6 +200,11 @@ def _process_mode(mode: str, task_label: str, crop_task, cfg: VLMConfig, ctx: di
             "vlm_model": cfg.vlm_model,
             "extracted": extracted,
             "usage":     dict(ctx["vlm"].last_meta),
+            # provenance: which upstream models produced this mode's context
+            "context": {
+                "ocr_model":     cfg.ocr_model if mode in ("whole_image_ocr", "cropped_ocr") else None,
+                "crop_detector": cfg.crop_detector if mode == "cropped_ocr" else None,
+            },
         }
         results.append(result)
         with open(os.path.join(output_dir, f"{image_name}_{mode}.json"), "w") as f:
@@ -233,22 +258,29 @@ async def run_vlm(cfg: VLMConfig, background: BackgroundTasks):
             fill_rate = (filled_fields / total_fields) if total_fields else 0
             res = _aggregate_resources(mode_results)
             task_label = mode_results[0].get("task", cfg.task)
-            entry = log_run(
-                stage="vlm", task=task_label, model=f"{cfg.vlm_model}_{mode}",
-                metrics={"fill_rate": round(fill_rate, 4), "images_processed": len(mode_results),
-                         **res},
-                extra={"mode": mode, "vlm_model": cfg.vlm_model},
-            )
+            prov = (mode_results[0].get("context") or {})
             gt  = vlm_eval.load_unified_gt()
             det = [{"image": r["image"], **vlm_eval.image_detail(r.get("extracted") or {}, gt.get(r["image"], {}))}
                    for r in mode_results if r["image"] in gt]
-            acc = vlm_eval.evaluate(combined_all, mode)
+            # Score THIS run's results for this mode (not the accumulated file), so
+            # each logged run carries its own accuracy for the leaderboard.
+            acc = vlm_eval.evaluate([r for r in combined_all if r["mode"] == mode], mode)
+            acc_metrics = {k: acc.get(k) for k in ("field_accuracy", "hallucination_rate",
+                           "miss_rate", "error_rate", "exact_match", "overall_accuracy", "numeric_mape")}
+            entry = log_run(
+                stage="vlm", task=task_label, model=f"{cfg.vlm_model}_{mode}",
+                metrics={"fill_rate": round(fill_rate, 4), "images_processed": len(mode_results),
+                         **acc_metrics, **res},
+                extra={"mode": mode, "vlm_model": cfg.vlm_model,
+                       "ocr_model": prov.get("ocr_model"), "crop_detector": prov.get("crop_detector")},
+            )
             save_snapshot(entry["id"], {
                 "stage": "vlm", "task": task_label, "model": f"{cfg.vlm_model} · {mode}", "mode": mode,
                 "timestamp": entry["timestamp"],
                 "metrics": {k: acc.get(k) for k in ("field_accuracy", "error_rate", "miss_rate",
                             "hallucination_rate", "numeric_mape", "exact_match", "overall_accuracy")},
-                "view": {"mode": mode, "vlm_model": cfg.vlm_model, "detail": det, "resources": res},
+                "view": {"mode": mode, "vlm_model": cfg.vlm_model, "detail": det, "resources": res,
+                         "ocr_model": prov.get("ocr_model"), "crop_detector": prov.get("crop_detector")},
             })
 
         job.log(f"All done. {len(combined_all)} results saved.")
@@ -272,6 +304,47 @@ def _aggregate_resources(results: list) -> dict:
         "avg_latency_s":     _avg("latency_s"),
         "total_cost_usd":    round(sum(costs), 6) if costs else None,
         "n_calls":           len(results),
+    }
+
+
+@router.get("/available-context")
+def available_context(task: str = "tables"):
+    """What upstream OCR/detector outputs already exist on disk, so the VLM
+    composer can offer only real, runnable pipeline combinations.
+      - whole_image_ocr: OCR models with a whole-image result (keyed 'all')
+      - cropped_ocr: (ocr_model, crop_detector) combos with a crop result for
+        this task. crop_detector is 'default' (best trained), 'gt' (ground truth
+        = ceiling), or a detector id (e.g. 'doclayout-yolo', 'yolov11_n-5')."""
+    from core.ocr_registry import list_models as list_ocr
+    ocr_ids = [m["id"] for m in list_ocr()]
+    results_dir = os.path.join(OCR_DIR, "results")
+    whole, seen = set(), set()
+    if os.path.isdir(results_dir):
+        files = set(os.listdir(results_dir))
+        for ocr in ocr_ids:
+            if f"all_{ocr}_full_results.json" in files:
+                whole.add(ocr)
+        tasks = ["tables", "dimensions"] if task == "both" else [task]
+        for t in tasks:
+            prefix, suffix = f"{t}_", "_results.json"
+            for fn in files:
+                if not (fn.startswith(prefix) and fn.endswith(suffix)):
+                    continue
+                middle = fn[len(prefix):-len(suffix)]
+                for ocr in ocr_ids:
+                    if middle.startswith(ocr + "_"):
+                        tag = middle[len(ocr) + 1:]
+                        if tag == "gtcrop":
+                            seen.add((ocr, "gt"))
+                        elif tag == "crop":
+                            seen.add((ocr, "default"))
+                        elif tag.startswith("crop-"):
+                            seen.add((ocr, tag[5:]))
+                        break
+    return {
+        "task": task,
+        "whole_image_ocr": sorted(whole),
+        "cropped_ocr": [{"ocr_model": o, "crop_detector": c} for o, c in sorted(seen)],
     }
 
 

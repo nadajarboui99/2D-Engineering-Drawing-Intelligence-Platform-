@@ -1,7 +1,7 @@
 {
-  "image": "Plan 6",
-  "width": 2481,
-  "height": 1754,
+  "image": "300_182_556-0_Support_Onduleur_EATON_5S_700i",
+  "width": 3308,
+  "height": 2339,
   "status": "draft",
   "meta": {
     "standard": "unknown",
@@ -13,256 +13,268 @@
   "regions": [
     {
       "id": 0,
-      "class": "table",
+      "class": "dimension",
       "bbox": [
-        1260,
-        1289,
-        1211,
-        443
+        2622,
+        204,
+        39,
+        27
       ],
-      "text": "Pièce à marquer du n° d'identification. Casser les angles vifs ch 0.5x0.5.(pièce d'usinage). Ebavurage soigné -aucune arrête coupante (pièce de tôlerie). Tr.Therm. Tr.Surf. Matière PEINTURE E24-2 Date de création. 19/12/2022  gal. Tolérance Dimensionnelle: 0 à 120 120 a 500 10.2 10.3 Révision Modification Date 500 à 1000 ±0.5  ±0.2 ±0.5 04/10/2022 SMP SUPPORT MOBILE CHAINE PORTE CABLE AXE X TECHNIK Propriété exclusive des Ets SMP_ Reproduction ou diffusion interdite sans autorisation écrite. Tol.gal. Forme et Géométrie A3 Des MR Vérif. Admin Ech. 1:2 Feuille 1/1 N40 102 807",
-      "cells": []
+      "text": "95"
     },
     {
       "id": 1,
       "class": "dimension",
       "bbox": [
-        273,
-        51,
-        67,
-        31
+        2823,
+        276,
+        45,
+        26
       ],
-      "text": "32,5"
+      "text": "22"
     },
     {
       "id": 2,
       "class": "dimension",
       "bbox": [
-        48,
-        297,
-        29,
-        41
+        2376,
+        496,
+        32,
+        51
       ],
-      "text": "60"
+      "text": "120"
     },
     {
       "id": 3,
       "class": "dimension",
       "bbox": [
-        84,
-        347,
-        31,
-        39
+        2831,
+        489,
+        33,
+        42
       ],
-      "text": "45"
+      "text": "30"
     },
     {
       "id": 4,
       "class": "dimension",
       "bbox": [
-        120,
-        433,
+        2916,
+        591,
         28,
-        37
+        46
       ],
-      "text": "15"
+      "text": "50"
     },
     {
       "id": 5,
       "class": "dimension",
       "bbox": [
-        236,
-        527,
-        41,
-        28
+        2676,
+        820,
+        31,
+        52
       ],
-      "text": "15"
+      "text": "120"
     },
     {
       "id": 6,
       "class": "dimension",
       "bbox": [
-        382,
-        528,
-        40,
-        26
+        2385,
+        886,
+        28,
+        29
       ],
-      "text": "35"
+      "text": "3"
     },
     {
       "id": 7,
       "class": "dimension",
       "bbox": [
-        396,
-        561,
-        41,
-        27
+        579,
+        210,
+        61,
+        29
       ],
-      "text": "70"
+      "text": "140"
     },
     {
       "id": 8,
       "class": "dimension",
       "bbox": [
-        705,
-        513,
-        134,
-        33
+        1127,
+        210,
+        56,
+        28
       ],
-      "text": "Ø6,5 Déb"
+      "text": "280"
     },
     {
       "id": 9,
       "class": "dimension",
       "bbox": [
-        114,
-        867,
-        34,
-        25
+        1679,
+        209,
+        65,
+        30
       ],
-      "text": "3"
+      "text": "140"
     },
     {
       "id": 10,
       "class": "dimension",
       "bbox": [
-        398,
-        854,
-        41,
-        28
+        1560,
+        295,
+        91,
+        30
       ],
-      "text": "70"
+      "text": "3 x 45°"
     },
     {
       "id": 11,
       "class": "dimension",
       "bbox": [
-        744,
-        853,
-        43,
-        29
+        837,
+        287,
+        39,
+        28
       ],
-      "text": "48"
+      "text": "50"
     },
     {
       "id": 12,
       "class": "dimension",
       "bbox": [
-        508,
-        1007,
-        52,
-        29
+        1021,
+        284,
+        38,
+        30
       ],
-      "text": "90°"
+      "text": "90"
     },
     {
       "id": 13,
       "class": "dimension",
       "bbox": [
-        934,
-        1001,
-        29,
-        43
+        655,
+        543,
+        30,
+        40
       ],
-      "text": "27"
+      "text": "60"
     },
     {
       "id": 14,
       "class": "dimension",
       "bbox": [
-        798,
-        1174,
-        56,
-        28
+        718,
+        562,
+        26,
+        42
       ],
-      "text": "90°"
+      "text": "15"
     },
     {
       "id": 15,
       "class": "dimension",
       "bbox": [
-        932,
-        1299,
-        34,
-        39
+        264,
+        819,
+        33,
+        52
       ],
-      "text": "73"
+      "text": "120"
     },
     {
       "id": 16,
       "class": "dimension",
       "bbox": [
-        2069,
-        165,
-        197,
-        33
+        324,
+        818,
+        34,
+        52
       ],
-      "text": "2xØ4,2 Déb"
+      "text": "100"
     },
     {
       "id": 17,
       "class": "dimension",
       "bbox": [
-        2107,
-        204,
-        129,
-        25
+        1973,
+        585,
+        95,
+        33
       ],
-      "text": "M5 Déb"
+      "text": "3 x 45°"
     },
     {
       "id": 18,
       "class": "dimension",
       "bbox": [
-        2109,
-        236,
-        168,
-        21
+        1987,
+        847,
+        55,
+        35
       ],
-      "text": "Ø5,05 X90°"
+      "text": "Ø7"
     },
     {
       "id": 19,
-      "class": "dimension",
+      "class": "table",
       "bbox": [
-        1966,
-        420,
-        29,
-        37
+        1731,
+        1726,
+        1495,
+        532
       ],
-      "text": "20"
+      "text": "Matière: Inox 304L\t Traitement :\t Traitement :\t Dureté requise :\t Teinte RAL:\t \tProfil : Format Folio A3\tTolérance générale : Echelle : 1:3 Masse : 2962.88 kg ARRAS MAXEi Support onduleur EATON 5S 700i pour coffret ELDON largeur 600mm 300 182 556 /0 Ce plan est la propriété de ARRAS-MAXEI. Il ne peut être transmis ou reproduit sans autorisation écrite.",
+      "cells": []
     },
     {
       "id": 20,
-      "class": "dimension",
+      "class": "table",
       "bbox": [
-        1860,
-        524,
-        66,
-        31
+        237,
+        2100,
+        1494,
+        162
       ],
-      "text": "16,5"
+      "text": "0\tCréation du pian\t\t22/10/2025\tFB\t22/10/2025\t\t \tREV. DESCRIPTION\tEDITE PAR\tDATE\tVERIFIE PAR\tDATE\tAPPROUVE PAR\tDATE \t\tTABLE DE REVISIONS\t\t\t\t\t",
+      "cells": []
     },
     {
       "id": 21,
       "class": "dimension",
       "bbox": [
-        1712,
-        526,
-        44,
-        28
+        1130,
+        1028,
+        59,
+        30
       ],
-      "text": "37"
+      "text": "532"
+    },
+    {
+      "id": 22,
+      "class": "dimension",
+      "bbox": [
+        1132,
+        1084,
+        51,
+        31
+      ],
+      "text": "560"
     }
   ],
   "features": {
     "length_before_bend": {
-      "value": null,
+      "value": 560,
       "text": "",
       "bbox": null
     },
     "length_after_bend": {
-      "value": 118,
+      "value": 560,
       "text": "",
       "bbox": null
     },
@@ -272,7 +284,7 @@
       "bbox": null
     },
     "width_after_bend": {
-      "value": 100,
+      "value": 243,
       "text": "",
       "bbox": null
     },
@@ -282,27 +294,32 @@
       "bbox": null
     },
     "height_after_bend": {
-      "value": 60,
+      "value": 98,
       "text": "",
       "bbox": null
     },
     "bends_count": {
-      "value": 2,
+      "value": 4,
       "text": "",
       "bbox": null
     },
     "circular_holes_count": {
-      "value": 5,
+      "value": 4,
       "text": "",
       "bbox": null
     },
     "noncircular_holes_count": {
-      "value": 0,
+      "value": 1,
       "text": "",
       "bbox": null
     },
     "circular_hole_diameters": {
-      "value": null,
+      "value": [
+        7,
+        7,
+        7,
+        7
+      ],
       "text": "",
       "bbox": null
     },
@@ -312,22 +329,22 @@
       "bbox": null
     },
     "material": {
-      "value": "E24-2",
+      "value": "Inox 304L",
       "text": "",
       "bbox": null
     },
     "standard": {
-      "value": "European",
-      "text": "",
-      "bbox": null
-    },
-    "part_name": {
       "value": null,
       "text": "",
       "bbox": null
     },
+    "part_name": {
+      "value": "Support onduleur EARTON 5S 700i pour coffret ELDON largeur 600mm",
+      "text": "",
+      "bbox": null
+    },
     "drawing_number": {
-      "value": "N40102807",
+      "value": "300182556",
       "text": "",
       "bbox": null
     }

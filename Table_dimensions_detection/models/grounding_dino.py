@@ -32,10 +32,18 @@ class GroundingDINODetector:
             inputs = self.processor(images=pil, text=self.prompt, return_tensors="pt")
             with self.torch.no_grad():
                 res = self.model(**inputs)
-            post = self.processor.post_process_grounded_object_detection(
-                res, inputs["input_ids"],
-                box_threshold=conf_threshold, text_threshold=0.25,
-                target_sizes=[(pil.height, pil.width)])[0]
+            # transformers renamed box_threshold → threshold in newer versions;
+            # try the new signature, fall back to the old one.
+            try:
+                post = self.processor.post_process_grounded_object_detection(
+                    res, inputs["input_ids"],
+                    threshold=conf_threshold, text_threshold=0.25,
+                    target_sizes=[(pil.height, pil.width)])[0]
+            except TypeError:
+                post = self.processor.post_process_grounded_object_detection(
+                    res, inputs["input_ids"],
+                    box_threshold=conf_threshold, text_threshold=0.25,
+                    target_sizes=[(pil.height, pil.width)])[0]
             boxes = post["boxes"].cpu().numpy()          # xyxy
             out.append({
                 "boxes":  boxes,

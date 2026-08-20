@@ -939,6 +939,23 @@
     },
     {
       "bbox": [
+        1246,
+        469,
+        83,
+        84
+      ],
+      "text": "Ø12,50",
+      "parsed": {
+        "symbol": "diam",
+        "value": 12.5,
+        "tol_plus": null,
+        "tol_minus": null,
+        "unit": null,
+        "raw": "Ø12,50"
+      }
+    },
+    {
+      "bbox": [
         861,
         694,
         30,
@@ -952,6 +969,23 @@
         "tol_minus": null,
         "unit": null,
         "raw": "25"
+      }
+    },
+    {
+      "bbox": [
+        755,
+        817,
+        83,
+        83
+      ],
+      "text": "Ø12,50",
+      "parsed": {
+        "symbol": "diam",
+        "value": 12.5,
+        "tol_plus": null,
+        "tol_minus": null,
+        "unit": null,
+        "raw": "Ø12,50"
       }
     }
   ],
@@ -1141,280 +1175,6 @@
         "tol_minus": null,
         "unit": null,
         "raw": "50"
-      }
-    }
-  ],
-  "Plan 6": [
-    {
-      "bbox": [
-        273,
-        51,
-        67,
-        31
-      ],
-      "text": "32,5",
-      "parsed": {
-        "symbol": null,
-        "value": 32.5,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "32,5"
-      }
-    },
-    {
-      "bbox": [
-        48,
-        297,
-        29,
-        41
-      ],
-      "text": "60",
-      "parsed": {
-        "symbol": null,
-        "value": 60.0,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "60"
-      }
-    },
-    {
-      "bbox": [
-        84,
-        347,
-        31,
-        39
-      ],
-      "text": "45",
-      "parsed": {
-        "symbol": null,
-        "value": 45.0,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "45"
-      }
-    },
-    {
-      "bbox": [
-        120,
-        433,
-        28,
-        37
-      ],
-      "text": "15",
-      "parsed": {
-        "symbol": null,
-        "value": 15.0,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "15"
-      }
-    },
-    {
-      "bbox": [
-        236,
-        527,
-        41,
-        28
-      ],
-      "text": "15",
-      "parsed": {
-        "symbol": null,
-        "value": 15.0,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "15"
-      }
-    },
-    {
-      "bbox": [
-        382,
-        528,
-        40,
-        26
-      ],
-      "text": "35",
-      "parsed": {
-        "symbol": null,
-        "value": 35.0,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "35"
-      }
-    },
-    {
-      "bbox": [
-        396,
-        561,
-        41,
-        27
-      ],
-      "text": "70",
-      "parsed": {
-        "symbol": null,
-        "value": 70.0,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "70"
-      }
-    },
-    {
-      "bbox": [
-        114,
-        867,
-        34,
-        25
-      ],
-      "text": "3",
-      "parsed": {
-        "symbol": null,
-        "value": 3.0,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "3"
-      }
-    },
-    {
-      "bbox": [
-        398,
-        854,
-        41,
-        28
-      ],
-      "text": "70",
-      "parsed": {
-        "symbol": null,
-        "value": 70.0,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "70"
-      }
-    },
-    {
-      "bbox": [
-        744,
-        853,
-        43,
-        29
-      ],
-      "text": "48",
-      "parsed": {
-        "symbol": null,
-        "value": 48.0,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "48"
-      }
-    },
-    {
-      "bbox": [
-        934,
-        1001,
-        29,
-        43
-      ],
-      "text": "27",
-      "parsed": {
-        "symbol": null,
-        "value": 27.0,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "27"
-      }
-    },
-    {
-      "bbox": [
-        932,
-        1299,
-        34,
-        39
-      ],
-      "text": "73",
-      "parsed": {
-        "symbol": null,
-        "value": 73.0,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "73"
-      }
-    },
-    {
-      "bbox": [
-        2107,
-        204,
-        129,
-        25
-      ],
-      "text": "M5 Déb",
-      "parsed": {
-        "symbol": null,
-        "value": 5.0,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "M5 Déb"
-      }
-    },
-    {
-      "bbox": [
-        1966,
-        420,
-        29,
-        37
-      ],
-      "text": "20",
-      "parsed": {
-        "symbol": null,
-        "value": 20.0,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "20"
-      }
-    },
-    {
-      "bbox": [
-        1860,
-        524,
-        66,
-        31
-      ],
-      "text": "16,5",
-      "parsed": {
-        "symbol": null,
-        "value": 16.5,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "16,5"
-      }
-    },
-    {
-      "bbox": [
-        1712,
-        526,
-        44,
-        28
-      ],
-      "text": "37",
-      "parsed": {
-        "symbol": null,
-        "value": 37.0,
-        "tol_plus": null,
-        "tol_minus": null,
-        "unit": null,
-        "raw": "37"
       }
     }
   ]

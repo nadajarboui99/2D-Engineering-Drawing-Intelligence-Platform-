@@ -29,15 +29,17 @@ BUILTIN_ARCHS = [
           "grounding_dino", "GroundingDINODetector",
           "pip install transformers torch", "transformers,torch",
           "Open-vocabulary, text-prompted detector. Zero-shot dimensions via prompt 'dimension . measurement . numeric value . tolerance .'."),
-    # Florence-2 is a unified detector — offered for both tasks (same wrapper, "<OD>").
-    _arch("florence2-tables", "Florence-2 (unified OD)", "tables",
-          "florence2", "Florence2Detector",
-          "pip install transformers timm einops torch", "transformers,timm,einops,torch",
-          "Microsoft Florence-2 — unified zero-shot detection via the <OD> task."),
-    _arch("florence2-dimensions", "Florence-2 (unified OD)", "dimensions",
-          "florence2", "Florence2Detector",
-          "pip install transformers timm einops torch", "transformers,timm,einops,torch",
-          "Microsoft Florence-2 — unified zero-shot detection via the <OD> task."),
+    _arch("grounding-dino-tables", "Grounding DINO — tables (open-vocab)", "tables",
+          "grounding_dino_tables", "GroundingDINOTableDetector",
+          "pip install transformers torch", "transformers,torch",
+          "Same open-vocabulary detector, prompted for tables/title blocks: 'table . title block . data table . parts list . bill of materials .' (zero-shot)."),
+    _arch("doclayout-yolo", "DocLayout-YOLO (layout)", "tables",
+          "doclayout_yolo_model", "DocLayoutYOLODetector",
+          "pip install doclayout-yolo huggingface_hub", "doclayout_yolo,huggingface_hub",
+          "YOLOv10 trained on document layouts (DocStructBench). Detects tables as page regions — closer to engineering title blocks than paper-table models. Zero-shot; keeps only the 'table' class."),
+    # NOTE: Florence-2 removed — its bundled remote code is incompatible with the
+    # installed transformers version (needs an older pin, which breaks Grounding
+    # DINO). The wrapper (models/florence2.py) is kept for a future pinned env.
 ]
 
 

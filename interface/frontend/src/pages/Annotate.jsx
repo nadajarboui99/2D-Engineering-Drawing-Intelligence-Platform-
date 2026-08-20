@@ -98,10 +98,26 @@ export default function AnnotatePage() {
   function clearDraftStorage() { try { localStorage.removeItem(DRAFT_IMG); localStorage.removeItem(DRAFT_ANN); } catch { /* ignore */ } }
 
   // loading images
-  function onFiles(e) {
-    const items = [...e.target.files].map(f => ({ file: f, stem: f.name.replace(/\.[^.]+$/, "") }));
-    setPending(p => [...p, ...items]);
+  async function onFiles(e) {
+    const files = [...e.target.files];
     e.target.value = "";
+    for (const f of files) {
+      const stem = f.name.replace(/\.[^.]+$/, "");
+      const isPdf = f.type === "application/pdf" || /\.pdf$/i.test(f.name);
+      if (isPdf) {
+        setMsg(`Converting ${f.name}…`);
+        try {
+          const blob = await api.renderPdf(f);                 // backend → PNG
+          const png = new File([blob], stem + ".png", { type: "image/png" });
+          setPending(p => [...p, { file: png, stem }]);
+          setMsg("");
+        } catch (err) {
+          setMsg(`Couldn't read ${f.name}: ${err.message}`);
+        }
+      } else {
+        setPending(p => [...p, { file: f, stem }]);
+      }
+    }
   }
 
   function removePending(item) {
@@ -244,8 +260,8 @@ export default function AnnotatePage() {
       {/* Load images */}
       <Panel title="Images">
         <label className="inline-flex items-center gap-2 text-sm cursor-pointer border border-gray-200 rounded-lg px-3 py-1.5 hover:bg-gray-50">
-          + Add images
-          <input type="file" accept=".jpg,.jpeg,.png" multiple onChange={onFiles} className="hidden" />
+          + Add drawings (image or PDF)
+          <input type="file" accept=".jpg,.jpeg,.png,.pdf" multiple onChange={onFiles} className="hidden" />
         </label>
         {pending.length > 0 && (
           <div className="mt-3">

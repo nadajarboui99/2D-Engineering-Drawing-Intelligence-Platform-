@@ -87,6 +87,19 @@ def evaluate(preds_by_image, gt_by_image, iou_thr=0.5, conf=0.25):
     recall = tp / (tp + fn) if (tp + fn) else 0.0
     f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) else 0.0
 
+    # Best achievable F1 over the PR curve, and the confidence threshold that
+    # reaches it — the fair operating point to report per model.
+    best_f1, best_conf = 0.0, conf
+    ctp = cfp = 0
+    for score, is_tp in scored:
+        ctp += is_tp
+        cfp += (1 - is_tp)
+        p = ctp / (ctp + cfp) if (ctp + cfp) else 0.0
+        r = ctp / n_gt
+        fscore = (2 * p * r / (p + r)) if (p + r) else 0.0
+        if fscore > best_f1:
+            best_f1, best_conf = fscore, score
+
     return {
         "available": True,
         "map50": round(ap, 4),
@@ -98,4 +111,6 @@ def evaluate(preds_by_image, gt_by_image, iou_thr=0.5, conf=0.25):
         "n_pred": sum(len(v) for v in preds_by_image.values()),
         "conf_threshold": conf,
         "iou_threshold": iou_thr,
+        "best_f1": round(best_f1, 4),
+        "best_conf": round(best_conf, 4),
     }

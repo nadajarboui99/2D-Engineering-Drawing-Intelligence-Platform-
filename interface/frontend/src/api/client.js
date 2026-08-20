@@ -18,7 +18,7 @@ export const api = {
   runDetection:            (task, cfg)       => req("POST", `/detection/run/${task}`, cfg),
   evalDetection:           (task)            => req("POST", `/detection/eval/${task}`),
   evalDetectionWithWeights:(task, path, sz)  => req("POST", `/detection/eval/${task}`, { weights_path: path, imgsz: sz }),
-  evalDetectionAnnotated:  (task, path, sz, archId)  => req("POST", `/detection/eval-annotated/${task}`, { weights_path: path, imgsz: sz, arch_id: archId }),
+  evalDetectionAnnotated:  (task, path, sz, archId, conf, tiled, tile)  => req("POST", `/detection/eval-annotated/${task}`, { weights_path: path, imgsz: sz, arch_id: archId, conf, tiled, tile }),
   evalDetectionDetail:     (task, path, sz)  => req("POST", `/detection/detail/${task}`, { weights_path: path, imgsz: sz }),
   getDetectionAnnotated:   (task)            => req("GET",  `/detection/annotated-result/${task}`),
   getDetectionResults:     (task)            => req("GET",  `/detection/results/${task}`),
@@ -39,6 +39,7 @@ export const api = {
   getVLMMetrics: (task, mode)=> req("GET",  `/vlm/metrics?task=${task || "tables"}${mode?`&mode=${mode}`:""}`),
   getVLMCompare: (task)      => req("GET",  `/vlm/compare?task=${task || "tables"}`),
   getVLMDetail:  ()          => req("GET",  `/vlm/detail`),
+  getVLMContext: (task)      => req("GET",  `/vlm/available-context?task=${task || "tables"}`),
 
   // Pipeline
   runPipeline:   (cfg)       => req("POST", `/pipeline/run`, cfg),
@@ -47,6 +48,12 @@ export const api = {
   listAnnotations:  ()      => req("GET",    `/annotation/list`),
   getMaster:        (stem)  => req("GET",    `/annotation/master/${encodeURIComponent(stem)}`),
   deleteAnnotation: (stem)  => req("DELETE", `/annotation/${encodeURIComponent(stem)}`),
+  renderPdf: async (file) => {
+    const form = new FormData(); form.append("pdf", file);
+    const res = await fetch(`${BASE}/annotation/render-pdf`, { method: "POST", body: form });
+    if (!res.ok) throw new Error(await res.text());
+    return res.blob();   // PNG image bytes
+  },
 
   // Features
   getFeatures:   ()          => req("GET",  `/features/`),

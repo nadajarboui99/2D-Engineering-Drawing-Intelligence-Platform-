@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { api, pollJob, API_BASE } from "../api/client";
-import { Panel, FormRow, Select, Btn, JobLog, Badge, InfoBox, RadioGroup, Collapsible, MetricCard } from "../components/ui";
+import { Panel, FormRow, Select, Btn, JobLog, Badge, InfoBox, RadioGroup, Collapsible, MetricCard, Tabs } from "../components/ui";
 
 const MODES = [
   { value:"whole_image",     label:"Image only",        hint:"Full drawing image, no text context — the baseline" },
@@ -25,10 +25,13 @@ function shuffle(arr) {
   return a;
 }
 
+// Only the INTRO/instructions — the JSON schema, the "return only JSON" rule,
+// and the OCR text context are always appended automatically by the backend, so
+// editing these can't break extraction.
 const DEFAULT_PROMPTS = {
-  whole_image:     "You are analyzing a 2D mechanical engineering drawing.\nExtract the manufacturing features and return ONLY a valid JSON object, no preamble, no markdown.\nAnalyze the provided image directly.",
-  whole_image_ocr: "You are analyzing a 2D mechanical engineering drawing.\nYou are also given OCR-extracted text as a hint — the image is the primary source of truth.\nReturn ONLY a valid JSON object.",
-  cropped_ocr:     "You are analyzing cropped patches from a 2D mechanical engineering drawing.\nCombine all patches to fill the feature schema. Return ONLY a valid JSON object.",
+  whole_image:     "You are analyzing a 2D mechanical engineering drawing. Read the drawing carefully and extract its manufacturing features.",
+  whole_image_ocr: "You are analyzing a 2D mechanical engineering drawing. You are also given OCR-extracted text as a hint — treat the image as the primary source of truth and the OCR as support.",
+  cropped_ocr:     "You are an expert reading a 2D mechanical engineering drawing. You are given the full image plus OCR text from detected regions (with box coordinates) — verify everything against the image.",
 };
 
 function Thumb({ stem, onOpen }) {
@@ -129,7 +132,11 @@ function CompareImageCard({ stem, perMode, onZoom }) {
 }
 
 export default function VLMPage() {
-  const [cfg, setCfg]         = useState({ vlm_model:"claude", mode:"whole_image", task:"both", ocr_model:"easyocr" });
+  const [cfg, setCfg]         = useState({ vlm_model:"claude", mode:"whole_image", task:"both", ocr_model:"easyocr", crop_detector:"default" });
+  const [ctxAvail, setCtxAvail] = useState({ whole_image_ocr:[], cropped_ocr:[] });
+  const [allRuns, setAllRuns]   = useState([]);   // every logged VLM run (the leaderboard)
+  const [cmpMode, setCmpMode]   = useState("all");
+  const [cmpVlm, setCmpVlm]     = useState("all");
   const [results, setResults] = useState([]);
   const [metrics, setMetrics] = useState(null);
   const [logs, setLogs]       = useState([]);
@@ -138,6 +145,7 @@ export default function VLMPage() {
   const [promptSaved, setPromptSaved] = useState(false);
   const [compare, setCompare] = useState(null);
   const [mView, setMView]     = useState("whole_image");  // metrics filter, independent of run config
+  const [tab, setTab]         = useState("run");           // "run" | "compare" (like Detection)
   const [detail, setDetail]   = useState(null);           // {mode: [{image, fields, metrics}]}
   const [gtImages, setGtImages] = useState([]);
   const [numImages, setNumImages] = useState(0);
@@ -147,9 +155,65 @@ export default function VLMPage() {
 
   const needsOCR = cfg.mode === "whole_image_ocr" || cfg.mode === "cropped_ocr";
 
+  // Which upstream OCR/detector outputs actually exist → drives the composer.
+  const detLabel = d => d === "default" ? "best trained detector"
+                      : d === "gt" ? "ground truth (ceiling)" : d;
+  const ocrOptions = cfg.mode === "cropped_ocr"
+    ? [...new Set(ctxAvail.cropped_ocr.map(c => c.ocr_model))]
+    : ctxAvail.whole_image_ocr;
+  const detOptions = ctxAvail.cropped_ocr
+    .filter(c => c.ocr_model === cfg.ocr_model).map(c => c.crop_detector);
+
   useEffect(() => {
     api.getVLMResults().then(setResults).catch(() => setResults([]));
   }, []);
+
+  useEffect(() => {
+    api.getAllResults("vlm").then(setAllRuns).catch(() => setAllRuns([]));
+  }, [results]);
+
+  // One row per distinct pipeline (vlm × mode × ocr × detector), latest kept,
+  // ranked by field accuracy — best on top, like Detection's Compare.
+  const pipelineOf = (e = {}) => {
+    const vlm = e.vlm_model || "vlm";
+    if (e.mode === "whole_image") return `image only → ${vlm}`;
+    if (e.mode === "whole_image_ocr") return `${e.ocr_model || "?"} (page) → ${vlm}`;
+    const det = e.crop_detector === "gt" ? "ground-truth"
+              : e.crop_detector === "default" ? "best-detector" : (e.crop_detector || "?");
+    return `${det} → ${e.ocr_model || "?"} → ${vlm}`;
+  };
+  const rankedRuns = (() => {
+    const byKey = {};
+    for (const r of allRuns) {
+      const e = r.extra || {};
+      const key = `${e.vlm_model}|${e.mode}|${e.ocr_model}|${e.crop_detector}`;
+      if (!byKey[key] || r.timestamp > byKey[key].timestamp) byKey[key] = r;
+    }
+    return Object.values(byKey).sort(
+      (a, b) => (b.metrics?.field_accuracy ?? -1) - (a.metrics?.field_accuracy ?? -1));
+  })();
+  // Compare-tab filters
+  const cmpVlmOpts = [...new Set(allRuns.map(r => r.extra?.vlm_model).filter(Boolean))];
+  const filteredRuns = rankedRuns.filter(r =>
+    (cmpMode === "all" || r.extra?.mode === cmpMode) &&
+    (cmpVlm === "all" || r.extra?.vlm_model === cmpVlm));
+
+  useEffect(() => {
+    api.getVLMContext(cfg.task).then(c => setCtxAvail({
+      whole_image_ocr: c.whole_image_ocr || [], cropped_ocr: c.cropped_ocr || [],
+    })).catch(() => setCtxAvail({ whole_image_ocr:[], cropped_ocr:[] }));
+  }, [cfg.task, results]);
+
+  // Keep the composer selections valid: if the current OCR/detector isn't
+  // available for this mode, snap to the first real option.
+  useEffect(() => {
+    if (needsOCR && ocrOptions.length && !ocrOptions.includes(cfg.ocr_model))
+      setCfg(c => ({ ...c, ocr_model: ocrOptions[0] }));
+  }, [ocrOptions.join(","), cfg.mode]);
+  useEffect(() => {
+    if (cfg.mode === "cropped_ocr" && detOptions.length && !detOptions.includes(cfg.crop_detector))
+      setCfg(c => ({ ...c, crop_detector: detOptions[0] }));
+  }, [detOptions.join(","), cfg.mode, cfg.ocr_model]);
 
   useEffect(() => {
     if (mView !== "compare") api.getVLMMetrics(null, mView).then(setMetrics).catch(() => setMetrics(null));
@@ -169,6 +233,11 @@ export default function VLMPage() {
     setPromptSaved(false);
   }, [cfg.mode]);
 
+  // Run tab shows exactly the selected mode's result; Compare shows all modes.
+  useEffect(() => {
+    setMView(tab === "compare" ? "compare" : cfg.mode);
+  }, [tab, cfg.mode]);
+
   async function run(allModes = false) {
     setRunning(true); setLogs([]);
     try {
@@ -177,6 +246,9 @@ export default function VLMPage() {
       await pollJob(job_id, setLogs);
       const fresh = await api.getVLMResults();
       setResults(fresh);
+      // Show the result of what was just run, without making the user click.
+      if (allModes) { setTab("compare"); setMView("compare"); }
+      else setMView(cfg.mode);
     } catch (e) {
       setLogs(l => [...l, { ts: new Date().toISOString(), msg: `Error: ${e.message}` }]);
     } finally { setRunning(false); }
@@ -190,6 +262,9 @@ export default function VLMPage() {
 
   return (
     <div>
+      <Tabs tabs={[{id:"run",label:"Run"},{id:"compare",label:"⇄ Compare all runs"}]} active={tab} onChange={setTab} />
+
+      {tab === "run" && (<>
       <Panel title="Config">
         <FormRow label="VLM model">
           <input value={cfg.vlm_model} onChange={e => setCfg(c=>({...c,vlm_model:e.target.value}))}
@@ -202,15 +277,34 @@ export default function VLMPage() {
         {/* Task only matters for crop context — it selects which detector crops feed the VLM.
             Whole-image modes read the entire page and fill the unified schema. */}
         {cfg.mode === "cropped_ocr" && (
-          <FormRow label="Crop source" hint="Which detector crops to feed as context">
+          <FormRow label="Crop task" hint="Which class of crops to feed as context">
             <Select value={cfg.task} onChange={v => setCfg(c=>({...c,task:v}))}
               options={[{value:"both",label:"Both (tables + dimensions)"},{value:"tables",label:"Tables only"},{value:"dimensions",label:"Dimensions only"}]} />
           </FormRow>
         )}
         {needsOCR && (
-          <FormRow label="OCR source" hint="Which OCR run to use as text context">
-            <Select value={cfg.ocr_model} onChange={v => setCfg(c=>({...c,ocr_model:v}))} options={["easyocr","tesseract"]} />
+          <FormRow label="OCR model" hint="Which OCR run supplies the text context">
+            {ocrOptions.length ? (
+              <Select value={cfg.ocr_model} onChange={v => setCfg(c=>({...c,ocr_model:v}))}
+                options={ocrOptions.map(o => ({ value:o, label:o }))} />
+            ) : (
+              <span className="text-xs text-amber-500">No {cfg.mode==="cropped_ocr"?"crop":"whole-image"} OCR results yet — run OCR ({cfg.mode==="cropped_ocr"?"Cropped":"Full image"}) first.</span>
+            )}
           </FormRow>
+        )}
+        {cfg.mode === "cropped_ocr" && detOptions.length > 0 && (
+          <FormRow label="Detector (crops)" hint="Whose boxes produced the crops the VLM reads — this is the pipeline you're testing">
+            <Select value={cfg.crop_detector} onChange={v => setCfg(c=>({...c,crop_detector:v}))}
+              options={detOptions.map(d => ({ value:d, label:detLabel(d) }))} />
+          </FormRow>
+        )}
+        {needsOCR && ocrOptions.length > 0 && (
+          <p className="text-xs text-gray-400 -mt-1">
+            Pipeline: <strong className="text-gray-600">
+              {cfg.mode==="cropped_ocr" ? `${detLabel(cfg.crop_detector)} → ${cfg.ocr_model} → ${cfg.vlm_model}`
+                                        : `${cfg.ocr_model} (whole page) → ${cfg.vlm_model}`}
+            </strong>
+          </p>
         )}
         <div className="mt-3 flex flex-wrap gap-2 items-center">
           <Btn primary onClick={() => run(false)} loading={running} disabled={running}>▶ Run this mode</Btn>
@@ -222,7 +316,7 @@ export default function VLMPage() {
       {/* Prompt editor — title reacts to selected mode */}
       <Collapsible title={`Edit prompt · ${MODES.find(m=>m.value===cfg.mode)?.label}`}>
         <p className="text-xs text-gray-400 mb-3">
-          The feature schema is appended automatically — you only need to write the instructions here.
+          Write only your instructions here. The <strong>JSON schema</strong>, the <strong>“return only JSON”</strong> rule, and the <strong>OCR text context</strong> are always appended automatically — so editing this can’t break the results.
         </p>
         <textarea value={prompt} onChange={e => setPrompt(e.target.value)}
           className="w-full h-36 text-sm font-mono border border-gray-200 rounded-lg p-3 resize-y focus:outline-none focus:ring-1 focus:ring-gray-300 text-gray-800" />
@@ -233,21 +327,70 @@ export default function VLMPage() {
       </Collapsible>
 
       {(running || logs.length > 0) && <Panel title="Live logs"><JobLog logs={logs} /></Panel>}
+      </>)}
 
-      {/* ── Evaluation metrics — own mode/compare filter (independent of run config) ── */}
-      <Panel title="Evaluation metrics">
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          {MODES.map(m => (
-            <button key={m.value} onClick={() => setMView(m.value)}
-              className={`text-xs px-3 py-1.5 rounded-lg border ${mView===m.value ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"}`}>
-              {m.label}
-            </button>
-          ))}
-          <button onClick={() => setMView("compare")}
-            className={`text-xs px-3 py-1.5 rounded-lg border ${mView==="compare" ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"}`}>
-            ⇄ Compare all 3
-          </button>
-        </div>
+      {tab === "compare" && (
+      /* Compare: every VLM run, ranked (best on top) */
+      <Panel title="Compare — all VLM runs" badge="best on top">
+        {rankedRuns.length === 0 ? (
+          <p className="text-sm text-gray-300 py-4 text-center">No VLM runs yet — run a pipeline above to populate this.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <div className="flex flex-wrap gap-3 mb-3 text-sm text-gray-500 items-center">
+              <span className="text-xs text-gray-400">Filter</span>
+              <Select value={cmpMode} onChange={setCmpMode} options={[
+                {value:"all",label:"All modes"},
+                {value:"whole_image",label:"Image only"},
+                {value:"whole_image_ocr",label:"Image + page OCR"},
+                {value:"cropped_ocr",label:"Image + crop OCR"}]} />
+              <Select value={cmpVlm} onChange={setCmpVlm} options={[
+                {value:"all",label:"All VLM models"},
+                ...cmpVlmOpts.map(v => ({value:v,label:v}))]} />
+              <span className="text-xs text-gray-400 ml-auto">{filteredRuns.length} of {rankedRuns.length} runs</span>
+            </div>
+            {filteredRuns.length === 0 && <p className="text-sm text-gray-300 py-4 text-center">No runs match the filter.</p>}
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-xs text-gray-400 border-b border-gray-100">
+                  <th className="text-left font-medium py-2 pr-3">Pipeline (detector → OCR → VLM)</th>
+                  <th className="text-right font-medium py-2 px-3">Field acc.</th>
+                  <th className="text-right font-medium py-2 px-3">Halluc.</th>
+                  <th className="text-right font-medium py-2 px-3">Miss</th>
+                  <th className="text-right font-medium py-2 px-3">Exact</th>
+                  <th className="text-right font-medium py-2 px-3">Cost</th>
+                  <th className="text-right font-medium py-2 pl-3">When</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRuns.map((r, i) => {
+                  const m = r.metrics || {};
+                  const f = (v) => v == null ? "—" : v.toFixed(3);
+                  return (
+                    <tr key={r.id} className={`border-b border-gray-50 last:border-0 ${i===0 ? "bg-emerald-50/60" : ""}`}>
+                      <td className="py-2 pr-3 text-gray-700">
+                        {pipelineOf(r.extra)} {i===0 && m.field_accuracy != null && <Badge variant="green">best</Badge>}
+                      </td>
+                      <td className="text-right px-3 font-mono text-gray-800">{f(m.field_accuracy)}</td>
+                      <td className="text-right px-3 font-mono text-gray-500">{f(m.hallucination_rate)}</td>
+                      <td className="text-right px-3 font-mono text-gray-500">{f(m.miss_rate)}</td>
+                      <td className="text-right px-3 font-mono text-gray-500">{f(m.exact_match)}</td>
+                      <td className="text-right px-3 font-mono text-gray-500">{m.total_cost_usd != null ? `$${m.total_cost_usd}` : "—"}</td>
+                      <td className="text-right pl-3 text-xs text-gray-400">{(r.timestamp || "").slice(5,16).replace("T"," ")}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <p className="text-xs text-gray-400 mt-3">
+              One row per distinct pipeline, ranked by <strong>field accuracy</strong>. Each row shows exactly which detector + OCR fed the VLM, so you can see whether a better upstream pipeline improves extraction.
+            </p>
+          </div>
+        )}
+      </Panel>
+      )}
+
+      {/* ── Evaluation metrics — Run tab: current mode only · Compare tab: all 3 modes ── */}
+      <Panel title={tab === "compare" ? "Compare — all 3 input modes" : "Current run — metrics"}>
 
         {mView === "compare" ? (
           compare?.modes?.some(m => m.evaluated_images > 0 || m.resources?.n_calls > 0) ? (() => {
@@ -299,7 +442,10 @@ export default function VLMPage() {
           })() : <InfoBox>Run the modes (▶▶ Run all 3 modes above) to compare them here.</InfoBox>
         ) : metrics?.available && metrics?.evaluated_images ? (
           <>
-            <p className="text-xs text-gray-400 mb-3">{modeLabel(mView)} · {metrics.evaluated_images} image(s) scored</p>
+            <p className="text-xs text-gray-400 mb-3">
+              Latest run · <strong className="text-gray-600">{modeLabel(mView)}</strong> · {metrics.evaluated_images} image(s) scored
+              {metrics.resources?.total_cost_usd != null && <span> · cost ${metrics.resources.total_cost_usd}</span>}
+            </p>
             <div className="grid grid-cols-4 gap-3 mb-3">
               <MetricCard label="Field accuracy"  value={metrics.field_accuracy?.toFixed(3)}     good={metrics.field_accuracy > 0.7}     sub="correct / fields with a value" />
               <MetricCard label="Error rate"      value={metrics.error_rate?.toFixed(3)}         good={metrics.error_rate < 0.15}        sub="wrong values · lower better" />

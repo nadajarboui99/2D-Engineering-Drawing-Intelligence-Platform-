@@ -1,0 +1,258 @@
+{
+  "image": "802035_011_CARTER_JB_DEVELOPPEMENT",
+  "width": 3308,
+  "height": 2339,
+  "status": "draft",
+  "meta": {
+    "standard": "unknown",
+    "source_type": "unknown",
+    "clutter": "med",
+    "has_gdt": false,
+    "difficulty": "med"
+  },
+  "regions": [
+    {
+      "id": 0,
+      "class": "dimension",
+      "bbox": [
+        950,
+        295,
+        86,
+        36
+      ],
+      "text": "232"
+    },
+    {
+      "id": 1,
+      "class": "dimension",
+      "bbox": [
+        1511,
+        283,
+        73,
+        47
+      ],
+      "text": "126"
+    },
+    {
+      "id": 2,
+      "class": "dimension",
+      "bbox": [
+        387,
+        692,
+        47,
+        74
+      ],
+      "text": "219"
+    },
+    {
+      "id": 3,
+      "class": "dimension",
+      "bbox": [
+        1110,
+        991,
+        35,
+        39
+      ],
+      "text": "3"
+    },
+    {
+      "id": 4,
+      "class": "dimension",
+      "bbox": [
+        1374,
+        1394,
+        42,
+        81
+      ],
+      "text": "120"
+    },
+    {
+      "id": 5,
+      "class": "dimension",
+      "bbox": [
+        2163,
+        793,
+        46,
+        128
+      ],
+      "text": "594,05"
+    },
+    {
+      "id": 6,
+      "class": "dimension",
+      "bbox": [
+        2364,
+        801,
+        58,
+        42
+      ],
+      "text": "37"
+    },
+    {
+      "id": 7,
+      "class": "dimension",
+      "bbox": [
+        2820,
+        793,
+        62,
+        40
+      ],
+      "text": "37"
+    },
+    {
+      "id": 8,
+      "class": "dimension",
+      "bbox": [
+        2594,
+        1458,
+        76,
+        39
+      ],
+      "text": "194"
+    },
+    {
+      "id": 9,
+      "class": "dimension",
+      "bbox": [
+        2868,
+        1212,
+        44,
+        107
+      ],
+      "text": "89,20"
+    },
+    {
+      "id": 10,
+      "class": "dimension",
+      "bbox": [
+        2927,
+        1185,
+        44,
+        126
+      ],
+      "text": "250,91"
+    },
+    {
+      "id": 11,
+      "class": "dimension",
+      "bbox": [
+        2980,
+        1182,
+        44,
+        129
+      ],
+      "text": "377,93"
+    },
+    {
+      "id": 12,
+      "class": "dimension",
+      "bbox": [
+        3033,
+        1181,
+        48,
+        127
+      ],
+      "text": "508,82"
+    },
+    {
+      "id": 13,
+      "class": "dimension",
+      "bbox": [
+        3084,
+        1185,
+        48,
+        127
+      ],
+      "text": "559,01"
+    },
+    {
+      "id": 14,
+      "class": "table",
+      "bbox": [
+        1810,
+        1822,
+        1420,
+        440
+      ],
+      "text": "SAUF INDICATION CONTRAIRE: LES COTES SONT EN MILLIMETRES TAT DE SURFACE TOLERANCES LINEAIRES: ANGULAIRES: NOM FINITION ET TRAITEMENT: SIGNATURE DATE AUTEUR VERIF. APPR. Document propriété de la socièté JB DEVELOPPEMENT. Toute utilisation sans accord est passible de poursuites. CASSER LES ANGLES VIFS JB Développement MATERIAU: MASSE: NE PAS CHANGER LECHELLE REVISION CONFIDENTIEL TITRE: No. DEPLAN 802035_011_CARTER ECHELLE:I:S FEUILLE 1 SUR A3",
+      "cells": []
+    }
+  ],
+  "features": {
+    "length_before_bend": {
+      "value": 594.05,
+      "text": "",
+      "bbox": null
+    },
+    "length_after_bend": {
+      "value": 232,
+      "text": "",
+      "bbox": null
+    },
+    "width_before_bend": {
+      "value": 194,
+      "text": "",
+      "bbox": null
+    },
+    "width_after_bend": {
+      "value": 219,
+      "text": "",
+      "bbox": null
+    },
+    "height_before_bend": {
+      "value": 3,
+      "text": "",
+      "bbox": null
+    },
+    "height_after_bend": {
+      "value": 126,
+      "text": "",
+      "bbox": null
+    },
+    "bends_count": {
+      "value": 7,
+      "text": "",
+      "bbox": null
+    },
+    "circular_holes_count": {
+      "value": 2,
+      "text": "",
+      "bbox": null
+    },
+    "noncircular_holes_count": {
+      "value": 0,
+      "text": "",
+      "bbox": null
+    },
+    "circular_hole_diameters": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "cut_perimeter": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "material": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "standard": {
+      "value": "European",
+      "text": "",
+      "bbox": null
+    },
+    "part_name": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    },
+    "drawing_number": {
+      "value": null,
+      "text": "",
+      "bbox": null
+    }
+  }
+}

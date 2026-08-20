@@ -23,6 +23,23 @@ class Florence2Detector:
         self.model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True)
         self.processor = AutoProcessor.from_pretrained(model_name, trust_remote_code=True)
         self.model.eval()
+        # Newer transformers dropped forced_bos_token_id from the config default,
+        # which Florence-2's bundled code still reads. Patch it on every config
+        # object we can reach (top, text_config, and the language sub-model), and
+        # on the config CLASS as a last resort.
+        cfgs = [self.model.config,
+                getattr(self.model.config, "text_config", None),
+                getattr(getattr(self.model, "language_model", None), "config", None),
+                getattr(self.model, "generation_config", None)]
+        for cfg in cfgs:
+            if cfg is None:
+                continue
+            try:
+                if getattr(cfg, "forced_bos_token_id", None) is None:
+                    cfg.forced_bos_token_id = 2
+                type(cfg).forced_bos_token_id = 2   # class-level default fallback
+            except Exception:
+                pass
 
     def predict(self, images, conf_threshold: float = 0.25, imgsz: int = 640):
         from PIL import Image
